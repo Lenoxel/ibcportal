@@ -5,7 +5,8 @@ from django.utils import timezone
 class Post(models.Model):
     objects = models.Manager()
 
-    publisher = models.ForeignKey('core.Publisher', verbose_name='Id do Publicador', null=True, on_delete=models.SET_NULL)
+    manager = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Gerenciador', null=True, on_delete=models.SET_NULL)
+    publisher = models.ForeignKey('core.Publisher', verbose_name='Publicador', null=True, on_delete=models.SET_NULL)
     title = models.CharField('Título da postagem', max_length=200)
     text = models.TextField('Texto da postagem')
     to_notify = models.BooleanField('Notificar', default=False)

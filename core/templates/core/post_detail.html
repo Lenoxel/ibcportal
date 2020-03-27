@@ -1,0 +1,17 @@
+{% extends 'core/index.html' %}
+
+{% block content %}
+    <div style="padding: 0.01em 16px;">
+        <h2><span style="border-bottom:1px solid #ccc">{{ post.title }}</span></h2>
+        <div style="border:1px solid #ccc; border-radius: 16px; padding-left:5px; background-color:aliceblue">
+            <p>{{ post.text|linebreaksbr }}</p>
+            {% if post.published_date %}
+            <p>
+                <span>Publicado por {{ post.publisher }} em {{ post.creation_date }}<span>
+                <br>
+                <span style="font:small-caption;">Publicação gerenciada por {{ post.manager }}<span>
+            </p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
