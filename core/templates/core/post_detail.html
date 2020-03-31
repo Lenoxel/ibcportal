@@ -7,7 +7,11 @@
             <p>{{ post.text|linebreaksbr }}</p>
             {% if post.published_date %}
             <p>
-                <span>Publicado por {{ post.publisher }} em {{ post.creation_date }}<span>
+                {% if post.published_date %}
+                    <span>Publicado por {{ post.publisher }} em {{ post.published_date }}<span>
+                {% else %}
+                    <span>Publicado por {{ post.publisher }} em {{ post.creation_date }}<span>
+                {% endif %}
                 <br>
                 <span style="font:small-caption;">Publicação gerenciada por {{ post.manager }}<span>
             </p>

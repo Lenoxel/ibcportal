@@ -1,0 +1,40 @@
+{% extends 'core/index.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col"> 
+        {% for post in posts %}
+            <div style="border-left: 6px solid silver; background-color: #ddffff; border-color: #2196F3; padding-left: 12px;">
+                <h2 style="padding-top:7px;"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
+                <p>{{ post.text|linebreaksbr }}</p>
+                <p style="padding-bottom:7px;">
+                    {% if post.published_date %}
+                        <span>Publicado por {{ post.publisher }} em {{ post.published_date }}</span>
+                    {% else %}
+                        <span>Publicado por {{ post.publisher }} em {{ post.creation_date }}</span>
+                    {% endif %}
+                    <br>
+                    <span style="font:small-caption;">Publicação gerenciada por {{ post.manager }}</span>
+                </p>
+            </div>
+        {% endfor %}
+        </div>
+        <div class="col" style="padding-left:7px;">
+        {% for meeting in meetings %}
+            <div style="border-left: 6px solid silver; background-color: #ddffff; border-color: #2196F3; padding-left: 12px;">
+                <h3 style="padding-top:7px;">{{ meeting.title }}</h3>
+                <p>{{ meeting.location }}</p>
+                <p style="padding-bottom:7px;">
+                    {% if meeting.end_date %}
+                        <span>Horário: {{ meeting.start_date }} às {{ meeting.end_date }}</span>
+                    {% else %}
+                        <span>Horário: {{ meeting.start_date }}</span>
+                    {% endif %}
+                    <br>
+                    <span>Pregador: {{ meeting.preacher }}</span>
+                </p>
+            </div>
+        {% endfor %}
+        </div>
+    <div>
+{% endblock %}    
