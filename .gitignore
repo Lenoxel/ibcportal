@@ -5,3 +5,17 @@ myvenv
 db.sqlite3
 /static
 .DS_Store
+
+
+
+---------------------------------------------------
+c:\CALLED\ENV>cd ..
+
+c:\CALLED>cd ..
+
+c:\>cd C:\CALLED\ENV\Scripts
+
+C:\CALLED\ENV\Scripts>activate.bat
+
+(ENV) C:\CALLED\ENV\Scripts>
+---------------------------------------------------

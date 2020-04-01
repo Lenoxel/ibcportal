@@ -31,3 +31,6 @@ def post_detail(request, pk):
     }
     return render(request, 'core/post_detail.html', context)
     
+def about(request):
+    # SAI QUE É TUA, GABRIEL!
+    return render(request, 'core/about.html')
