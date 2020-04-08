@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Post, Publisher, PostFile, PostView, Video, Schedule, Group
+from .models import Post, Publisher, PostFile, PostView, Video, Schedule, Group, Church
+from django.core.exceptions import PermissionDenied
 
 class PostFileInline(admin.TabularInline):
     model = PostFile
@@ -10,9 +11,27 @@ class PostAdmin(admin.ModelAdmin):
         PostFileInline 
     ]
 
+    readonly_fields = ('manager',)
+
+    def save_model(self, request, obj, form, change):
+        if request.user.is_superuser:
+            obj.manager = request.user
+            super().save_model(request, obj, form, change)
+        else:
+            return PermissionDenied
+
+    def delete_model(self, request, obj):
+        if request.user.is_superuser:
+            obj.manager = request.user
+            super().delete_model(request, obj)
+        else:
+            return PermissionDenied
+
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Publisher)
 admin.site.register(PostView)
 admin.site.register(Video)
 admin.site.register(Schedule)
 admin.site.register(Group)
+admin.site.register(Church)
