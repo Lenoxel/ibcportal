@@ -2,14 +2,21 @@
 <html>
     <head>
         <title style=>Portal IBC</title>
+        <link rel="stylesheet" href="{% static 'css/index.css' %}">
     </head>
     <body>
+        <header>
+            <!-- informações de topo, menu logo, input search -->
+        </header>
         <div>
             <h1 style="text-align:center;">Portal IBC</h1>
-            <link rel="stylesheet" href="{% static 'css/index.css' %}">
         </div>
 
         {% block content %}
         {% endblock %}
+
+        <footer>
+            <!-- Informações estáticas de contato, socialmedia, formulário de cadastro de notificação de notícias pelo celular (cadastro pelo número do usuário) -->
+        </footer>
     </body>
 </html>
