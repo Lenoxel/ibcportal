@@ -40,7 +40,7 @@ class Post(models.Model):
     objects = models.Manager()
 
     manager = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Gerenciador', null=True, on_delete=models.SET_NULL)
-    publisher = models.ForeignKey('core.Publisher', verbose_name='Publicador', null=True, on_delete=models.SET_NULL)
+    publisher = models.ForeignKey('core.Member', verbose_name='Publicador', null=True, on_delete=models.SET_NULL)
     title = models.CharField('Título da postagem', max_length=200)
     text = models.TextField('Texto da postagem')
     to_notify = models.BooleanField('Notificar', default=False)
@@ -56,7 +56,7 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
-class Publisher(models.Model):
+class Member(models.Model):
     objects = models.Manager()
 
     name = models.CharField('Nome', max_length=100)
@@ -119,7 +119,7 @@ class Schedule(models.Model):
     end_date = models.DateTimeField('Horário de fim', null=True, blank=True)
     location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
     description = models.TextField('Descrição', max_length=300, blank=True, null=True)
-    preacher = models.ForeignKey('core.Publisher', verbose_name='Pregador', null=True, on_delete=models.SET_NULL)
+    preacher = models.ForeignKey('core.Member', verbose_name='Pregador', null=True, on_delete=models.SET_NULL)
     organizing_group = models.ForeignKey('core.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
     category = models.CharField('Tipo', max_length=15, choices=[(meetingType.name, meetingType.value) for meetingType in MeetingTypeEnum])
     # does_repeat = models.BooleanField('Se repete', default=False)
@@ -149,9 +149,9 @@ class Group(models.Model):
 
     name = models.CharField('Nome', max_length=100)
     description = models.TextField('Descrição')
-    leader = models.ForeignKey('core.Publisher', verbose_name='Líder', related_name='group_leader', null=True, on_delete=models.SET_NULL)
-    vice_leader = models.ForeignKey('core.Publisher', verbose_name='Vice-líder', related_name='vice_leader', null=True, blank=True, on_delete=models.SET_NULL)
-    third_leader = models.ForeignKey('core.Publisher', verbose_name='Terceiro líder', related_name='third_leader', null=True, blank=True, on_delete=models.SET_NULL)
+    leader = models.ForeignKey('core.Member', verbose_name='Líder', related_name='group_leader', null=True, on_delete=models.SET_NULL)
+    vice_leader = models.ForeignKey('core.Member', verbose_name='Vice-líder', related_name='vice_leader', null=True, blank=True, on_delete=models.SET_NULL)
+    third_leader = models.ForeignKey('core.Member', verbose_name='Terceiro líder', related_name='third_leader', null=True, blank=True, on_delete=models.SET_NULL)
     background_image = models.ImageField('Imagem do grupo', upload_to ='group_images/')
     church = models.ForeignKey('core.Church', verbose_name='Igreja', null=True, blank=True, on_delete=models.SET_NULL)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
@@ -171,7 +171,7 @@ class Church(models.Model):
     name = models.CharField('Nome', max_length=100)
     description = models.TextField('Descrição')
     address = models.CharField('Endereço', max_length=250)
-    chief_pastor = models.ForeignKey('core.Publisher', verbose_name='Pastor Principal', null=True, on_delete=models.SET_NULL)
+    chief_pastor = models.ForeignKey('core.Member', verbose_name='Pastor Principal', null=True, on_delete=models.SET_NULL)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 

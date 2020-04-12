@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Publisher, PostFile, PostView, Video, Schedule, Group, Church, Donate
+from .models import Post, Member, PostFile, PostView, Video, Schedule, Group, Church, Donate
 from django.core.exceptions import PermissionDenied
 
 class PostFileInline(admin.TabularInline):
@@ -29,7 +29,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Post, PostAdmin)
-admin.site.register(Publisher)
+admin.site.register(Member)
 admin.site.register(PostView)
 admin.site.register(Video)
 admin.site.register(Schedule)
