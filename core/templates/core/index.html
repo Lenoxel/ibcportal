@@ -7,6 +7,10 @@
     <body>
         <header>
             <!-- informações de topo, menu logo, input search -->
+            <div class="tab">
+                <button class="tablinks" onclick="changeTab(event, 'home')">Home</button>
+                <button class="tablinks" onclick="changeTab(event, 'donate')">Doar</button>
+            </div>
         </header>
         <div>
             <h1 style="text-align:center;">Portal IBC</h1>
@@ -18,5 +22,7 @@
         <footer>
             <!-- Informações estáticas de contato, socialmedia, formulário de cadastro de notificação de notícias pelo celular (cadastro pelo número do usuário) -->
         </footer>
+
+        <script src="{% static 'js/index.js'%}"></script>
     </body>
 </html>

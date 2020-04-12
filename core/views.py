@@ -1,8 +1,16 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Post, Video, Schedule
+from .models import Post, Video, Schedule, Donate, STATUS_CHOICES
 from django.utils import timezone
 from django.db.models import Q
 from .models import PostView
+from .forms import DonateForm
+from django.views.decorators.csrf import csrf_protect
+from django.views.generic.base import RedirectView
+from django.urls import reverse
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
+from pagseguro import PagSeguro
 
 def home(request):
     posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')
@@ -30,7 +38,93 @@ def post_detail(request, pk):
         'post': post
     }
     return render(request, 'core/post_detail.html', context)
-    
+
 def about(request):
     # SAI QUE É TUA, GABRIEL!
     return render(request, 'core/about.html')
+
+def donate(request):
+    form = DonateForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'core/donate.html', context)
+
+
+class PagSeguroDonateView(RedirectView):
+    def get_redirect_url(self):
+        if self.request.POST:
+            form = DonateForm(self.request.POST)
+
+            if form.is_valid():
+                donor_name = form.cleaned_data['donor_name']
+                donor_email = form.cleaned_data['donor_email']
+                donate_Type = form.data['donate_Type']
+                payment_option = form.data['payment_option']
+                amount = form.cleaned_data['amount']
+                
+                donate_object = {
+                    'donor_name': donor_name,
+                    'donor_email': donor_email,
+                    'donate_Type': donate_Type,
+                    'payment_option': payment_option,
+                    'amount': amount
+                }
+
+                # Update probably pending payments by the the same email
+                pending_payments = Donate.objects.filter(donor_email=donor_email, payment_status='pending', donate_type=donate_Type)
+                for payment in pending_payments:
+                    payment.payment_status = 'excluded'
+
+                Donate.objects.bulk_update(pending_payments, ['payment_status'])
+
+                donate = Donate()
+                donate.initialize_object(donate_object)
+                donate.save()
+
+                pagseguro_donate = Donate.objects.earliest('-id')
+
+                pg = pagseguro_donate.pagseguro()
+
+                # pg.redirect_url = "http://meusite.com/obrigado"
+
+                pg.redirect_url = self.request.build_absolute_uri(
+                    reverse('done_payment')
+                )
+
+                pg.notification_url  = self.request.build_absolute_uri(
+                    reverse('pagseguro_notification')
+                )
+
+                response = pg.checkout()
+                return response.payment_url
+
+def done_payment(request):
+    return render(request, 'core/done_payment.html')
+
+# @csrf_exempt
+def pagseguro_notification(request):
+    notification_code = request.POST.get('notificationCode', None)
+    if notification_code:
+        pg = PagSeguro(
+            email=settings.PAGSEGURO_EMAIL, 
+            token=settings.PAGSEGURO_TOKEN,
+            config={'sandbox': settings.PAGSEGURO_SANDBOX}
+        )
+
+        notification_data = pg.check_notification(notification_code)
+        print(notification_code)
+        print(notification_data)
+        status = notification_data.status
+        reference = notification_data.reference
+        print(status)
+        print(reference)
+        try:
+            donate = Donate.objects.get(pk=reference)
+            print(donate)
+        except ObjectDoesNotExist:
+            pass
+        else:
+            print("Entrou em update Status")
+            donate.pagseguro_update_status(status)
+    return HttpResponse('OK')    

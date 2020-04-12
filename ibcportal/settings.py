@@ -125,3 +125,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+PAGSEGURO_TOKEN = 'A5093E82D74349949699411762217053'
+PAGSEGURO_EMAIL = 'glenonsilva@gmail.com'
+PAGSEGURO_SANDBOX = True
