@@ -46,12 +46,12 @@ class Post(models.Model):
     to_notify = models.BooleanField('Notificar', default=False)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     published_date = models.DateTimeField('Publicado em', blank=True, null=True)
-    # last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
     class Meta:
         verbose_name = 'Postagem'
         verbose_name_plural = 'Postagens'
-        ordering = ['-published_date']
+        ordering = ['-last_updated_date']
 
     def __str__(self):
         return self.title
