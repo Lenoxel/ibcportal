@@ -221,10 +221,8 @@ class Donate(models.Model):
     def pagseguro_update_status(self, status):
         if status == '3':
             self.payment_status = 'done'
-            print(self.payment_status)
         elif status == '7':
             self.payment_status = 'excluded'
-            print(self.payment_status)
         self.save()
 
     def pagseguro(self):

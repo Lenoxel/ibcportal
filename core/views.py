@@ -113,18 +113,12 @@ def pagseguro_notification(request):
         )
 
         notification_data = pg.check_notification(notification_code)
-        print(notification_code)
-        print(notification_data)
         status = notification_data.status
         reference = notification_data.reference
-        print(status)
-        print(reference)
         try:
             donate = Donate.objects.get(pk=reference)
-            print(donate)
         except ObjectDoesNotExist:
             pass
         else:
-            print("Entrou em update Status")
             donate.pagseguro_update_status(status)
     return HttpResponse('OK')    
