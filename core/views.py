@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.db.models import Q
 from .models import PostView
 from .forms import DonateForm
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.views.generic.base import RedirectView
 from django.urls import reverse
 from django.conf import settings
@@ -102,7 +102,7 @@ class PagSeguroDonateView(RedirectView):
 def done_payment(request):
     return render(request, 'core/done_payment.html')
 
-# @csrf_exempt
+@csrf_exempt
 def pagseguro_notification(request):
     notification_code = request.POST.get('notificationCode', None)
     if notification_code:
