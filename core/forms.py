@@ -8,8 +8,4 @@ class DonateForm(forms.Form):
         label='Tipo da doação',
         widget=forms.Select(choices=DONATE_TYPE_CHOICES)
     )
-    payment_option = forms.CharField(
-        label='Forma de Pagamento',
-        widget=forms.Select(choices=PAYMENT_OPTION_CHOICES)
-    )
     amount = forms.FloatField(label='Valor (R$)')

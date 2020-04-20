@@ -1,40 +1,178 @@
 {% extends 'core/index.html' %}
 
 {% block content %}
-    <div class="row">
-        <div class="col"> 
-        {% for post in posts %}
-            <div style="border-left: 6px solid silver; background-color: #ddffff; border-color: #2196F3; padding-left: 12px;">
-                <h2 style="padding-top:7px;"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
-                <p>{{ post.text|linebreaksbr }}</p>
-                <p style="padding-bottom:7px;">
-                    {% if post.published_date %}
-                        <span>Publicado por {{ post.publisher }} em {{ post.published_date }}</span>
-                    {% else %}
-                        <span>Publicado por {{ post.publisher }} em {{ post.creation_date }}</span>
-                    {% endif %}
-                    <br>
-                    <span style="font:small-caption;">Publicação gerenciada por {{ post.manager }}</span>
-                </p>
+   <main>
+        <div>
+            <div id="swiper-top">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" style="background-image:url(http://jaguars.atimo.us/ctm/31250/projects/jaguars/layout01/images/hm_slides/hm02.jpg);"></div>
+                    <div class="swiper-slide" style="background-image:url(http://jaguars.atimo.us/ctm/31250/projects/jaguars/layout01/images/hm_slides/hm01.jpg);"></div>
+                    <div class="swiper-slide" style="background-image:url(http://jaguars.atimo.us/ctm/31250/projects/jaguars/layout01/images/hm_slides/hm05.jpg);"></div>
+                    <div class="swiper-slide" style="background-image:url(http://jaguars.atimo.us/ctm/31250/projects/jaguars/layout01/images/hm_slides/hm11.jpg);"></div>
+                    <div class="swiper-slide" style="background-image:url(http://jaguars.atimo.us/ctm/31250/projects/jaguars/layout01/images/hm_slides/hm02.jpg);"></div>
+                    <div class="swiper-slide" style="background-image:url(http://jaguars.atimo.us/ctm/31250/projects/jaguars/layout01/images/hm_slides/hm09.jpg);"></div>
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+                <!-- <div id="pg-bar"></div> -->
             </div>
-        {% endfor %}
         </div>
-        <div class="col" style="padding-left:7px;">
-        {% for meeting in meetings %}
-            <div style="border-left: 6px solid silver; background-color: #ddffff; border-color: #2196F3; padding-left: 12px;">
-                <h3 style="padding-top:7px;">{{ meeting.title }}</h3>
-                <p>{{ meeting.location }}</p>
-                <p style="padding-bottom:7px;">
-                    {% if meeting.end_date %}
-                        <span>Horário: {{ meeting.start_date }} às {{ meeting.end_date }}</span>
-                    {% else %}
-                        <span>Horário: {{ meeting.start_date }}</span>
-                    {% endif %}
-                    <br>
-                    <span>Pregador: {{ meeting.preacher }}</span>
-                </p>
+
+        <div>
+            <div id="sobre">
+                <section>
+                    <div class="content">
+                        <h1>Aqui é o lugar onde Deus nos mostra que somos dependentes Dele.</h1>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt dignissimos quae ut itaque ratione eos temporibus? Aspernatur molestias facilis fuga facere, tenetur, reiciendis consequatur quasi nostrum fugit, consectetur ipsam alias.</p>
+                    </div>
+                </section>
             </div>
-        {% endfor %}
         </div>
-    <div>
+
+        <div>
+            <div id="agenda">
+                <section>
+                    <div class="content">
+                        <h1>Agenda da Semana</h1>
+                        
+                        <div class="flex">
+
+                        {% for meeting in meetings %}
+                            <div class="fx_4">
+                                <div class="noticia">
+                                    <h2 class="NT-titulo">{{ meeting.title }}</h2>
+                                    <h5 class="NT-categoria">{{ meeting.location }}</h5>
+                                    <p class="NT-resumo">
+                                         {% if meeting.end_date %}
+                                            <span>Horário: {{ meeting.start_date }} às {{ meeting.end_date }}</span>
+                                        {% else %}
+                                            <span>Horário: {{ meeting.start_date }}</span>
+                                        {% endif %}
+                                        <br>
+                                    </p>
+                                    <span style="font:small-caption; color: white;">Pregador: {{ meeting.preacher }}</span>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div>
+            <div id="cultos-online">
+                <section>
+                    <div class="content">
+                        <h1>Nada impede que Deus chegue até você.</h1>
+                        <div class="flex">
+                            {% for video in videos %}
+                                <div class="fx_3">
+                                    <div class="video">
+                                        <iframe src="{{video.src}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                    <h4>{{video.title}}</h4>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <a class="link-btn-youtube" href="https://www.youtube.com/channel/UC-hzq9E2dNoxj29qpSgyfuw" target="_blank">Assista mais cultos em nosso canal no YouTube!</a>
+                        <div class="clear"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div>
+            <div id="comunicados">
+                <section>
+                    <div class="content">
+                        <h1>Comunicados Importantes</h1>
+                        
+                        <div class="flex">
+
+                        {% for post in posts %}
+                            <div class="fx_4">
+                                <div class="noticia">
+                                    <h1 class="NT-titulo">{{ post.title }}</h1>
+                                    <!-- <h5 class="NT-categoria">Categoria</h5> -->
+                                    <h6 class="NT-data">Publicado por {{ post.publisher }} em {{ post.published_date }}.</h6>
+                                    <p class="NT-resumo">{{ post.text|linebreaksbr|slice:"0:279" }}...</p>
+                                    <span style="font:small-caption; color: white;">Publicação gerenciada por {{ post.manager }}.</span>
+                                    <a href="{% url 'post_detail' pk=post.pk %}" class="NT-readmore">Saiba +</a>
+                                    <div class="clear"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        </div>
+
+                        <p style="text-align: right; font-size: 14px;"><a style="border-bottom: 1px solid;" href="{% url 'posts' %}"><strong><em>Veja mais notícias</em></strong></a></p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 100px;">
+            <div id="contribuicao">
+                <section>
+                    <div class="content">
+                        <h1>Deus ama ao que dá com alegria.</h1>
+                        <img src=" /media/general_images/oferta-home.jpg" class="imgL" alt="">
+                        <h3>Faça sua contribuição abaixo</h3>
+                        <form method="post">{% csrf_token %}
+                            {{ form.as_p }}
+                            <p style="margin-top: 39px; text-align: center;">
+                                <button class="link-contribuicao" style="background-color: green;" type="submit" formaction="{% url 'pagseguro_donate_view' %}">Pagar com PagSeguro</button>
+                            </p>
+                            <p style="margin-top: 39px; text-align: center;">
+                                <button class="link-contribuicao" style="background-color: blue;" type="submit" formaction="{% url 'paypal_donate_view' %}">Pagar com PayPal</button>
+                            </p>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div>
+            <div id="mission">
+                <section>
+                    <h1>Como Igreja, somos o corpo de Cristo</h1>
+                    <p class="statement"><em>"Dele todo o corpo, ajustado e unido pelo auxílio de todas as juntas, cresce e edifica-se a si mesmo em amor, na medida em que cada parte realiza a sua função."</em> <strong>Efésios 4:16</strong></p>
+                    
+                    <div class="flex">
+
+                        <dl class="fx_3">
+                            <!-- <dd><img src="img/MS-home-bible.png" style="width: 180px;" class="imgC"></dd> -->
+                            <dd><span><i class="fas fa-bible"></i></span></dd>
+                            <dt>Visão</dt>
+                            <dd>
+                                <p>"Our job is to prepare our children for Heaven, if they make to Harvard, that's a bonus."</p>
+                                <p class="author">Thomas Halfaker, Principal</p>
+                            </dd>
+                        </dl>  
+
+                        <dl class="fx_3">
+                            <!-- <dd><img src="img/MS-home-social.png" style="width: 180px;" class="imgC"></dd> -->
+                            <dd><span><i class="fas fa-hand-holding-heart"></i></span></dd>
+                            <dt>Missão</dt>
+                            <dd><p>"In this life, we can not do great things, we can only do small things with great love."</p> <p class="author">Mother Teresa</p></dd>
+                        </dl>  
+
+                        <dl class="fx_3">
+                            <!-- <dd><img src="img/MS-home-social.png" style="width: 180px;" class="imgC"></dd> -->
+                            <dd><span><i class="fas fa-praying-hands"></i></span></dd>
+                            <dt>Valores</dt>
+                            <dd>
+                                <p>"Sports contribute to the love of life, teaches sacrifice, respect and responsibility, leading to the full development of every human person."</p>
+                                <p class="author">Saint John Paul II</p>
+                            </dd>
+                        </dl>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
 {% endblock %}    

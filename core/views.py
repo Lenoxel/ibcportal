@@ -11,9 +11,11 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from pagseguro import PagSeguro
+from paypal.standard.forms import PayPalPaymentsForm
 
 def home(request):
-    posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')
+    posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')[0:4]
+    videos = Video.objects.order_by('-registering_date')[0:3]
     meetings = Schedule.objects.filter(
         Q(start_date__gte=timezone.now()) | 
         Q(
@@ -21,11 +23,21 @@ def home(request):
             end_date__lt=timezone.now()
         )
     )
+    form = DonateForm()
     context = {
         'posts': posts,
-        'meetings': meetings
+        'meetings': meetings,
+        'videos': videos,
+        'form': form
     }
     return render(request, 'core/home.html', context)
+
+def posts(request):
+    posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')
+    context = {
+        'posts': posts
+    }
+    return render(request, 'core/posts.html', context)
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -43,15 +55,7 @@ def about(request):
     # SAI QUE É TUA, GABRIEL!
     return render(request, 'core/about.html')
 
-def donate(request):
-    form = DonateForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'core/donate.html', context)
-
-
-class PagSeguroDonateView(RedirectView):
+class DonateViewPagseguro(RedirectView):
     def get_redirect_url(self):
         if self.request.POST:
             form = DonateForm(self.request.POST)
@@ -60,14 +64,13 @@ class PagSeguroDonateView(RedirectView):
                 donor_name = form.cleaned_data['donor_name']
                 donor_email = form.cleaned_data['donor_email']
                 donate_Type = form.data['donate_Type']
-                payment_option = form.data['payment_option']
                 amount = form.cleaned_data['amount']
                 
                 donate_object = {
                     'donor_name': donor_name,
                     'donor_email': donor_email,
                     'donate_Type': donate_Type,
-                    'payment_option': payment_option,
+                    'payment_option': 'pagseguro',
                     'amount': amount
                 }
 
@@ -98,6 +101,52 @@ class PagSeguroDonateView(RedirectView):
 
                 response = pg.checkout()
                 return response.payment_url
+
+def donateViewPayPal(request):   
+    if request.POST:
+        form = DonateForm(request.POST)
+
+        if form.is_valid():
+            donor_name = form.cleaned_data['donor_name']
+            donor_email = form.cleaned_data['donor_email']
+            donate_Type = form.data['donate_Type']
+            amount = form.cleaned_data['amount']
+            
+            donate_object = {
+                'donor_name': donor_name,
+                'donor_email': donor_email,
+                'donate_Type': donate_Type,
+                'payment_option': 'pagseguro',
+                'amount': amount
+            }
+
+            # Update probably pending payments by the the same email
+            pending_payments = Donate.objects.filter(donor_email=donor_email, payment_status='pending', donate_type=donate_Type)
+            for payment in pending_payments:
+                payment.payment_status = 'excluded'
+
+            Donate.objects.bulk_update(pending_payments, ['payment_status'])   
+
+            donate = Donate()
+            donate.initialize_object(donate_object)
+            donate.save()
+
+            paypal_donate = Donate.objects.earliest('-id')
+
+            paypal_dict = paypal_donate.paypal()
+
+            paypal_dict['return'] = request.build_absolute_uri(
+                reverse('done_payment')
+            )
+
+            paypal_dict['cancel_return']  = request.build_absolute_uri(
+                reverse('home')
+            )
+
+            form = PayPalPaymentsForm(initial=paypal_dict)
+            context = {"form": form}
+            return render(request, "core/payment.html", context)
+
 
 def done_payment(request):
     return render(request, 'core/done_payment.html')

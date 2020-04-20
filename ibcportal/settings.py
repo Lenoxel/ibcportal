@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # libs
+    'paypal.standard.ipn',
+    'corsheaders',
+    # apps
     'core',
 ]
 
@@ -49,6 +53,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'ibcportal.urls'
@@ -116,6 +122,11 @@ USE_L10N = True
 USE_TZ = True
 
 
+CORS_ALLOW_METHODS = [
+    'PUT',
+]
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
@@ -140,3 +151,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 PAGSEGURO_TOKEN = 'A5093E82D74349949699411762217053'
 PAGSEGURO_EMAIL = 'glenonsilva@gmail.com'
 PAGSEGURO_SANDBOX = True
+
+PAYPAL_TEST = True
+PAYPAL_EMAIL = 'glenonsilva@gmail.com'

@@ -26,11 +26,13 @@ def format_string(list_or_tuple, choice):
         if data[0] == choice:
             return data[1]
 
-class MeetingCategoryEnum(Enum): 
-    DOUTRINA = "Culto de Doutrina"
-    EBD = "Escola Bíblica Dominical"
-    INTERCESSAO = "Culto de Intercessão"
-    DOMINGO = "Culto de Domingo"
+MEETING_CATEGORY_OPTIONS = [
+    ('doutrina', 'Culto de Doutrina'),
+    ('ebd', 'Escola Bíblica Dominical'),
+    ('intercessao', 'Culto de Intercessão'),
+    ('domingo', 'Culto de Domingo'),
+    ('ceia', 'Ceia do Senhor')
+]
 
 class MeetingTypeEnum(Enum): 
     PRESENCIAL = "Presencial"
@@ -98,7 +100,7 @@ class Video(models.Model):
     objects = models.Manager()
 
     src = models.CharField('URL', max_length=100)
-    category = models.CharField('Categoria', max_length=15, choices=[(meetingCategory.name, meetingCategory.value) for meetingCategory in MeetingCategoryEnum])
+    category = models.CharField('Categoria', choices=MEETING_CATEGORY_OPTIONS, max_length=20)
     title = models.CharField('Título do vídeo', max_length=100)
     description = models.TextField('Descrição do vídeo', max_length=300, null = True, blank = True)
     registering_date = models.DateTimeField('Cadastrado em', auto_now_add=True)
@@ -114,7 +116,7 @@ class Video(models.Model):
 class Schedule(models.Model):
     objects = models.Manager()
 
-    title = models.CharField('Encontro', max_length=15, choices=[(meetingCategory.name, meetingCategory.value) for meetingCategory in MeetingCategoryEnum])
+    title = models.CharField('Encontro', choices=MEETING_CATEGORY_OPTIONS, max_length=20)
     start_date = models.DateTimeField('Horário de início')
     end_date = models.DateTimeField('Horário de fim', null=True, blank=True)
     location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
@@ -246,3 +248,21 @@ class Donate(models.Model):
         )
 
         return pg
+    
+    def paypal(self):
+        paypal_dict = {
+            'upload': '1',
+            'business': settings.PAGSEGURO_EMAIL,
+            'amount': '%.2f' % self.amount,
+            'item_name': format_string(DONATE_TYPE_CHOICES, self.donate_type),
+            'quantity': 1,
+            'invoice': self.pk,
+            'cmd': '_cart',
+            'currency_code': 'BRL',
+            'charset': 'utf-8'
+            # "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),
+            # "return": request.build_absolute_uri(reverse('your-return-view')),
+            # "cancel_return": request.build_absolute_uri(reverse('your-cancel-view')),
+            # "custom": "premium_plan"
+        }
+        return paypal_dict
