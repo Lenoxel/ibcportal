@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Post, Video, Schedule, Donate, STATUS_CHOICES
+from .models import Post, Video, Schedule, Donate, STATUS_CHOICES, Member
 from django.utils import timezone
 from django.db.models import Q
 from .models import PostView
@@ -12,6 +12,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from pagseguro import PagSeguro
 from paypal.standard.forms import PayPalPaymentsForm
+from rest_framework import viewsets
+from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer
 
 def home(request):
     posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')[0:4]
@@ -50,10 +52,6 @@ def post_detail(request, pk):
         'post': post
     }
     return render(request, 'core/post_detail.html', context)
-
-def about(request):
-    # SAI QUE É TUA, GABRIEL!
-    return render(request, 'core/about.html')
 
 class DonateViewPagseguro(RedirectView):
     def get_redirect_url(self):
@@ -171,3 +169,28 @@ def pagseguro_notification(request):
         else:
             donate.pagseguro_update_status(status)
     return HttpResponse('OK')    
+
+
+# Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')
+    serializer_class = PostSerializer
+
+class MemberViewSet(viewsets.ModelViewSet):
+    queryset = Member.objects.all()
+    serializer_class = MemberSerializer
+
+class VideoViewSet(viewsets.ModelViewSet):
+    queryset = Video.objects.all().order_by('-registering_date')
+    serializer_class = VideoSerializer
+
+class ScheduleViewSet(viewsets.ModelViewSet):
+    queryset = Schedule.objects.filter(
+        Q(start_date__gte=timezone.now()) | 
+        Q(
+            Q(end_date__isnull=False),
+            end_date__lt=timezone.now()
+        )
+    )
+    serializer_class = ScheduleSerializer
+

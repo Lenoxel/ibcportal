@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+import birthday
 from django.utils import timezone
 from enum import Enum
 from pagseguro import PagSeguro
@@ -63,8 +64,14 @@ class Member(models.Model):
 
     name = models.CharField('Nome', max_length=100)
     description = models.TextField('Descrição', max_length=300)
+    address = models.CharField('Endereço', max_length=100)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+    date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
+
+    # birthday = birthday.fields.BirthdayField()
+    
+    # birthday_objects = birthday.managers.BirthdayManager()
 
     class Meta:
         verbose_name = 'Membro'
@@ -122,7 +129,7 @@ class Schedule(models.Model):
     location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
     description = models.TextField('Descrição', max_length=300, blank=True, null=True)
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', null=True, on_delete=models.SET_NULL)
-    organizing_group = models.ForeignKey('core.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
+    organizing_group = models.ForeignKey('groups.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
     category = models.CharField('Tipo', max_length=15, choices=[(meetingType.name, meetingType.value) for meetingType in MeetingTypeEnum])
     # does_repeat = models.BooleanField('Se repete', default=False)
     # repetition_quantity = models.IntegerField('Quantidade de repetições semanais', default=0)
@@ -145,27 +152,6 @@ class Schedule(models.Model):
             date = self.start_date.replace(tzinfo=timezone.utc).astimezone(tz=None)
             formatted_hour = date.strftime("%X")[0:5]
             return '{}: {} - {}'.format(self.title, date.strftime("%x"), formatted_hour)
-
-class Group(models.Model):
-    objects = models.Manager()
-
-    name = models.CharField('Nome', max_length=100)
-    description = models.TextField('Descrição')
-    leader = models.ForeignKey('core.Member', verbose_name='Líder', related_name='group_leader', null=True, on_delete=models.SET_NULL)
-    vice_leader = models.ForeignKey('core.Member', verbose_name='Vice-líder', related_name='vice_leader', null=True, blank=True, on_delete=models.SET_NULL)
-    third_leader = models.ForeignKey('core.Member', verbose_name='Terceiro líder', related_name='third_leader', null=True, blank=True, on_delete=models.SET_NULL)
-    background_image = models.ImageField('Imagem do grupo', upload_to ='group_images/')
-    church = models.ForeignKey('core.Church', verbose_name='Igreja', null=True, blank=True, on_delete=models.SET_NULL)
-    creation_date = models.DateTimeField('Criado em', auto_now_add=True)
-    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
-
-    class Meta:
-        verbose_name = 'Grupo'
-        verbose_name_plural = 'Grupos'
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
 
 class Church(models.Model):
     objects = models.Manager()
