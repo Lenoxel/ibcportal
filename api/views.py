@@ -6,6 +6,7 @@ from core.models import Post, Video, Schedule, Member, Event
 from groups.models import Group
 from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, ComemorationSerializer, EventSerializer
 from datetime import datetime, timedelta
+from calendar import monthrange
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
 class PostViewSet(viewsets.ModelViewSet):
@@ -17,11 +18,10 @@ class MemberViewSet(viewsets.ModelViewSet):
     serializer_class = MemberSerializer
 
 class CelebrationViewSet(viewsets.ModelViewSet):
-    serializer_class = ComemorationSerializer
     queryset = Member.objects.filter(
-        Q(date_of_birth__gte=timezone.now()),
         Q(date_of_birth__month=timezone.now().month)
     )
+    serializer_class = ComemorationSerializer
 
 class VideoViewSet(viewsets.ModelViewSet):
     queryset = Video.objects.all().order_by('-registering_date')
