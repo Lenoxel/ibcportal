@@ -106,20 +106,20 @@ class PostView(models.Model):
         else:
             return "{} - {} visualização".format(self.post, self.views_count)
 
-class PostReaction(models.Model):
-    objects = models.Manager()
+# class PostReaction(models.Model):
+#     objects = models.Manager()
 
-    post = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
-    claps_count = models.IntegerField('Gostei', default=0)
-    dislike_count = models.IntegerField('Não gostei', default=0)
+#     post = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
+#     claps_count = models.IntegerField('Gostei', default=0)
+#     dislike_count = models.IntegerField('Não gostei', default=0)
 
-    class Meta:
-        verbose_name = 'Reação'
-        verbose_name_plural = 'Reações'
-        ordering = ['-claps_count', '-dislike_count']
+#     class Meta:
+#         verbose_name = 'Reação'
+#         verbose_name_plural = 'Reações'
+#         ordering = ['-claps_count', '-dislike_count']
 
-    def __str__(self):
-        return "{} - {} reações positivas e {} reações negativas".format(self.post, self.claps_count, self.dislike_count)
+#     def __str__(self):
+#         return "{} - {} reações positivas e {} reações negativas".format(self.post, self.claps_count, self.dislike_count)
 
 class Video(models.Model):
     objects = models.Manager()
@@ -138,20 +138,20 @@ class Video(models.Model):
     def __str__(self):
         return self.title
 
-class VideoReaction(models.Model):
-    objects = models.Manager()
+# class VideoReaction(models.Model):
+#     objects = models.Manager()
 
-    video = models.OneToOneField(Video, verbose_name='Vídeo', on_delete=models.CASCADE)
-    claps_count = models.IntegerField('Gostei', default=0)
-    dislike_count = models.IntegerField('Não gostei', default=0)
+#     video = models.OneToOneField(Video, verbose_name='Vídeo', on_delete=models.CASCADE)
+#     claps_count = models.IntegerField('Gostei', default=0)
+#     dislike_count = models.IntegerField('Não gostei', default=0)
 
-    class Meta:
-        verbose_name = 'Reação'
-        verbose_name_plural = 'Reações'
-        ordering = ['-claps_count', '-dislike_count']
+#     class Meta:
+#         verbose_name = 'Reação'
+#         verbose_name_plural = 'Reações'
+#         ordering = ['-claps_count', '-dislike_count']
 
-    def __str__(self):
-        return "{} - {} reações positivas e {} reações negativas".format(self.video, self.claps_count, self.dislike_count)
+#     def __str__(self):
+#         return "{} - {} reações positivas e {} reações negativas".format(self.video, self.claps_count, self.dislike_count)
 
 class Schedule(models.Model):
     objects = models.Manager()
