@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from core.views import PostViewSet, MemberViewSet, VideoViewSet, ScheduleViewSet
+from api.views import PostViewSet, MemberViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet
 from rest_framework import routers
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -26,6 +26,8 @@ router.register(r'posts', PostViewSet)
 router.register(r'members', MemberViewSet)
 router.register(r'videos', VideoViewSet)
 router.register(r'meetings', ScheduleViewSet)
+router.register(r'groups', GroupViewSet)
+router.register(r'events', EventViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

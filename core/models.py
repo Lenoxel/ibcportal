@@ -63,11 +63,13 @@ class Member(models.Model):
     objects = models.Manager()
 
     name = models.CharField('Nome', max_length=100)
+    nickname = models.CharField('Conhecido como', max_length=25)
     description = models.TextField('Descrição', max_length=300)
     address = models.CharField('Endereço', max_length=100)
+    church_function = models.CharField('Função na Igreja', max_length=40)
+    date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
-    date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
 
     # birthday = birthday.fields.BirthdayField()
     
@@ -170,6 +172,33 @@ class Church(models.Model):
 
     def __str__(self):
         return self.name
+
+class Event(models.Model):
+    objects = models.Manager()
+    
+    title = models.CharField('Evento', max_length=100)
+    start_date = models.DateTimeField('Início')
+    end_date = models.DateTimeField('Término')
+    description = models.TextField('Descrição', max_length=300, blank=True, null=True)
+    location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
+    event_type =  models.CharField('Tipo do evento', max_length=30)
+    price = models.FloatField('Valor (R$)')
+    preacher = models.ForeignKey('core.Member', verbose_name='Pregador', null=True, blank=True, on_delete=models.SET_NULL)
+    organizing_group = models.ForeignKey('groups.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
+    creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Evento'
+        verbose_name_plural = 'Eventos'
+        ordering = ['-start_date']
+
+    def __str__(self):
+        start_date = self.start_date.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        end_date = self.end_date.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        formatted_start_hour = start_date.strftime("%X")[0:5]
+        formatted_end_hour = end_date.strftime("%X")[0:5]
+        return '{}: {} às {} - {} às {}'.format(self.title, start_date.strftime("%x"), formatted_start_hour, end_date.strftime("%x"), formatted_end_hour)
 
 class Donate(models.Model):
     objects = models.Manager()
