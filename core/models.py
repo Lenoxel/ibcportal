@@ -68,7 +68,7 @@ class Member(models.Model):
     address = models.CharField('Endereço', max_length=100)
     church_function = models.CharField('Função na Igreja', max_length=40)
     date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
-    picture = models.ImageField('Foto', upload_to='pictures/')
+    # picture = models.ImageField('Foto', upload_to='pictures/')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
