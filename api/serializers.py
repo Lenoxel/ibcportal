@@ -13,7 +13,7 @@ class PostSerializer(serializers.ModelSerializer):
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = ('name', 'description', 'address', 'church_function', 'date_of_birth')
+        fields = ('name', 'description', 'church_function', 'address', 'date_of_birth', 'picture')
 
 class ComemorationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.SerializerMethodField()
@@ -28,7 +28,7 @@ class ComemorationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ('name', 'nickname', 'date_of_birth')
+        fields = ('name', 'nickname', 'date_of_birth', 'picture')
 
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
