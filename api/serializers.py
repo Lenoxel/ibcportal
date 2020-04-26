@@ -19,7 +19,7 @@ class ComemorationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.SerializerMethodField()
 
     def get_date_of_birth(self, obj):
-        birthday = obj.date_of_birth.day + '/' + obj.date_of_birth.month
+        birthday = str(obj.date_of_birth.day) + '/' + str(obj.date_of_birth.month)
         return birthday
 
     class Meta:
