@@ -216,6 +216,7 @@ class Event(models.Model):
     price = models.FloatField('Valor (R$)')
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', null=True, blank=True, on_delete=models.SET_NULL)
     organizing_group = models.ForeignKey('groups.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
+    picture = models.ImageField('Imagem do evento', upload_to='event_images/')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
