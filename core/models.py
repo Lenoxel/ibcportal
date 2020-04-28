@@ -128,6 +128,7 @@ class Video(models.Model):
     category = models.CharField('Categoria', choices=MEETING_CATEGORY_OPTIONS, max_length=20)
     title = models.CharField('Título do vídeo', max_length=100)
     description = models.TextField('Descrição do vídeo', max_length=300, null = True, blank = True)
+    meeting = models.ForeignKey('core.Schedule', verbose_name='Encontro', null=True, blank=True, on_delete=models.SET_NULL)
     registering_date = models.DateTimeField('Cadastrado em', auto_now_add=True)
     
     class Meta:
