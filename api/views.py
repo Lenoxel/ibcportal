@@ -28,19 +28,21 @@ class VideoViewSet(viewsets.ModelViewSet):
     serializer_class = VideoSerializer
 
 class ScheduleViewSet(viewsets.ModelViewSet):
-    one_week_period = datetime.today() + timedelta(days=7)
+    one_week_after_period = datetime.today() + timedelta(days=7)
+    one_week_before_period = datetime.today() - timedelta(days=7)
     queryset = Schedule.objects.filter(
-        Q(start_date__gte=timezone.now()), 
-        Q(start_date__lte=one_week_period)
+        Q(start_date__gte=one_week_before_period), 
+        Q(start_date__lte=one_week_after_period)
     )
     serializer_class = ScheduleSerializer
+
 
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all().order_by('name')
     serializer_class = GroupSerializer
 
 class EventViewSet(viewsets.ModelViewSet):
-    two_months_period = datetime.today() + timedelta(days=60)
+    two_months_period = datetime.today() + timedelta(days=90)
     queryset = Event.objects.filter(
         Q(start_date__gte=timezone.now()), 
         Q(start_date__lte=two_months_period)
