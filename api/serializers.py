@@ -33,7 +33,7 @@ class ComemorationSerializer(serializers.ModelSerializer):
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ('src', 'category', 'title', 'description', 'meeting', 'youtube_video_code' 'registering_date')
+        fields = ('src', 'category', 'title', 'description', 'meeting', 'youtube_video_code', 'registering_date')
 
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
