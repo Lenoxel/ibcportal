@@ -129,6 +129,7 @@ class Video(models.Model):
     title = models.CharField('Título do vídeo', max_length=100)
     description = models.TextField('Descrição do vídeo', max_length=300, null = True, blank = True)
     meeting = models.ForeignKey('core.Schedule', verbose_name='Encontro', null=True, blank=True, on_delete=models.SET_NULL)
+    youtube_video_code = models.CharField('Código do Youtube', max_length=150)
     registering_date = models.DateTimeField('Cadastrado em', auto_now_add=True)
     
     class Meta:
