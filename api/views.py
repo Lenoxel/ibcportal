@@ -33,7 +33,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     queryset = Schedule.objects.filter(
         Q(start_date__gte=one_week_before_period), 
         Q(start_date__lte=one_week_after_period)
-    )
+    ).order_by('-start_date')
     serializer_class = ScheduleSerializer
 
 
@@ -46,5 +46,5 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.filter(
         Q(start_date__gte=timezone.now()), 
         Q(start_date__lte=two_months_period)
-    )
+    ).order_by('-start_date')
     serializer_class = EventSerializer
