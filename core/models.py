@@ -231,7 +231,7 @@ class Event(models.Model):
     description = models.TextField('Descrição', max_length=300, blank=True, null=True)
     location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
     event_type =  models.CharField('Tipo do evento', max_length=30)
-    price = models.FloatField('Valor (R$)')
+    price = models.FloatField('Valor (R$)', null=True, blank=True)
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', null=True, blank=True, on_delete=models.SET_NULL)
     organizing_group = models.ForeignKey('groups.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
     picture = models.ImageField('Imagem do evento', upload_to='event_images/')
