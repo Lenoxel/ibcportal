@@ -10,3 +10,22 @@ class Migration(migrations.Migration):
         ('core', '0014_auto_20200426_1459'),
     ]
 
+    operations = [
+        migrations.AlterField(
+            model_name='event',
+            name='picture',
+            field=models.ImageField(default='default', upload_to='event_images/', verbose_name='Imagem do evento'),
+            preserve_default=False,
+        ),
+        migrations.AlterField(
+            model_name='schedule',
+            name='video',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.Video', verbose_name='Vídeo'),
+        ),
+        migrations.AlterField(
+            model_name='video',
+            name='youtube_video_code',
+            field=models.CharField(default='default', max_length=150, verbose_name='Código do Youtube'),
+            preserve_default=False,
+        ),
+    ]
