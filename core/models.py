@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-import birthday
+from birthday import fields, managers
 from django.utils import timezone
 from enum import Enum
 from pagseguro import PagSeguro
@@ -67,14 +67,13 @@ class Member(models.Model):
     description = models.TextField('Descrição', max_length=300)
     address = models.CharField('Endereço', max_length=100)
     church_function = models.CharField('Função na Igreja', max_length=40)
-    date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
     picture = models.ImageField('Foto', upload_to='pictures/')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
-    # birthday = birthday.fields.BirthdayField()
-    
-    # birthday_objects = birthday.managers.BirthdayManager()
+    date_of_birth = fields.BirthdayField('Data de nascimento', null=True, blank=True)
+
+    birthday_objects = managers.BirthdayManager()
 
     class Meta:
         verbose_name = 'Membro'
@@ -96,8 +95,8 @@ class PostView(models.Model):
     views_count = models.IntegerField('Visualizações', default=0)
 
     class Meta:
-        verbose_name = 'Visualização'
-        verbose_name_plural = 'Visualizações'
+        verbose_name = 'Visualização da Postagem'
+        verbose_name_plural = 'Visualizações das Postagens'
         ordering = ['-views_count']
 
     def __str__(self):
@@ -114,8 +113,8 @@ class PostReaction(models.Model):
     dislike_count = models.IntegerField('Não gostei', default=0)
 
     class Meta:
-        verbose_name = 'Reação'
-        verbose_name_plural = 'Reações'
+        verbose_name = 'Reação ao Post'
+        verbose_name_plural = 'Reações aos Posts'
         ordering = ['-claps_count', '-dislike_count']
 
     def __str__(self):
@@ -128,7 +127,6 @@ class Video(models.Model):
     category = models.CharField('Categoria', choices=MEETING_CATEGORY_OPTIONS, max_length=20)
     title = models.CharField('Título do vídeo', max_length=100)
     description = models.TextField('Descrição do vídeo', max_length=300, null = True, blank = True)
-    meeting = models.ForeignKey('core.Schedule', verbose_name='Encontro', null=True, blank=True, on_delete=models.SET_NULL)
     youtube_video_code = models.CharField('Código do Youtube', max_length=150)
     registering_date = models.DateTimeField('Cadastrado em', auto_now_add=True)
     
@@ -148,12 +146,29 @@ class VideoReaction(models.Model):
     dislike_count = models.IntegerField('Não gostei', default=0)
 
     class Meta:
-        verbose_name = 'Reação'
-        verbose_name_plural = 'Reações'
+        verbose_name = 'Reação ao Vídeo'
+        verbose_name_plural = 'Reações aos vídeos'
         ordering = ['-claps_count', '-dislike_count']
 
     def __str__(self):
         return "{} - {} reações positivas e {} reações negativas".format(self.video, self.claps_count, self.dislike_count)
+
+class VideoView(models.Model):
+    objects = models.Manager()
+
+    video = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
+    views_count = models.IntegerField('Visualizações', default=0)
+
+    class Meta:
+        verbose_name = 'Visualização do Vídeo'
+        verbose_name_plural = 'Visualizações dos Vídeos'
+        ordering = ['-views_count']
+
+    def __str__(self):
+        if self.views_count > 1:
+            return "{} - {} visualizações".format(self.video, self.views_count)
+        else:
+            return "{} - {} visualização".format(self.video, self.views_count)
 
 class Schedule(models.Model):
     objects = models.Manager()
@@ -166,6 +181,7 @@ class Schedule(models.Model):
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', null=True, on_delete=models.SET_NULL)
     organizing_group = models.ForeignKey('groups.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
     category = models.CharField('Tipo', max_length=15, choices=[(meetingType.name, meetingType.value) for meetingType in MeetingTypeEnum])
+    video = models.ForeignKey('core.Video', verbose_name='Vídeo', null=True, blank=True, on_delete=models.SET_NULL)
     # does_repeat = models.BooleanField('Se repete', default=False)
     # repetition_quantity = models.IntegerField('Quantidade de repetições semanais', default=0)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
