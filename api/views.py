@@ -3,8 +3,8 @@ from rest_framework import viewsets
 from django.utils import timezone
 from django.db.models import Q
 from core.models import Post, Video, Schedule, Member, Event
-from groups.models import Group
-from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, ComemorationSerializer, EventSerializer
+# from groups.models import Group
+from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, ComemorationSerializer, EventSerializer
 from datetime import datetime, timedelta
 from calendar import monthrange
 
@@ -37,9 +37,9 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     serializer_class = ScheduleSerializer
 
 
-class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all().order_by('name')
-    serializer_class = GroupSerializer
+# class GroupViewSet(viewsets.ModelViewSet):
+#     queryset = Group.objects.all().order_by('name')
+#     serializer_class = GroupSerializer
 
 class EventViewSet(viewsets.ModelViewSet):
     two_months_period = datetime.today() + timedelta(days=90)
