@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.models import Post, Member, Video, Schedule, Event
-# from groups.models import Group
+from groups.models import Group
 from datetime import datetime
 
 # Serializers define the API representation.
@@ -38,17 +38,17 @@ class VideoSerializer(serializers.ModelSerializer):
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
-        fields = ('title', 'start_date', 'end_date', 'location', 'description', 'preacher', 'category', 'video')
+        fields = ('title', 'start_date', 'end_date', 'location', 'description', 'preacher', 'organizing_group', 'category', 'video')
         depth = 1
 
-# class GroupSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Group
-#         fields = ('name', 'description', 'leader', 'vice_leader', 'third_leader', 'background_image', 'church')
-#         depth = 1
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('name', 'description', 'leader', 'vice_leader', 'third_leader', 'background_image', 'church')
+        depth = 1
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ('title', 'start_date', 'end_date', 'description', 'picture', 'location', 'event_type', 'price', 'preacher')
+        fields = ('title', 'start_date', 'end_date', 'description', 'picture', 'location', 'event_type', 'price', 'preacher', 'organizing_group')
         depth = 1
