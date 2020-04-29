@@ -88,22 +88,22 @@ class PostFile(models.Model):
     post_file = models.FileField('Arquivo', upload_to='post_files/')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
 
-# class PostView(models.Model):
-#     objects = models.Manager()
+class PostView(models.Model):
+    objects = models.Manager()
 
-#     post = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
-#     views_count = models.IntegerField('Visualizações', default=0)
+    post = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
+    views_count = models.IntegerField('Visualizações', default=0)
 
-#     class Meta:
-#         verbose_name = 'Visualização da Postagem'
-#         verbose_name_plural = 'Visualizações das Postagens'
-#         ordering = ['-views_count']
+    class Meta:
+        verbose_name = 'Visualização da Postagem'
+        verbose_name_plural = 'Visualizações das Postagens'
+        ordering = ['-views_count']
 
-#     def __str__(self):
-#         if self.views_count > 1:
-#             return "{} - {} visualizações".format(self.post, self.views_count)
-#         else:
-#             return "{} - {} visualização".format(self.post, self.views_count)
+    def __str__(self):
+        if self.views_count > 1:
+            return "{} - {} visualizações".format(self.post, self.views_count)
+        else:
+            return "{} - {} visualização".format(self.post, self.views_count)
 
 class PostReaction(models.Model):
     objects = models.Manager()
