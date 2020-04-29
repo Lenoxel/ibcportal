@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from birthday import fields, managers
 from django.utils import timezone
 from enum import Enum
 from pagseguro import PagSeguro
@@ -67,13 +66,14 @@ class Member(models.Model):
     description = models.TextField('Descrição', max_length=300)
     address = models.CharField('Endereço', max_length=100)
     church_function = models.CharField('Função na Igreja', max_length=40)
+    date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
     picture = models.ImageField('Foto', upload_to='pictures/')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
-    date_of_birth = fields.BirthdayField('Data de nascimento', null=True, blank=True)
-
-    birthday_objects = managers.BirthdayManager()
+    # birthday = fields.BirthdayField()
+    
+    # birthday_objects = managers.BirthdayManager()
 
     class Meta:
         verbose_name = 'Membro'
@@ -85,25 +85,25 @@ class Member(models.Model):
 
 class PostFile(models.Model):
     post = models.ForeignKey('core.Post', verbose_name='Postagem', on_delete=models.CASCADE, related_name='files')
-    file = models.FileField('Arquivo', upload_to='post_files/')
+    post_file = models.FileField('Arquivo', upload_to='post_files/')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
 
-class PostView(models.Model):
-    objects = models.Manager()
+# class PostView(models.Model):
+#     objects = models.Manager()
 
-    post = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
-    views_count = models.IntegerField('Visualizações', default=0)
+#     post = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
+#     views_count = models.IntegerField('Visualizações', default=0)
 
-    class Meta:
-        verbose_name = 'Visualização da Postagem'
-        verbose_name_plural = 'Visualizações das Postagens'
-        ordering = ['-views_count']
+#     class Meta:
+#         verbose_name = 'Visualização da Postagem'
+#         verbose_name_plural = 'Visualizações das Postagens'
+#         ordering = ['-views_count']
 
-    def __str__(self):
-        if self.views_count > 1:
-            return "{} - {} visualizações".format(self.post, self.views_count)
-        else:
-            return "{} - {} visualização".format(self.post, self.views_count)
+#     def __str__(self):
+#         if self.views_count > 1:
+#             return "{} - {} visualizações".format(self.post, self.views_count)
+#         else:
+#             return "{} - {} visualização".format(self.post, self.views_count)
 
 class PostReaction(models.Model):
     objects = models.Manager()
