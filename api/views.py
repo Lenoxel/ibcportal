@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from django.utils import timezone
 from django.db.models import Q
 from core.models import Post, Video, Schedule, Member, Event
@@ -7,6 +7,18 @@ from groups.models import Group
 from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, ComemorationSerializer, EventSerializer
 from datetime import datetime, timedelta
 from calendar import monthrange
+
+from rest_framework.authtoken.models import Token
+from django.http import JsonResponse
+
+# Toquen validator and generator
+def token_request(request):
+    try:
+        new_token = Token.objects.get_or_create(user=request.user)
+        return JsonResponse({'token': new_token[0].key}, status=status.HTTP_200_OK)
+    except Exception as message:
+        return JsonResponse({'messagem': 'você não tem permissão.'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
 class PostViewSet(viewsets.ModelViewSet):

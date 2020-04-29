@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from api.views import PostViewSet, MemberViewSet, CelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet
+from api.views import PostViewSet, MemberViewSet, CelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, token_request
 from rest_framework import routers
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -34,6 +34,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
     path('grupos/', include('groups.urls')),
+    path('token/', token_request, name='token'),
     path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls'))
+    path('api-auth/', include('rest_framework.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
