@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from enum import Enum
 from pagseguro import PagSeguro
+from cloudinary.models import CloudinaryField
 
 PAYMENT_OPTION_CHOICES = [
     ('deposit', 'Depósito'),
@@ -67,7 +68,7 @@ class Member(models.Model):
     address = models.CharField('Endereço', max_length=100)
     church_function = models.CharField('Função na Igreja', max_length=40)
     date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
-    picture = models.ImageField('Foto', upload_to='pictures/')
+    picture = CloudinaryField('Foto')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
@@ -85,7 +86,7 @@ class Member(models.Model):
 
 class PostFile(models.Model):
     post = models.ForeignKey('core.Post', verbose_name='Postagem', on_delete=models.CASCADE, related_name='files')
-    post_file = models.FileField('Arquivo', upload_to='post_files/')
+    post_file = CloudinaryField('Arquivo')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
 
 class PostView(models.Model):
@@ -234,7 +235,7 @@ class Event(models.Model):
     price = models.FloatField('Valor (R$)', null=True, blank=True)
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', null=True, blank=True, on_delete=models.SET_NULL)
     organizing_group = models.ForeignKey('groups.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
-    picture = models.ImageField('Imagem do evento', upload_to='event_images/')
+    picture = CloudinaryField('Imagem do evento')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 

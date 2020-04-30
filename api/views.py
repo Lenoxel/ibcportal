@@ -56,7 +56,11 @@ class GroupViewSet(viewsets.ModelViewSet):
 class EventViewSet(viewsets.ModelViewSet):
     two_months_period = datetime.today() + timedelta(days=90)
     queryset = Event.objects.filter(
-        Q(start_date__gte=timezone.now()), 
-        Q(start_date__lte=two_months_period)
+        Q(start_date__day=timezone.now().day) 
+        | 
+        Q(
+            Q(start_date__gte=timezone.now()), 
+            Q(start_date__lte=two_months_period)
+        )
     ).order_by('-start_date')
     serializer_class = EventSerializer

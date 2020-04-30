@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 import dj_database_url
 
+import cloudinary  # cloudinary
+import cloudinary.uploader  # cloudinary
+import cloudinary.api  # cloudinary
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -43,10 +47,17 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'cloudinary',
     # project apps
     'core',
     'groups',
 ]
+
+cloudinary.config(
+    cloud_name="dps5k8b3f",
+    api_key="931573166589349",
+    api_secret="eCzfPJqmihWyzhcQJ0ztVQeCXlU"
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
