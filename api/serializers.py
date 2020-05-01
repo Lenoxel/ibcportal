@@ -18,7 +18,7 @@ class PostSerializer(serializers.ModelSerializer):
     files = FileSerializer(many=True, required=False)
     class Meta:
         model = Post
-        fields = ('publisher', 'title', 'text', 'published_date', 'last_updated_date', 'files')
+        fields = ('publisher', 'title', 'text', 'published_date', 'last_updated_date', 'files', 'views_count', 'claps_count', 'dislike_count')
         depth = 1
 
 class MemberSerializer(serializers.ModelSerializer):
@@ -54,7 +54,7 @@ class ComemorationSerializer(serializers.ModelSerializer):
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ('src', 'category', 'title', 'description', 'youtube_video_code', 'registering_date')
+        fields = ('src', 'category', 'title', 'description', 'youtube_video_code', 'views_count', 'claps_count', 'dislike_count', 'registering_date')
 
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
