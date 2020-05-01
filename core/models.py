@@ -4,6 +4,10 @@ from django.utils import timezone
 from enum import Enum
 from pagseguro import PagSeguro
 from cloudinary.models import CloudinaryField
+from django.db.models.signals import pre_delete
+import cloudinary
+from django.dispatch import receiver
+
 
 PAYMENT_OPTION_CHOICES = [
     ('deposit', 'Depósito'),
@@ -73,7 +77,6 @@ class Member(models.Model):
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
     # birthday = fields.BirthdayField()
-    
     # birthday_objects = managers.BirthdayManager()
 
     class Meta:
@@ -84,10 +87,18 @@ class Member(models.Model):
     def __str__(self):
         return self.name
 
+@receiver(pre_delete, sender=Member)
+def member_picture_delete(sender, instance, **kwargs):
+    cloudinary.uploader.destroy(instance.picture.public_id)
+
 class PostFile(models.Model):
     post = models.ForeignKey('core.Post', verbose_name='Postagem', on_delete=models.CASCADE, related_name='files')
     post_file = CloudinaryField('Arquivo')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+
+@receiver(pre_delete, sender=PostFile)
+def post_file_delete(sender, instance, **kwargs):
+    cloudinary.uploader.destroy(instance.post_file.public_id)
 
 class PostView(models.Model):
     objects = models.Manager()
@@ -124,7 +135,7 @@ class PostReaction(models.Model):
 class Video(models.Model):
     objects = models.Manager()
 
-    src = models.CharField('URL', max_length=100)
+    src = models.CharField('URL', max_length=100, blank=True)
     category = models.CharField('Categoria', choices=MEETING_CATEGORY_OPTIONS, max_length=20)
     title = models.CharField('Título do vídeo', max_length=100)
     description = models.TextField('Descrição do vídeo', max_length=300, null = True, blank = True)
@@ -229,7 +240,7 @@ class Event(models.Model):
     title = models.CharField('Evento', max_length=100)
     start_date = models.DateTimeField('Início')
     end_date = models.DateTimeField('Término')
-    description = models.TextField('Descrição', max_length=300, blank=True, null=True)
+    description = models.TextField('Descrição', max_length=1000, blank=True, null=True)
     location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
     event_type =  models.CharField('Tipo do evento', max_length=30)
     price = models.FloatField('Valor (R$)', null=True, blank=True)
@@ -250,6 +261,10 @@ class Event(models.Model):
         formatted_start_hour = start_date.strftime("%X")[0:5]
         formatted_end_hour = end_date.strftime("%X")[0:5]
         return '{}: {} às {} - {} às {}'.format(self.title, start_date.strftime("%x"), formatted_start_hour, end_date.strftime("%x"), formatted_end_hour)
+
+@receiver(pre_delete, sender=PostFile)
+def event_picture_delete(sender, instance, **kwargs):
+    cloudinary.uploader.destroy(instance.picture.public_id)
 
 class Donate(models.Model):
     objects = models.Manager()

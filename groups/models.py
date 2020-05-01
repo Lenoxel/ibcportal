@@ -1,5 +1,8 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
+from django.db.models.signals import pre_delete
+import cloudinary
+from django.dispatch import receiver
 
 class Group(models.Model):
     objects = models.Manager()
@@ -21,4 +24,8 @@ class Group(models.Model):
 
     def __str__(self):
         return self.name
+
+@receiver(pre_delete, sender=Group)
+def event_picture_delete(sender, instance, **kwargs):
+    cloudinary.uploader.destroy(instance.background_image.public_id)
 
