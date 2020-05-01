@@ -67,5 +67,5 @@ class EventViewSet(viewsets.ModelViewSet):
             Q(start_date__gte=datetime.now()), 
             Q(start_date__lte=three_months_period)
         )
-    ).order_by('-start_date')
+    ).order_by('start_date')
     serializer_class = EventSerializer
