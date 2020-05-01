@@ -248,6 +248,7 @@ class Event(models.Model):
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', null=True, blank=True, on_delete=models.SET_NULL)
     organizing_group = models.ForeignKey('groups.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
     picture = CloudinaryField('Imagem do evento')
+    interested_people_count = models.PositiveIntegerField('Pessoas Interessadas', default=0)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
@@ -266,23 +267,6 @@ class Event(models.Model):
 @receiver(pre_delete, sender=PostFile)
 def event_picture_delete(sender, instance, **kwargs):
     cloudinary.uploader.destroy(instance.picture.public_id)
-
-class EventInterests(models.Model):
-    objects = models.Manager()
-
-    event = models.OneToOneField(Event, verbose_name='Evento', on_delete=models.CASCADE)
-    interested_people_count = models.IntegerField('Pessoas Interessadas', default=0)
-
-    class Meta:
-        verbose_name = 'Pessoas Interessas'
-        verbose_name_plural = 'Pessoas Interessas em Eventos'
-        ordering = ['-interested_people_count']
-
-    def __str__(self):
-        if self.interested_people_count > 1:
-            return "{} - {} pessoas interessadas".format(self.event, self.interested_people_count)
-        else:
-            return "{} - {} visualização".format(self.event, self.interested_people_count)
 
 class Donate(models.Model):
     objects = models.Manager()
