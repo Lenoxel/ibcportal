@@ -220,6 +220,7 @@ class Church(models.Model):
     objects = models.Manager()
 
     name = models.CharField('Nome', max_length=100)
+    acronym = models.CharField('Sigla', max_length=15)
     description = models.TextField('Descrição')
     address = models.CharField('Endereço', max_length=250)
     chief_pastor = models.ForeignKey('core.Member', verbose_name='Pastor Principal', null=True, on_delete=models.SET_NULL)
@@ -265,6 +266,23 @@ class Event(models.Model):
 @receiver(pre_delete, sender=PostFile)
 def event_picture_delete(sender, instance, **kwargs):
     cloudinary.uploader.destroy(instance.picture.public_id)
+
+class EventInterests(models.Model):
+    objects = models.Manager()
+
+    event = models.OneToOneField(Event, verbose_name='Evento', on_delete=models.CASCADE)
+    interested_people_count = models.IntegerField('Pessoas Interessadas', default=0)
+
+    class Meta:
+        verbose_name = 'Pessoas Interessas em Eventos'
+        verbose_name_plural = 'Pessoas Interessadas'
+        ordering = ['-interested_people_count']
+
+    def __str__(self):
+        if self.interested_people_count > 1:
+            return "{} - {} pessoas interessadas".format(self.event, self.interested_people_count)
+        else:
+            return "{} - {} visualização".format(self.event, self.interested_people_count)
 
 class Donate(models.Model):
     objects = models.Manager()
