@@ -18,7 +18,7 @@ class PostSerializer(serializers.ModelSerializer):
     files = FileSerializer(many=True, required=False)
     class Meta:
         model = Post
-        fields = ('publisher', 'title', 'text', 'published_date', 'last_updated_date', 'files', 'views_count', 'claps_count', 'dislike_count')
+        fields = ('id', 'publisher', 'title', 'text', 'published_date', 'last_updated_date', 'files', 'views_count', 'claps_count', 'dislike_count')
         depth = 1
 
 class MemberSerializer(serializers.ModelSerializer):
@@ -59,7 +59,7 @@ class VideoSerializer(serializers.ModelSerializer):
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
-        fields = ('title', 'start_date', 'end_date', 'location', 'description', 'preacher', 'organizing_group', 'category', 'video')
+        fields = ('id', 'title', 'start_date', 'end_date', 'location', 'description', 'preacher', 'organizing_group', 'category', 'video')
         depth = 1
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -81,5 +81,5 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('title', 'start_date', 'end_date', 'description', 'picture', 'location', 'event_type', 'price', 'preacher', 'organizing_group', 'interested_people_count')
+        fields = ('id', 'title', 'start_date', 'end_date', 'description', 'picture', 'location', 'event_type', 'price', 'preacher', 'organizing_group', 'interested_people_count')
         depth = 1
