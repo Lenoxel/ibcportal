@@ -22,7 +22,7 @@ def token_request(request):
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')
+    queryset = Post.objects.filter(Q(published_date__lte=datetime.now()) | Q(published_date__isnull=True)).order_by('-published_date')
     serializer_class = PostSerializer
 
 class MemberViewSet(viewsets.ModelViewSet):
@@ -31,7 +31,7 @@ class MemberViewSet(viewsets.ModelViewSet):
 
 class CelebrationViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.filter(
-        Q(date_of_birth__month=timezone.now().month)
+        Q(date_of_birth__month=datetime.now().month)
     )
     serializer_class = ComemorationSerializer
 
@@ -54,13 +54,17 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
 
 class EventViewSet(viewsets.ModelViewSet):
-    two_months_period = datetime.today() + timedelta(days=90)
+    three_months_period = datetime.today() + timedelta(days=90)
     queryset = Event.objects.filter(
-        Q(start_date__day=timezone.now().day) 
+        Q(start_date__day=datetime.now()) 
         | 
         Q(
-            Q(start_date__gte=timezone.now()), 
-            Q(start_date__lte=two_months_period)
+            Q(start_date__lte=datetime.now()), 
+            Q(end_date__gte=datetime.now())
+        )
+        Q(
+            Q(start_date__gte=datetime.now()), 
+            Q(start_date__lte=three_months_period)
         )
     ).order_by('-start_date')
     serializer_class = EventSerializer
