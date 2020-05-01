@@ -56,12 +56,13 @@ class GroupViewSet(viewsets.ModelViewSet):
 class EventViewSet(viewsets.ModelViewSet):
     three_months_period = datetime.today() + timedelta(days=90)
     queryset = Event.objects.filter(
-        Q(start_date__day=datetime.now()) 
+        Q(start_date__day=datetime.now().day) 
         | 
         Q(
             Q(start_date__lte=datetime.now()), 
             Q(end_date__gte=datetime.now())
         )
+        |
         Q(
             Q(start_date__gte=datetime.now()), 
             Q(start_date__lte=three_months_period)
