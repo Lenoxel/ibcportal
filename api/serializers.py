@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import Post, PostFile, Member, Video, Schedule, Event
+from core.models import Post, PostFile, Member, Video, Schedule, Event, EventInterests
 from groups.models import Group
 from datetime import datetime
 
@@ -75,7 +75,14 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('name', 'description', 'leader', 'vice_leader', 'third_leader', 'background_image', 'church')
         depth = 1
 
+class EventInterestsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventInterests
+        fields = ('event', 'interested_people_count')
+
 class EventSerializer(serializers.ModelSerializer):
+    event_interests = EventInterestsSerializer()
+
     picture = serializers.SerializerMethodField()
 
     def get_picture(self, obj):
@@ -83,5 +90,5 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('title', 'start_date', 'end_date', 'description', 'picture', 'location', 'event_type', 'price', 'preacher', 'organizing_group')
+        fields = ('title', 'start_date', 'end_date', 'description', 'picture', 'location', 'event_type', 'price', 'preacher', 'organizing_group', 'event_interests')
         depth = 1

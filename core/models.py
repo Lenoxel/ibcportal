@@ -274,8 +274,8 @@ class EventInterests(models.Model):
     interested_people_count = models.IntegerField('Pessoas Interessadas', default=0)
 
     class Meta:
-        verbose_name = 'Pessoas Interessas em Eventos'
-        verbose_name_plural = 'Pessoas Interessadas'
+        verbose_name = 'Pessoas Interessas'
+        verbose_name_plural = 'Pessoas Interessas em Eventos'
         ordering = ['-interested_people_count']
 
     def __str__(self):
