@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404
 from .models import Post, Video, Schedule, Donate, STATUS_CHOICES
 from django.utils import timezone
 from django.db.models import Q
-from .models import PostView
 from .forms import DonateForm
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.views.generic.base import RedirectView
@@ -42,10 +41,8 @@ def posts(request):
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if post is not None:
-        post_view, create = PostView.objects.get_or_create(post=post)
-        if post_view:
-            post_view.views_count += 1
-            post_view.save()
+        post.views_count += 1
+        post.save()
     context = {
         'post': post
     }

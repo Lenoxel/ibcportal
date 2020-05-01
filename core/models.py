@@ -51,6 +51,9 @@ class Post(models.Model):
     title = models.CharField('Título da postagem', max_length=200)
     text = models.TextField('Texto da postagem')
     to_notify = models.BooleanField('Notificar', default=False)
+    views_count = models.PositiveIntegerField('Visualizações', default=0)
+    claps_count = models.PositiveIntegerField('Gostei', default=0)
+    dislike_count = models.PositiveIntegerField('Não gostei', default=0)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     published_date = models.DateTimeField('Publicado em', blank=True, null=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
@@ -100,38 +103,6 @@ class PostFile(models.Model):
 def post_file_delete(sender, instance, **kwargs):
     cloudinary.uploader.destroy(instance.post_file.public_id)
 
-class PostView(models.Model):
-    objects = models.Manager()
-
-    post = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
-    views_count = models.IntegerField('Visualizações', default=0)
-
-    class Meta:
-        verbose_name = 'Visualização da Postagem'
-        verbose_name_plural = 'Visualizações das Postagens'
-        ordering = ['-views_count']
-
-    def __str__(self):
-        if self.views_count > 1:
-            return "{} - {} visualizações".format(self.post, self.views_count)
-        else:
-            return "{} - {} visualização".format(self.post, self.views_count)
-
-class PostReaction(models.Model):
-    objects = models.Manager()
-
-    post = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
-    claps_count = models.IntegerField('Gostei', default=0)
-    dislike_count = models.IntegerField('Não gostei', default=0)
-
-    class Meta:
-        verbose_name = 'Reação ao Post'
-        verbose_name_plural = 'Reações aos Posts'
-        ordering = ['-claps_count', '-dislike_count']
-
-    def __str__(self):
-        return "{} - {} reações positivas e {} reações negativas".format(self.post, self.claps_count, self.dislike_count)
-
 class Video(models.Model):
     objects = models.Manager()
 
@@ -140,6 +111,10 @@ class Video(models.Model):
     title = models.CharField('Título do vídeo', max_length=100)
     description = models.TextField('Descrição do vídeo', max_length=300, null = True, blank = True)
     youtube_video_code = models.CharField('Código do Youtube', max_length=150)
+    views_count = models.PositiveIntegerField('Visualizações', default=0)
+    claps_count = models.PositiveIntegerField('Gostei', default=0)
+    dislike_count = models.PositiveIntegerField('Não gostei', default=0)
+
     registering_date = models.DateTimeField('Cadastrado em', auto_now_add=True)
     
     class Meta:
@@ -149,38 +124,6 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
-
-class VideoReaction(models.Model):
-    objects = models.Manager()
-
-    video = models.OneToOneField(Video, verbose_name='Vídeo', on_delete=models.CASCADE)
-    claps_count = models.IntegerField('Gostei', default=0)
-    dislike_count = models.IntegerField('Não gostei', default=0)
-
-    class Meta:
-        verbose_name = 'Reação ao Vídeo'
-        verbose_name_plural = 'Reações aos vídeos'
-        ordering = ['-claps_count', '-dislike_count']
-
-    def __str__(self):
-        return "{} - {} reações positivas e {} reações negativas".format(self.video, self.claps_count, self.dislike_count)
-
-class VideoView(models.Model):
-    objects = models.Manager()
-
-    video = models.OneToOneField(Post, verbose_name='Postagem', on_delete=models.CASCADE)
-    views_count = models.IntegerField('Visualizações', default=0)
-
-    class Meta:
-        verbose_name = 'Visualização do Vídeo'
-        verbose_name_plural = 'Visualizações dos Vídeos'
-        ordering = ['-views_count']
-
-    def __str__(self):
-        if self.views_count > 1:
-            return "{} - {} visualizações".format(self.video, self.views_count)
-        else:
-            return "{} - {} visualização".format(self.video, self.views_count)
 
 class Schedule(models.Model):
     objects = models.Manager()

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, PostReaction, Member, PostFile, PostView, Video, VideoReaction, VideoView, Schedule, Church, Donate, Event
+from .models import Post, Member, PostFile, Video, Schedule, Church, Donate, Event
 from django.core.exceptions import PermissionDenied
 
 class PostFileInline(admin.TabularInline):
@@ -11,7 +11,7 @@ class PostAdmin(admin.ModelAdmin):
         PostFileInline 
     ]
 
-    readonly_fields = ('manager',)
+    readonly_fields = ('manager', 'views_count', 'claps_count', 'dislike_count')
 
     def save_model(self, request, obj, form, change):
         if request.user.is_superuser:
@@ -27,14 +27,16 @@ class PostAdmin(admin.ModelAdmin):
         else:
             return PermissionDenied
 
+class VideoAdmin(admin.ModelAdmin):
+    readonly_fields = ('views_count', 'claps_count', 'dislike_count')
+
+class EventAdmin(admin.ModelAdmin):
+    readonly_fields = ('interested_people_count',)
+
 admin.site.register(Post, PostAdmin)
-admin.site.register(PostReaction)
 admin.site.register(Member)
-admin.site.register(PostView)
-admin.site.register(Video)
-admin.site.register(VideoReaction)
+admin.site.register(Video, VideoAdmin)
 admin.site.register(Schedule)
 admin.site.register(Church)
 admin.site.register(Donate)
-admin.site.register(Event)
-admin.site.register(VideoView)
+admin.site.register(Event, EventAdmin)
