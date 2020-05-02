@@ -2,9 +2,9 @@ from django.shortcuts import render
 from rest_framework import viewsets, status
 from django.utils import timezone
 from django.db.models import Q
-from core.models import Post, Video, Schedule, Member, Event
+from core.models import Post, Video, Schedule, Member, Event, MembersUnion
 from groups.models import Group
-from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, ComemorationSerializer, EventSerializer
+from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer
 from datetime import datetime, timedelta
 from calendar import monthrange
 
@@ -29,11 +29,19 @@ class MemberViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
 
-class CelebrationViewSet(viewsets.ModelViewSet):
+class BirthdayCelebrationViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.filter(
         Q(date_of_birth__month=datetime.now().month)
     )
-    serializer_class = ComemorationSerializer
+    
+    serializer_class = BirthdayComemorationSerializer
+
+class UnionCelebrationViewSet(viewsets.ModelViewSet):
+    queryset = MembersUnion.objects.filter(
+        Q(union_date__month=datetime.now().month)
+    )
+
+    serializer_class = UnionComemorationSerializer
 
 class VideoViewSet(viewsets.ModelViewSet):
     queryset = Video.objects.all().order_by('-registering_date')

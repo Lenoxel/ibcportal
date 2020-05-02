@@ -104,16 +104,16 @@ def member_picture_delete(sender, instance, **kwargs):
 class MembersUnion(models.Model):
     objects = models.Manager()
 
-    man = models.ForeignKey('core.Member', verbose_name='Homem', related_name='man', on_delete=models.CASCADE)
-    woman = models.ForeignKey('core.Member', verbose_name='Mulher', related_name='woman', on_delete=models.CASCADE)
+    man = models.OneToOneField('core.Member', verbose_name='Homem', related_name='man', on_delete=models.CASCADE)
+    woman = models.OneToOneField('core.Member', verbose_name='Mulher', related_name='woman', on_delete=models.CASCADE)
     union_type = models.CharField('Tipo da união', choices=MEMBERS_UNION_OPTIONS, max_length=20)
     union_date = models.DateTimeField('Data da união')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
     class Meta:
-        verbose_name = 'Vídeo'
-        verbose_name_plural = 'Vídeos'
+        verbose_name = 'União'
+        verbose_name_plural = 'Uniões'
         ordering = ['-union_date']
 
     def __str__(self):
