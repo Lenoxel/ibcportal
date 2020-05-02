@@ -36,7 +36,14 @@ MEETING_CATEGORY_OPTIONS = [
     ('ebd', 'Escola Bíblica Dominical'),
     ('intercessao', 'Culto de Intercessão'),
     ('domingo', 'Culto de Domingo'),
-    ('ceia', 'Ceia do Senhor')
+    ('ceia', 'Ceia do Senhor'),
+    ('casa', 'Cultuando em casa'),
+]
+
+MEMBERS_UNION_OPTIONS = [
+    ('compromisso', 'Compromisso'),
+    ('noivado', 'Noivado'),
+    ('casamento', 'Casamento'),
 ]
 
 class MeetingTypeEnum(Enum): 
@@ -94,6 +101,24 @@ class Member(models.Model):
 def member_picture_delete(sender, instance, **kwargs):
     cloudinary.uploader.destroy(instance.picture.public_id)
 
+class MembersUnion(models.Model):
+    objects = models.Manager()
+
+    man = models.ForeignKey('core.Member', verbose_name='Homem', related_name='man', on_delete=models.CASCADE)
+    woman = models.ForeignKey('core.Member', verbose_name='Mulher', related_name='woman', on_delete=models.CASCADE)
+    union_type = models.CharField('Tipo da união', choices=MEMBERS_UNION_OPTIONS, max_length=20)
+    union_date = models.DateTimeField('Data da união')
+    creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Vídeo'
+        verbose_name_plural = 'Vídeos'
+        ordering = ['-union_date']
+
+    def __str__(self):
+        return '{} e {}'.format(self.man, self.woman)
+
 class PostFile(models.Model):
     post = models.ForeignKey('core.Post', verbose_name='Postagem', on_delete=models.CASCADE, related_name='files')
     post_file = CloudinaryField('Arquivo')
@@ -110,7 +135,7 @@ class Video(models.Model):
     category = models.CharField('Categoria', choices=MEETING_CATEGORY_OPTIONS, max_length=20)
     title = models.CharField('Título do vídeo', max_length=100)
     description = models.TextField('Descrição do vídeo', max_length=300, null = True, blank = True)
-    youtube_video_code = models.CharField('Código do Youtube', max_length=150)
+    youtube_video_code = models.CharField('Código do Youtube', max_length=150, blank=True)
     views_count = models.PositiveIntegerField('Visualizações', default=0)
     claps_count = models.PositiveIntegerField('Gostei', default=0)
     dislike_count = models.PositiveIntegerField('Não gostei', default=0)
