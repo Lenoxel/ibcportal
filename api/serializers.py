@@ -16,9 +16,15 @@ class FileSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     files = FileSerializer(many=True, required=False)
+
+    publisher_picture = serializers.SerializerMethodField()
+
+    def get_publisher_picture(self, obj):
+        return obj.publisher.picture.url
+
     class Meta:
         model = Post
-        fields = ('id', 'publisher', 'title', 'text', 'published_date', 'last_updated_date', 'files', 'views_count', 'claps_count', 'dislike_count')
+        fields = ('id', 'publisher', 'publisher_picture', 'title', 'text', 'published_date', 'last_updated_date', 'files', 'views_count', 'claps_count', 'dislike_count')
         depth = 1
 
 class MemberSerializer(serializers.ModelSerializer):
