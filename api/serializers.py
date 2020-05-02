@@ -72,7 +72,7 @@ class UnionComemorationSerializer(serializers.ModelSerializer):
         return obj.woman.picture.url
 
     class Meta:
-        model = Member
+        model = MembersUnion
         fields = '__all__'
         depth = 1
 
