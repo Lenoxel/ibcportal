@@ -38,6 +38,7 @@ MEETING_CATEGORY_OPTIONS = [
     ('domingo', 'Culto de Domingo'),
     ('ceia', 'Ceia do Senhor'),
     ('casa', 'Cultuando em casa'),
+    ('infantil', 'Culto Infantil')
 ]
 
 MEMBERS_UNION_OPTIONS = [
