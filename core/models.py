@@ -121,8 +121,13 @@ class MembersUnion(models.Model):
 
 class PostFile(models.Model):
     post = models.ForeignKey('core.Post', verbose_name='Postagem', on_delete=models.CASCADE, related_name='files')
-    post_file = CloudinaryField('Arquivo')
+    post_file = CloudinaryField(
+        'Arquivo',
+        overwrite=True,
+        resource_type="auto",
+    )
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+
 
 @receiver(pre_delete, sender=PostFile)
 def post_file_delete(sender, instance, **kwargs):
@@ -232,7 +237,7 @@ class Event(models.Model):
         formatted_end_hour = end_date.strftime("%X")[0:5]
         return '{}: {} às {} - {} às {}'.format(self.title, start_date.strftime("%x"), formatted_start_hour, end_date.strftime("%x"), formatted_end_hour)
 
-@receiver(pre_delete, sender=PostFile)
+@receiver(pre_delete, sender=Event)
 def event_picture_delete(sender, instance, **kwargs):
     cloudinary.uploader.destroy(instance.picture.public_id)
 
