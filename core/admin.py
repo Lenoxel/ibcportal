@@ -27,15 +27,12 @@ class PostAdmin(admin.ModelAdmin):
         else:
             return PermissionDenied
 
-class VideoAdmin(admin.ModelAdmin):
-    readonly_fields = ('views_count', 'claps_count', 'dislike_count')
-
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = ('interested_people_count',)
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Member)
-admin.site.register(Video, VideoAdmin)
+admin.site.register(Video)
 admin.site.register(Schedule)
 admin.site.register(Church)
 admin.site.register(Donate)

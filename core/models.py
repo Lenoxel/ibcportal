@@ -144,9 +144,6 @@ class Video(models.Model):
     title = models.CharField('Título do vídeo', max_length=100)
     description = models.TextField('Descrição do vídeo', max_length=300, null = True, blank = True)
     youtube_video_code = models.CharField('Código do Youtube', max_length=150, blank=True)
-    views_count = models.PositiveIntegerField('Visualizações', default=0)
-    claps_count = models.PositiveIntegerField('Gostei', default=0)
-    dislike_count = models.PositiveIntegerField('Não gostei', default=0)
 
     registering_date = models.DateTimeField('Cadastrado em', auto_now_add=True)
     

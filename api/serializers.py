@@ -85,7 +85,7 @@ class UnionComemorationSerializer(serializers.ModelSerializer):
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ('id', 'src', 'category', 'title', 'description', 'youtube_video_code', 'views_count', 'claps_count', 'dislike_count', 'registering_date')
+        fields = ('id', 'src', 'category', 'title', 'description', 'youtube_video_code', 'registering_date')
 
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
