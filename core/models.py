@@ -164,7 +164,7 @@ class Schedule(models.Model):
     location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
     description = models.TextField('Descrição', max_length=300, blank=True, null=True)
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', related_name='pregador', blank=True, null=True, on_delete=models.SET_NULL)
-    leader = models.ForeignKey('core.Member', verbose_name='Pregador', related_name='dirigente', blank=True, null=True, on_delete=models.SET_NULL)
+    leader = models.ForeignKey('core.Member', verbose_name='Dirigente', related_name='dirigente', blank=True, null=True, on_delete=models.SET_NULL)
     organizing_group = models.ForeignKey('groups.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
     category = models.CharField('Tipo', max_length=15, choices=[(meetingType.name, meetingType.value) for meetingType in MeetingTypeEnum])
     video = models.ForeignKey('core.Video', verbose_name='Vídeo', null=True, blank=True, on_delete=models.SET_NULL)
