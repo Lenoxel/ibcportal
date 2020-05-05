@@ -90,7 +90,7 @@ class VideoSerializer(serializers.ModelSerializer):
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
-        fields = ('id', 'title', 'start_date', 'end_date', 'location', 'description', 'preacher', 'organizing_group', 'category', 'video')
+        fields = ('id', 'title', 'start_date', 'end_date', 'location', 'description', 'preacher', 'leader', 'organizing_group', 'category', 'video')
         depth = 1
 
 class GroupSerializer(serializers.ModelSerializer):
