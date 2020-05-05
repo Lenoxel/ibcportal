@@ -162,7 +162,7 @@ class Schedule(models.Model):
     start_date = models.DateTimeField('Horário de início')
     end_date = models.DateTimeField('Horário de fim', null=True, blank=True)
     location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
-    description = models.TextField('Descrição', max_length=300, blank=True, null=True)
+    description = models.TextField('Descrição', max_length=1000, blank=True, null=True)
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', related_name='pregador', blank=True, null=True, on_delete=models.SET_NULL)
     leader = models.ForeignKey('core.Member', verbose_name='Dirigente', related_name='dirigente', blank=True, null=True, on_delete=models.SET_NULL)
     organizing_group = models.ForeignKey('groups.Group', verbose_name='Grupo Organizador', null=True, blank=True, on_delete=models.SET_NULL)
