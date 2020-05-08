@@ -183,7 +183,7 @@ def pagseguro_notification(request):
 def paypal_notification(sender, **kwargs):
     ipn_obj = sender
     donate = Donate.objects.get(pk=ipn_obj.invoice)
-    donate.pagseguro_paypal_update_status(3)
+    donate.pagseguro_paypal_update_status('3')
     # if ipn_obj.payment_status == ST_PP_COMPLETED:
     #     if ipn_obj.receiver_email == settings.PAYPAL_EMAIL:
     #         try:
