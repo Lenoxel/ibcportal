@@ -136,10 +136,6 @@ class PostFile(models.Model):
         verbose_name_plural = 'Arquivos'
         ordering = ['post_file']
 
-    def __str__(self):
-        return self.post_file
-
-
 @receiver(pre_delete, sender=PostFile)
 def post_file_delete(sender, instance, **kwargs):
     cloudinary.uploader.destroy(instance.post_file.public_id)

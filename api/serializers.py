@@ -97,7 +97,7 @@ class GroupMeetingDateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupMeetingDate
-        fields = ('group', 'start_date', 'end_date')
+        fields = ('group', 'day', 'start_date', 'end_date')
 
 class GroupSerializer(serializers.ModelSerializer):
     meeting_dates = GroupMeetingDateSerializer(many=True, required=False)
@@ -108,7 +108,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ('name', 'description', 'leader', 'vice_leader', 'third_leader', 'background_image', 'church', 'meeting_dates')
+        fields = ('name', 'description', 'leader', 'vice_leader', 'third_leader', 'background_image', 'church', 'members', 'meeting_dates')
         depth = 1
 
 class EventSerializer(serializers.ModelSerializer):
