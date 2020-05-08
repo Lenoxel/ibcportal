@@ -94,10 +94,6 @@ class ScheduleSerializer(serializers.ModelSerializer):
         depth = 1
 
 class GroupMeetingDateSerializer(serializers.ModelSerializer):
-    group = serializers.SerializerMethodField()
-
-    def get_group(self, obj):
-        return obj.group
     class Meta:
         model = GroupMeetingDate
         fields = ('group', 'day', 'start_date', 'end_date')
