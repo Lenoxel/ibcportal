@@ -151,8 +151,8 @@ def donateViewPayPal(request):
                 reverse('paypal-ipn')
             )
 
-            # form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
-            form = PayPalSharedSecretEncryptedPaymentsForm(initial=paypal_dict, button_type="subscribe")
+            form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
+            # form = PayPalSharedSecretEncryptedPaymentsForm(initial=paypal_dict, button_type="subscribe")
             return HttpResponse(form.render())
 
 
