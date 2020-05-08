@@ -186,9 +186,8 @@ def paypal_notification(sender, **kwargs):
         if ipn_obj.receiver_email == settings.PAYPAL_EMAIL:
             try:
                 donate = Donate.objects.get(pk=ipn_obj.invoice)
+                donate.pagseguro_paypal_update_status(3)
             except ObjectDoesNotExist:
                 pass
-            else:
-                donate.pagseguro_paypal_update_status(3)
 
 valid_ipn_received.connect(paypal_notification)
