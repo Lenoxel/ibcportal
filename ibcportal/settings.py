@@ -164,7 +164,7 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
-#production database configuration
+# Production database configuration
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
@@ -175,9 +175,15 @@ ALLOWED_HOSTS = ['*']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+# PagSeguro Configuration
 PAGSEGURO_TOKEN = 'A5093E82D74349949699411762217053'
 PAGSEGURO_EMAIL = 'glenonsilva@gmail.com'
 PAGSEGURO_SANDBOX = True
 
+# Paypal Configuration
 PAYPAL_TEST = True
 PAYPAL_EMAIL = 'glenonsilva@gmail.com'
+
+# Youtube API V3 Configuration
+YOUTUBE_KEY = 'AIzaSyCzaG47Waw7SL4fY4vyyZH9VlBMwzJVkCs'
+YOUTUBE_URL = 'https://www.googleapis.com/youtube/v3/videos'

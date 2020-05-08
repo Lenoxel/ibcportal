@@ -1,4 +1,13 @@
 from django.contrib import admin
-from .models import Group
+from .models import Group, GroupMeetingDate
 
-admin.site.register(Group)
+class GroupMeetingDateInline(admin.TabularInline):
+    model = GroupMeetingDate
+    extra = 1
+
+class GroupAdmin(admin.ModelAdmin):
+    inlines = [ 
+        GroupMeetingDateInline 
+    ]
+
+admin.site.register(Group, GroupAdmin)

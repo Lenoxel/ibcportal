@@ -10,7 +10,10 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from pagseguro import PagSeguro
-from paypal.standard.forms import PayPalPaymentsForm
+from paypal.standard.forms import PayPalPaymentsForm, PayPalSharedSecretEncryptedPaymentsForm
+from paypal.standard.models import ST_PP_COMPLETED
+from paypal.standard.ipn.signals import valid_ipn_received
+from . import auxiliar_functions
 
 def home(request):
     posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')[0:4]
@@ -23,6 +26,16 @@ def home(request):
         )
     )
     form = DonateForm()
+
+    video_ids = ""
+
+    for video in videos:
+        video_ids += video.youtube_video_code + ","
+    video_ids = video_ids[0:len(video_ids)-1]
+
+    # Utilizar a requisição abaixo para incrementar informações nos vídeos
+    my_request = auxiliar_functions.youtube_request(video_ids)
+
     context = {
         'posts': posts,
         'meetings': meetings,
@@ -67,7 +80,7 @@ class DonateViewPagseguro(RedirectView):
                     'amount': amount
                 }
 
-                # Update probably pending payments by the the same email
+                # Update possible pending payments with the the same email
                 pending_payments = Donate.objects.filter(donor_email=donor_email, payment_status='pending', donate_type=donate_Type)
                 for payment in pending_payments:
                     payment.payment_status = 'excluded'
@@ -81,8 +94,6 @@ class DonateViewPagseguro(RedirectView):
                 pagseguro_donate = Donate.objects.earliest('-id')
 
                 pg = pagseguro_donate.pagseguro()
-
-                # pg.redirect_url = "http://meusite.com/obrigado"
 
                 pg.redirect_url = self.request.build_absolute_uri(
                     reverse('done_payment')
@@ -109,7 +120,7 @@ def donateViewPayPal(request):
                 'donor_name': donor_name,
                 'donor_email': donor_email,
                 'donate_Type': donate_Type,
-                'payment_option': 'pagseguro',
+                'payment_option': 'paypal',
                 'amount': amount
             }
 
@@ -136,9 +147,13 @@ def donateViewPayPal(request):
                 reverse('home')
             )
 
-            form = PayPalPaymentsForm(initial=paypal_dict)
-            context = {"form": form}
-            return render(request, "core/payment.html", context)
+            paypal_dict['notify_url']  = request.build_absolute_uri(
+                reverse('paypal-ipn')
+            )
+
+            # form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
+            form = PayPalSharedSecretEncryptedPaymentsForm(initial=paypal_dict, button_type="subscribe")
+            return HttpResponse(form.render())
 
 
 def done_payment(request):
@@ -162,5 +177,18 @@ def pagseguro_notification(request):
         except ObjectDoesNotExist:
             pass
         else:
-            donate.pagseguro_update_status(status)
+            donate.pagseguro_paypal_update_status(status)
     return HttpResponse('OK')    
+
+def paypal_notification(sender, **kwargs):
+    ipn_obj = sender
+    if ipn_obj.payment_status == ST_PP_COMPLETED:
+        if ipn_obj.receiver_email == settings.PAYPAL_EMAIL:
+            try:
+                donate = Donate.objects.get(pk=ipn_obj.invoice)
+            except ObjectDoesNotExist:
+                pass
+            else:
+                donate.pagseguro_paypal_update_status(3)
+
+valid_ipn_received.connect(paypal_notification)

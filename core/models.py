@@ -277,7 +277,7 @@ class Donate(models.Model):
         self.payment_option = donate_object.get('payment_option')
         self.amount = donate_object.get('amount')
 
-    def pagseguro_update_status(self, status):
+    def pagseguro_paypal_update_status(self, status):
         if status == '3':
             self.payment_status = 'done'
         elif status == '7':
@@ -301,7 +301,12 @@ class Donate(models.Model):
         pg.reference = self.pk
 
         pg.items.append(
-            {"id": self.pk, "description": format_string(DONATE_TYPE_CHOICES, self.donate_type), "amount": '%.2f' % self.amount, "quantity": 1},
+            {
+                "id": self.pk, 
+                "description": format_string(DONATE_TYPE_CHOICES, self.donate_type), 
+                "amount": '%.2f' % self.amount, 
+                "quantity": 1
+            },
         )
 
         return pg
@@ -310,9 +315,9 @@ class Donate(models.Model):
         paypal_dict = {
             'upload': '1',
             'business': settings.PAGSEGURO_EMAIL,
-            'amount': '%.2f' % self.amount,
-            'item_name': format_string(DONATE_TYPE_CHOICES, self.donate_type),
-            'quantity': 1,
+            'amount_1': '%.2f' % self.amount,
+            'item_name_1': format_string(DONATE_TYPE_CHOICES, self.donate_type),
+            'quantity_1': 1,
             'invoice': self.pk,
             'cmd': '_cart',
             'currency_code': 'BRL',
@@ -322,4 +327,5 @@ class Donate(models.Model):
             # "cancel_return": request.build_absolute_uri(reverse('your-cancel-view')),
             # "custom": "premium_plan"
         }
+        
         return paypal_dict

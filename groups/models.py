@@ -29,3 +29,9 @@ class Group(models.Model):
 def event_picture_delete(sender, instance, **kwargs):
     cloudinary.uploader.destroy(instance.background_image.public_id)
 
+class GroupMeetingDate(models.Model):
+    group = models.ForeignKey('groups.Group', verbose_name='Grupo', on_delete=models.CASCADE)
+    start_date = models.DateTimeField('Horário de início')
+    end_date = models.DateTimeField('Horário de fim', null=True, blank=True)
+    creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+

@@ -30,6 +30,9 @@ class PostAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = ('interested_people_count',)
 
+# class DonateAdmin(admin.ModelAdmin):
+#     readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Member)
 admin.site.register(Video)

@@ -41,4 +41,5 @@ urlpatterns = [
     path('token/', token_request, name='token'),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls')),
+    path('paypal/', include('paypal.standard.ipn.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
