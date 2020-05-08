@@ -29,7 +29,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = os.getenv('IBC_PORTAL_SECRET_KEY', '123')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.herokuapp.com']
 
