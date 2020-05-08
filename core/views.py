@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from pagseguro import PagSeguro
 from paypal.standard.forms import PayPalPaymentsForm, PayPalSharedSecretEncryptedPaymentsForm
-from paypal.standard.models import ST_PP_COMPLETED
+from paypal.standard.models import ST_PP_COMPLETED, ST_PP_DECLINED, ST_PP_FAILED, ST_PP_EXPIRED
 from paypal.standard.ipn.signals import valid_ipn_received
 from . import auxiliar_functions
 
@@ -182,14 +182,18 @@ def pagseguro_notification(request):
 
 def paypal_notification(sender, **kwargs):
     ipn_obj = sender
-    donate = Donate.objects.get(pk=ipn_obj.invoice)
-    donate.pagseguro_paypal_update_status('3')
-    # if ipn_obj.payment_status == ST_PP_COMPLETED:
-    #     if ipn_obj.receiver_email == settings.PAYPAL_EMAIL:
-    #         try:
-    #             donate = Donate.objects.get(pk=ipn_obj.invoice)
-    #             donate.pagseguro_paypal_update_status(3)
-    #         except ObjectDoesNotExist:
-    #             pass
+    if ipn_obj.payment_status == ST_PP_COMPLETED:
+        if ipn_obj.receiver_email == settings.PAYPAL_EMAIL:
+            try:
+                donate = Donate.objects.get(pk=ipn_obj.invoice)
+                donate.pagseguro_paypal_update_status('3')
+            except ObjectDoesNotExist:
+                pass
+    elif ipn_obj.payment_status == ST_PP_DECLINED or ipn_obj.payment_status == ST_PP_FAILED or ipn_obj.payment_status == ST_PP_EXPIRED:
+        try:
+            donate = Donate.objects.get(pk=ipn_obj.invoice)
+            donate.pagseguro_paypal_update_status('7')
+        except ObjectDoesNotExist:
+            pass
 
 valid_ipn_received.connect(paypal_notification)
