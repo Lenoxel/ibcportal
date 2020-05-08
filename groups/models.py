@@ -3,6 +3,17 @@ from cloudinary.models import CloudinaryField
 from django.db.models.signals import pre_delete
 import cloudinary
 from django.dispatch import receiver
+from core.models import Member
+
+DAY_OPTIONS = [
+    ('Segunda', 'Segunda'),
+    ('Terça', 'Terça'),
+    ('Quarta', 'Quarta'),
+    ('Quinta', 'Quinta'),
+    ('Sexta', 'Sexta'),
+    ('Sábado', 'Sábado'),
+    ('Domingo', 'Domingo'),
+]
 
 class Group(models.Model):
     objects = models.Manager()
@@ -14,6 +25,7 @@ class Group(models.Model):
     third_leader = models.ForeignKey('core.Member', verbose_name='Terceiro líder', related_name='third_leader', null=True, blank=True, on_delete=models.SET_NULL)
     background_image = CloudinaryField('Imagem do grupo')
     church = models.ForeignKey('core.Church', verbose_name='Igreja', null=True, blank=True, on_delete=models.SET_NULL)
+    members = models.ManyToManyField(Member, 'Membro')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
@@ -31,7 +43,19 @@ def event_picture_delete(sender, instance, **kwargs):
 
 class GroupMeetingDate(models.Model):
     group = models.ForeignKey('groups.Group', verbose_name='Grupo', on_delete=models.CASCADE)
-    start_date = models.DateTimeField('Horário de início')
-    end_date = models.DateTimeField('Horário de fim', null=True, blank=True)
+    day = models.CharField('Dia', choices=DAY_OPTIONS, max_length=20)
+    start_date = models.TimeField('Início')
+    end_date = models.TimeField('Fim', null=True, blank=True)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Horário'
+        verbose_name_plural = 'Horários'
+        ordering = ['day']
+
+    def __str__(self):
+        if self.end_date:
+            return '{} - {}, {} às {}'.format(self.group, self.day, self.start_date, self.end_date)
+        else:
+            return '{} - {}, {}'.format(self.group, self.day, self.start_date)
 

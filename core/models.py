@@ -131,6 +131,14 @@ class PostFile(models.Model):
     )
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
 
+    class Meta:
+        verbose_name = 'Arquivo'
+        verbose_name_plural = 'Arquivos'
+        ordering = ['post_file']
+
+    def __str__(self):
+        return self.post_file
+
 
 @receiver(pre_delete, sender=PostFile)
 def post_file_delete(sender, instance, **kwargs):
