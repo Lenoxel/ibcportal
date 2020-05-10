@@ -19,7 +19,8 @@ class Group(models.Model):
     objects = models.Manager()
 
     name = models.CharField('Nome', max_length=100)
-    description = models.TextField('Descrição')
+    description = models.CharField('Descrição', max_length=100)
+    info = models.TextField('Info')
     leader = models.ForeignKey('core.Member', verbose_name='Líder', related_name='group_leader', null=True, on_delete=models.SET_NULL)
     vice_leader = models.ForeignKey('core.Member', verbose_name='Vice-líder', related_name='vice_leader', null=True, blank=True, on_delete=models.SET_NULL)
     third_leader = models.ForeignKey('core.Member', verbose_name='Terceiro líder', related_name='third_leader', null=True, blank=True, on_delete=models.SET_NULL)
@@ -51,7 +52,7 @@ class GroupMeetingDate(models.Model):
     class Meta:
         verbose_name = 'Horário'
         verbose_name_plural = 'Horários'
-        ordering = ['day']
+        ordering = ['-day']
 
     def __str__(self):
         if self.end_date:

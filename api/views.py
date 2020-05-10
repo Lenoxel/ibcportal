@@ -26,8 +26,15 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
 
 class MemberViewSet(viewsets.ModelViewSet):
-    queryset = Member.objects.all()
     serializer_class = MemberSerializer
+
+    def get_queryset(self):
+        queryset = Member.objects.all()
+        group_id = self.request.query_params.get('groupId', None)
+        if group_id is not None:
+            group = Group.objects.get(pk=group_id)
+            queryset = group.members
+        return queryset
 
 class BirthdayCelebrationViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.filter(
