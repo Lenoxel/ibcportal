@@ -101,13 +101,25 @@ class GroupMeetingDateSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     meeting_dates = GroupMeetingDateSerializer(many=True, required=False)
     background_image = serializers.SerializerMethodField()
+    leader_picture = serializers.SerializerMethodField()
+    vice_leader_picture = serializers.SerializerMethodField()
+    third_leader_picture = serializers.SerializerMethodField()
 
     def get_background_image(self, obj):
         return obj.background_image.url
 
+    def get_leader_picture(self, obj):
+        return obj.leader.picture.url
+    
+    def get_vice_leader_picture(self, obj):
+        return obj.vice_leader.picture.url
+
+    def get_third_leader_picture(self, obj):
+        return obj.third_leader.picture.url
+
     class Meta:
         model = Group
-        fields = ('name', 'description', 'leader', 'vice_leader', 'third_leader', 'background_image', 'church', 'members', 'meeting_dates')
+        fields = ('name', 'description', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'members', 'meeting_dates')
         depth = 1
 
 class EventSerializer(serializers.ModelSerializer):
