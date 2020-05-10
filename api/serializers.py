@@ -109,13 +109,22 @@ class GroupSerializer(serializers.ModelSerializer):
         return obj.background_image.url
 
     def get_leader_picture(self, obj):
-        return obj.leader.picture.url
+        if obj.leader and obj.leader.picture:
+            return obj.leader.picture.url
+        else: 
+            return None
     
     def get_vice_leader_picture(self, obj):
-        return obj.vice_leader.picture.url
+        if obj.vice_leader and obj.vice_leader.picture:
+            return obj.vice_leader.picture.url
+        else: 
+            return None
 
     def get_third_leader_picture(self, obj):
-        return obj.third_leader.picture.url
+        if obj.third_leader and obj.third_leader.picture:
+            return obj.third_leader.picture.url
+        else: 
+            return None
 
     class Meta:
         model = Group
