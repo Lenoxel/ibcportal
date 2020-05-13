@@ -1,0 +1,31 @@
+{% extends 'core/index.html' %}
+
+{% block content %}
+
+    <div style="margin-top:20px; margin-bottom:20px;">
+        <section>
+            <div class="content">
+                <h1>Todos os Comunicados</h1>
+                
+                <div class="flex">
+
+                {% for post in posts %}
+                    <div class="fx_4">
+                        <div class="noticia">
+                            <h1 class="NT-titulo">{{ post.title }}</h1>
+                            <h5 class="NT-categoria">Categoria</h5>
+                            <h6 class="NT-data">Publicado por {{ post.publisher }} em {{ post.published_date }}</h6>
+                            <p class="NT-resumo">{{ post.text|linebreaksbr }}</p>
+                            <span style="font:small-caption;">Publicação gerenciada por {{ post.manager }}</span>
+                            <a href="{% url 'post_detail' pk=post.pk %}" class="NT-readmore">Saiba +</a>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+{% endblock %} 

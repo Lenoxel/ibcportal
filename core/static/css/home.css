@@ -1,0 +1,365 @@
+/*
+INDEX
+    - SWIPER
+    - MISSION
+    - NEWS & EVENTS
+    - ADMISSIONS
+*/
+
+/*-----------------------------------------------------------  SWIPER --------------------------*/
+/*@media screen and (max-width:649px) { .swiper-pagination { display: none; } }*/
+
+@media screen and (min-width: 879px) {
+    #swiper-top { position: relative; height: 450px !important; }
+}
+
+.swiper-slide { cursor: grab; }
+
+.swiper-button-prev { background-image: none; }
+.swiper-button-next { background-image: none; }
+
+.swiper-button-prev::before,
+.swiper-button-next::before{
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 34px;
+}
+
+.swiper-button-prev::before { content: "\f053"; }
+.swiper-button-next::before { content: "\f054"; }
+
+#pg-bar {
+    bottom: 0;
+    /*background-color: rgba(0,53,54,0.5);*/
+    background-color: rgba(234,234,234,0.5);
+    width: 100%;
+    padding: 5px 0;
+    position: absolute;
+    height: 20px;
+    display: block;
+    z-index: 900;
+}
+
+#swiper-top .swiper-pagination { 
+    bottom: 5px;
+    z-index: 990;
+}
+
+#swiper-top .swiper-pagination .swiper-pagination-bullet { background-color: var(--gray3); }
+
+.swiper-pagination-bullet-active {
+    opacity: 1 !important;
+    background: var(--gray3) !important;
+}
+
+/*.swiper-pagination-bullet {
+    background: white;
+    opacity: .4;
+}
+*/
+
+#swiper-top div.swiper-slide { background-size: cover; }
+#swiper-top .swiper-button-prev::before,
+#swiper-top .swiper-button-next::before { color: rgba(255,255,255,.5); }
+
+/*------------------------------------------------------------  SOBRE  -------------------------*/
+@media screen and (min-width: 879px) {
+    #sobre .content { width: 800px; margin: 0 auto; }
+}
+
+#sobre {
+    background: var(--gray1);
+    padding: 30px 0;
+}
+
+#sobre .content {
+    background: transparent;
+}
+
+#sobre .content p { text-align: center; }
+
+/*--------------------------------------------------------  CULTOS ONLINE  ---------------------*/
+#cultos-online {
+    background: white;
+    padding: 30px 0;
+}
+
+#cultos-online .content {
+    background: white;
+}
+
+#cultos-online h1 { color: black; }
+
+#cultos-online .flex {
+    margin-top: 30px; margin-bottom: 30px;
+}
+
+#cultos-online .fx_3 h4 {
+    background: var(--gray5);
+    font-size: 12px;
+    text-align: center;
+    margin-top: -32px;
+    color: white;
+    border-top: 2px solid var(--color1000);
+    padding: 4px 5px 2px;
+}
+
+.link-btn-youtube {
+    display: block;
+    border: 1px solid var(--color1000);
+    text-align: center;
+    text-transform: uppercase;
+    padding: 10px;
+    font-size: 20px;
+    color: var(--color1000);
+    border-radius: 30px;
+    transition: all 0.3s linear;
+}
+
+.link-btn-youtube:hover {
+    border-color: transparent;
+    background: var(--color1000);
+    color: white;
+    transition: all 0.3s linear;
+}
+
+/*---------------------------------------------------------  COMUNICADOS  ---------------------*/
+#comunicados {
+    background: var(--gray1);
+    padding: 30px 0;
+}
+
+#comunicados .content {
+    background: var(--gray1);
+}
+
+#comunicados .content h1 { font-weight: bolder; text-transform: uppercase; color: var(--color1000); }
+
+#comunicados .flex { margin-top: 30px; margin-bottom: 30px; }
+
+#comunicados .noticia {
+    background: var(--gray5);
+    padding: 20px 15px 0;
+}
+
+#comunicados .noticia .NT-titulo {
+    text-transform: none;
+    color: var(--color5000);
+    text-align: left;
+    font-size: 20px;
+    margin-bottom: 10px;
+    line-height: 24px;
+}
+
+#comunicados .noticia .NT-categoria {
+    text-transform: none;
+    color: var(--gray2);
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-style: italic;
+    margin-top: -10px;
+    margin-bottom: 0;
+}
+
+#comunicados .noticia .NT-data {
+    font-size: 12px;
+    font-weight: normal;
+    color: var(--gray2);
+    margin-top: -5px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+#comunicados .noticia .NT-resumo {
+    font-size: 12px;
+    color: white;
+}
+
+#comunicados .noticia .NT-readmore {
+    display: block;
+    background: var(--color1000);
+    color: white;
+    width: 80px;
+    text-align: center;
+    padding: 5px 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    /*float: right;*/
+    margin-left: calc(50% - 40px);
+    transition: all 0.2s linear;
+}
+
+#comunicados .noticia .NT-readmore:hover {
+    background: var(--gray1);
+    color: var(--color1000);
+    transition: all 0.2s linear;
+}
+
+/*---------------------------------------------------------  CONTRIBUIÇÃO  ---------------------*/
+@media screen and (min-width: 879px) {
+    #contribuicao .content {
+        width: 800px; margin: 0 auto;
+    }
+}
+
+#contribuicao { padding: 30px 0; }
+
+#contribuicao .content h1 {
+    margin-bottom: 30px;
+}
+
+#contribuicao .content .link-contribuicao {
+    background: var(--color1000);
+    color: white;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    font-size: 20px;
+}
+
+/*-----------------------------------------------------------  MISSION -------------------------*/
+#mission {
+    background-color: var(--color2000);
+    color: white;
+    padding: 20px 0;
+}
+
+#mission h1 {
+    color: yellow;
+    text-align: center;
+    padding: 25px 0 15px 0;
+    font-size: 26px;
+    text-transform: uppercase;
+}
+
+p.statement {
+    max-width: 638px;
+    font-size: 16px;
+    text-align: center;
+    padding: 0 15px 31px 15px;
+    margin: 0 auto;
+    line-height: 22px;
+}
+
+#mission dl {
+    max-width: 200px;
+    margin: 20px auto;
+}
+
+#mission dl dt {
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 23px;
+    font-weight: bold;
+    padding-bottom: 12px;
+}
+
+#mission dl dd img {
+    filter: hue-rotate(240deg) brightness(1.3);
+}
+
+#mission dl dd span { color: yellow; font-size: 50px; text-align: center; display: block; }
+
+#mission dl dd p {
+    text-align: center;
+    font-size: 13px;
+    line-height: 19px;
+    margin-bottom: 15px;
+}
+
+#mission dl dd p.author { font-style: italic; }
+
+/*-----------------------------------------------------------  NEWS & EVENTS -------------------*/
+#hm_news h1 {
+    text-transform: uppercase;
+    text-align: center;
+    padding: 25px 0;
+    font-size: 37px;
+}
+
+#news_rotator { 
+    overflow: hidden;
+    margin-bottom: 50px;
+}
+
+#news_rotator a {
+    width: 275px;
+    display: block;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+#news_rotator img {
+    border: 10px solid white;
+    outline: 1px solid var(--gray2);
+    margin: 2px 0 2px 2px;
+}
+
+
+#news_rotator p.title {
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 0 15px 3px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#news_rotator p.subtitle {
+    color: black;
+    font-size: 13px;
+    padding-left: 16px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-style: italic;
+}
+
+#news-rotator01 .swiper-pagination { margin-top: 10px; position: static; }
+
+#news-rotator01 .swiper-pagination .swiper-pagination-bullet { background-color: var(--gray3); }
+
+
+/*-----------------------------------------------------------  ADMISSIONS ----------------------*/
+
+@media screen and (max-width: 1179px) {
+    #admissions .flex .fx_2 { width: 100%; }
+}
+
+#admissions {
+    background: url(../images/bg_OLOL.jpeg);
+    padding: 25px 0;
+}
+
+#admissions .content { background-color: inherit; }
+
+#admissions h1 {
+    text-transform: uppercase;
+    font-size: 37px;
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+.hm_actions { margin-top: 40px; }
+
+.hm_actions a {
+    display: block;
+    color: white;
+    padding: 12px 0;
+    font-size: 17px;
+    text-transform: uppercase;
+    text-align: center;
+    width: 303px;
+    margin: 0 auto 25px;
+    word-spacing: 4px;
+    border-radius: 10px;
+}
+
+.hm_actions a:nth-child(1) { background-color: var(--color2000); }
+.hm_actions a:nth-child(2) { background-color: var(--color1000); }
+
+.hm_actions a:nth-child(1):hover,
+.hm_actions a:nth-child(2):hover { background-color: var(--gray4); }
