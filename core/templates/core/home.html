@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <div>
+        <div style="display: none;">
             <div id="mes_oracao_ramada">
                 <section>
                     <div class="content" style="text-align: center">
@@ -55,13 +55,13 @@
                                     <h5 class="NT-categoria">{{ meeting.location }}</h5>
                                     <p class="NT-resumo">
                                          {% if meeting.end_date %}
-                                            <span>Horário: {{ meeting.start_date }} às {{ meeting.end_date }}</span>
+                                            <span><i class="fas fa-clock"></i> {{ meeting.start_date }} às {{ meeting.end_date }}</span>
                                         {% else %}
-                                            <span>Horário: {{ meeting.start_date }}</span>
+                                            <span><i class="fas fa-clock"></i> {{ meeting.start_date }}</span>
                                         {% endif %}
                                         <br>
                                     </p>
-                                    <span style="font:small-caption; color: white;">Pregador: {{ meeting.preacher }}</span>
+                                    <p class="AG-pregador"><span><strong>Pregador:</strong> {{ meeting.preacher }}</span></p>
                                     <div class="clear"></div>
                                 </div>
                             </div>
@@ -82,7 +82,7 @@
                             {% for video in videos %}
                                 <div class="fx_3">
                                     <div class="video">
-                                        <iframe src="{{video.src}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                        <iframe src="https://www.youtube.com/embed/{{video.src}}?rel=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                     </div>
                                     <h4>{{video.title}}</h4>
                                 </div>
@@ -106,11 +106,10 @@
                         {% for post in posts %}
                             <div class="fx_4">
                                 <div class="noticia">
-                                    <h1 class="NT-titulo">{{ post.title }}</h1>
+                                    <h1 class="NT-titulo">{{ post.title|slice:"0:41" }}</h1>
                                     <!-- <h5 class="NT-categoria">Categoria</h5> -->
                                     <h6 class="NT-data">Publicado por {{ post.publisher }} em {{ post.published_date }}.</h6>
-                                    <p class="NT-resumo">{{ post.text|linebreaksbr|slice:"0:279" }}...</p>
-                                    <span style="font:small-caption; color: white;">Publicação gerenciada por {{ post.manager }}.</span>
+                                    <p class="NT-resumo">{{ post.text|linebreaksbr|slice:"0:120" }}...</p>
                                     <a href="{% url 'post_detail' pk=post.pk %}" class="NT-readmore">Saiba +</a>
                                     <div class="clear"></div>
                                 </div>
@@ -132,7 +131,41 @@
                         <h1>Deus ama ao que dá com alegria.</h1>
                         <img src=" /media/general_images/oferta-home.jpg" class="imgL" alt="">
                         <h3>Faça sua contribuição abaixo</h3>
-                        <form method="post">{% csrf_token %}
+
+                        <form method="post" class="default">
+                            {% csrf_token %}
+
+                            <div>
+                                <p for="id_donor_name">Nome:</p>
+                                <input type="text" name="donor_name" maxlength="100" required="" id="id_donor_name">
+                            </div>
+                            <div>
+                                <p for="id_donor_email">Email:</p>
+                                <input type="email" name="donor_email" required="" id="id_donor_email">
+                            </div>
+                            <div>
+                                <p for="id_donate_Type">Tipo da doação:</p>
+                                <select name="donate_Type" id="id_donate_Type">
+                                    <option value="tithe">Dízimo</option>
+                                    <option value="offer">Oferta</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <p for="id_amount">Valor (R$):</p>
+                                <input type="number" name="amount" step="any" required="" id="id_amount">
+                            </div>
+                            
+                            <p style="margin-top: 39px; text-align: center;">
+                                <button class="link-contribuicao" style="background-color: green;" type="submit" formaction="/donate/pagseguro">Pagar com PagSeguro</button>
+                            </p>
+                            
+                            <p style="margin-top: 39px; text-align: center;">
+                                <button class="link-contribuicao" style="background-color: blue;" type="submit" formaction="/donate/paypal">Pagar com PayPal</button>
+                            </p>
+                        </form>
+
+                        <!-- <form class="default" method="post">{% csrf_token %}
                             {{ form.as_p }}
                             <p style="margin-top: 39px; text-align: center;">
                                 <button class="link-contribuicao" style="background-color: green;" type="submit" formaction="{% url 'pagseguro_donate_view' %}">Pagar com PagSeguro</button>
@@ -140,7 +173,8 @@
                             <p style="margin-top: 39px; text-align: center;">
                                 <button class="link-contribuicao" style="background-color: blue;" type="submit" formaction="{% url 'paypal_donate_view' %}">Pagar com PayPal</button>
                             </p>
-                        </form>
+                        </form> -->
+
                     </div>
                 </section>
             </div>
