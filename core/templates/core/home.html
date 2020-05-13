@@ -157,11 +157,11 @@
                             </div>
                             
                             <p style="margin-top: 39px; text-align: center;">
-                                <button class="link-contribuicao" style="background-color: green;" type="submit" formaction="/donate/pagseguro">Pagar com PagSeguro</button>
+                                <button class="link-contribuicao" style="background-color: green;" type="submit" formaction="{% url 'pagseguro_donate_view' %}">Pagar com PagSeguro</button>
                             </p>
                             
                             <p style="margin-top: 39px; text-align: center;">
-                                <button class="link-contribuicao" style="background-color: blue;" type="submit" formaction="/donate/paypal">Pagar com PayPal</button>
+                                <button class="link-contribuicao" style="background-color: blue;" type="submit" formaction="{% url 'paypal_donate_view' %}">Pagar com PayPal</button>
                             </p>
                         </form>
 
