@@ -52,12 +52,14 @@
                             <div class="fx_4">
                                 <div class="noticia">
                                     <h2 class="NT-titulo">{{ meeting.title }}</h2>
-                                    <h5 class="NT-categoria">{{ meeting.location }}</h5>
+                                    {% if meeting.location %}
+                                        <h5 class="NT-categoria">{{ meeting.location }}</h5>
+                                    {% endif %}
                                     <p class="NT-resumo">
-                                         {% if meeting.end_date %}
+                                        {% if meeting.end_date %}
                                             <span><i class="fas fa-clock"></i> {{ meeting.start_date }} às {{ meeting.end_date }}</span>
-                                        {% else %}
-                                            <span><i class="fas fa-clock"></i> {{ meeting.start_date }}</span>
+                                        <!-- {% else %}
+                                            <span><i class="fas fa-clock"></i> {{ meeting.start_date }}</span> -->
                                         {% endif %}
                                         <br>
                                     </p>
@@ -82,7 +84,7 @@
                             {% for video in videos %}
                                 <div class="fx_3">
                                     <div class="video">
-                                        <iframe src="https://www.youtube.com/embed/{{video.src}}?rel=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                        <iframe src="https://www.youtube.com/embed/{{video.youtube_video_code}}?rel=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                     </div>
                                     <h4>{{video.title}}</h4>
                                 </div>
@@ -109,7 +111,7 @@
                                     <h1 class="NT-titulo">{{ post.title|slice:"0:41" }}</h1>
                                     <!-- <h5 class="NT-categoria">Categoria</h5> -->
                                     <h6 class="NT-data">Publicado por {{ post.publisher }} em {{ post.published_date }}.</h6>
-                                    <p class="NT-resumo">{{ post.text|linebreaksbr|slice:"0:120" }}...</p>
+                                    <p class="NT-resumo">{{ post.text|linebreaksbr|slice:"0:135" }}...</p>
                                     <a href="{% url 'post_detail' pk=post.pk %}" class="NT-readmore">Saiba +</a>
                                     <div class="clear"></div>
                                 </div>
