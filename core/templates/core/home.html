@@ -56,10 +56,11 @@
                                         <h5 class="NT-categoria">{{ meeting.location }}</h5>
                                     {% endif %}
                                     <p class="NT-resumo">
+                                        <span><i class="fas fa-clock"></i> {{ meeting.start_date }}</span>
                                         <!-- {% if meeting.end_date %}
                                             <span><i class="fas fa-clock"></i> {{ meeting.start_date }} às {{ meeting.end_date }}</span>
                                         {% else %} -->
-                                            <span><i class="fas fa-clock"></i> {{ meeting.start_date }}</span>
+                                            <!-- <span><i class="fas fa-clock"></i> {{ meeting.start_date }}</span> -->
                                         <!-- {% endif %} -->
                                         <br>
                                     </p>
