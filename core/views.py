@@ -25,7 +25,7 @@ def home(request):
     meetings = Schedule.objects.filter(
         Q(start_date__gte=timezone.now()),
         Q(start_date__lte=one_week_after_period)
-    ).order_by('-start_date')
+    ).order_by('start_date')
     form = DonateForm()
 
     video_ids = ""
