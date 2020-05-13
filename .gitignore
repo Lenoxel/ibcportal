@@ -19,3 +19,15 @@ C:\CALLED\ENV\Scripts>activate.bat
 
 (ENV) C:\CALLED\ENV\Scripts>
 ---------------------------------------------------
+
+git status >>>>>>>> Status do que está comitado ou não.
+
+git add --all >>>>>>>> Adiciona todas as modificações em todos os arquivos que trabalhei.
+
+git add core/templates/core/index.html >>>>>>> Adiciona apenas as mudanças feitas em um único arquivo.
+
+git commit -m "mensagem de commit" >>>>>>>>>>>> Adicionar mengame informando que eu fiz edições.
+
+git push origin master >>>>>>>> Sobe todas as atualições que foram feitas.
+
+git pull >>>>>>> SEMPRE QUE FOR TRABALHAR, FAZER ISSO! Ele vai puxar todos os arquivos atualizados do repositório.
