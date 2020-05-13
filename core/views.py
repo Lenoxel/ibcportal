@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Post, Video, Schedule, Donate, STATUS_CHOICES
 from django.utils import timezone
+from datetime import datetime, timedelta
 from django.db.models import Q
 from .forms import DonateForm
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
@@ -17,14 +18,14 @@ from . import auxiliar_functions
 
 def home(request):
     posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')[0:4]
+    
     videos = Video.objects.order_by('-registering_date')[0:3]
+
+    one_week_after_period = datetime.today() + timedelta(days=7)
     meetings = Schedule.objects.filter(
-        Q(start_date__gte=timezone.now()) | 
-        Q(
-            Q(end_date__isnull=False),
-            end_date__lt=timezone.now()
-        )
-    )
+        Q(start_date__gte=timezone.now()),
+        Q(start_date__lte=one_week_after_period)
+    ).order_by('-start_date')
     form = DonateForm()
 
     video_ids = ""
@@ -34,7 +35,7 @@ def home(request):
     video_ids = video_ids[0:len(video_ids)-1]
 
     # Utilizar a requisição abaixo para incrementar informações nos vídeos
-    my_request = auxiliar_functions.youtube_request(video_ids)
+    # my_request = auxiliar_functions.youtube_request(video_ids)
 
     context = {
         'posts': posts,
