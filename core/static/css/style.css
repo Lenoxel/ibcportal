@@ -809,8 +809,8 @@ table.default .bg02 {
     /* FIRST LEVEL    -----------------*/
 
     .hmenu01 ul#main-menu {
-        width: 900px;
-        left: 27%;
+        width: 610px;
+        left: 48%;
     }
 
     .hmenu01 ul#main-menu > li > a {
