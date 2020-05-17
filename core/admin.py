@@ -98,7 +98,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             return PermissionDenied
 
 class AuditAdmin(admin.ModelAdmin):
-    readonly_fields = ('responsible', 'changed_model', 'action_type', 'description',)  
+    readonly_fields = ('responsible', 'changed_model', 'action_type', 'description', 'obj_name',)  
 
     def has_delete_permission(self, request, obj=None):
         return False
