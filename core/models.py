@@ -257,16 +257,18 @@ class Audit(models.Model):
     objects = models.Manager()
 
     responsible = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Responsável', null=True, on_delete=models.SET_NULL)
+    obj_name = models.CharField('Título', max_length=150)
     changed_model = models.CharField('Modelo modificado', max_length=50)
     action_type = models.CharField('Ação', max_length=20)
     description = models.TextField('Descrição')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
 
-    def create_audit(self, donate_object):
-        self.responsible = donate_object.get('responsible')
-        self.changed_model = donate_object.get('changed_model')
-        self.action_type = donate_object.get('action_type')
-        self.description = donate_object.get('description')
+    def create_audit(self, audit_object):
+        self.responsible = audit_object.get('responsible')
+        self.obj_name = audit_object.get('obj_name')
+        self.changed_model = audit_object.get('changed_model')
+        self.action_type = audit_object.get('action_type')
+        self.description = audit_object.get('description')
         self.save()
 
     class Meta:
@@ -275,7 +277,7 @@ class Audit(models.Model):
         ordering = ['-creation_date']
 
     def __str__(self):
-       return '{} em {} feito por {} - {}'.format(self.action_type, self.changed_model, self.responsible, self.creation_date)
+       return '{} em "{}" ({}) feito por {} - {}'.format(self.action_type, self.obj_name, self.changed_model, self.responsible, self.creation_date)
 
 class Donate(models.Model):
     objects = models.Manager()

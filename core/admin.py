@@ -18,7 +18,7 @@ class PostAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             # Criando auditoria
             action_type = "update" if change == True else "save"
-            create_audit(request.user, 'Post', action_type)
+            create_audit(request.user, 'Post', action_type, obj)
             # Salvando o model
             obj.manager = request.user
             super().save_model(request, obj, form, change)
@@ -28,7 +28,7 @@ class PostAdmin(admin.ModelAdmin):
     def delete_model(self, request, obj):
         if request.user.is_superuser:
             # Criando auditoria
-            create_audit(request.user, 'Post', "delete")
+            create_audit(request.user, 'Post', "delete", obj)
             # Salvando o model
             obj.manager = request.user
             super().delete_model(request, obj)
@@ -42,7 +42,7 @@ class EventAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             # Criando auditoria
             action_type = "update" if change == True else "save"
-            create_audit(request.user, 'Event', action_type)
+            create_audit(request.user, 'Event', action_type, obj)
             # Salvando o model
             super().save_model(request, obj, form, change)
         else:
@@ -51,7 +51,7 @@ class EventAdmin(admin.ModelAdmin):
     def delete_model(self, request, obj):
         if request.user.is_superuser:
             # Criando auditoria
-            create_audit(request.user, 'Event', "delete")
+            create_audit(request.user, 'Event', "delete", obj)
             # Salvando o model
             super().delete_model(request, obj)
         else:
@@ -62,7 +62,7 @@ class VideoAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             # Criando auditoria
             action_type = "update" if change == True else "save"
-            create_audit(request.user, 'Video', action_type)
+            create_audit(request.user, 'Video', action_type, obj)
             # Salvando o model
             super().save_model(request, obj, form, change)
         else:
@@ -71,7 +71,7 @@ class VideoAdmin(admin.ModelAdmin):
     def delete_model(self, request, obj):
         if request.user.is_superuser:
             # Criando auditoria
-            create_audit(request.user, 'Video', "delete")
+            create_audit(request.user, 'Video', "delete", obj)
             # Salvando o model
             super().delete_model(request, obj)
         else:
@@ -82,7 +82,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             # Criando auditoria
             action_type = "update" if change == True else "save"
-            create_audit(request.user, 'Schedule', action_type)
+            create_audit(request.user, 'Schedule', action_type, obj)
             # Salvando o model
             super().save_model(request, obj, form, change)
         else:
@@ -91,7 +91,7 @@ class ScheduleAdmin(admin.ModelAdmin):
     def delete_model(self, request, obj):
         if request.user.is_superuser:
             # Criando auditoria
-            create_audit(request.user, 'Schedule', "delete")
+            create_audit(request.user, 'Schedule', "delete", obj)
             # Salvando o model
             super().delete_model(request, obj)
         else:

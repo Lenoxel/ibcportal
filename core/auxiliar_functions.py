@@ -12,10 +12,11 @@ def youtube_request(video_ids):
     request = requests.get(settings.YOUTUBE_URL, params=payload, headers=headers)
     return request.json()
 
-def create_audit(responsible, changed_model, action_type):
-    description = "O administrador {} realizou a ação de {} no model {}.".format(responsible, action_type, changed_model)
+def create_audit(responsible, changed_model, action_type, obj_name):
+    description = 'O administrador {} realizou a ação de {} em "{}" ({}).'.format(responsible, action_type, obj_name, changed_model)
     audit_object = {
         'responsible': responsible,
+        'obj_name': obj_name,
         'changed_model': changed_model,
         'action_type': action_type,
         'description': description
