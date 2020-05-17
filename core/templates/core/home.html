@@ -54,6 +54,10 @@
                                     <h2 class="NT-titulo">{{ meeting.title }}</h2>
                                     {% if meeting.location %}
                                         <h5 class="NT-categoria">{{ meeting.location }}</h5>
+                                    {% elif meeting.category == 'ONLINE'  %}
+                                        <h5 class="NT-categoria">Encontro Online</h5>
+                                    {% else  %}
+                                        <h5 class="NT-categoria">Local não informado</h5>
                                     {% endif %}
                                     <p class="NT-resumo">
                                         <span><i class="fas fa-clock"></i> {{ meeting.start_date }}</span>
@@ -64,7 +68,10 @@
                                         <!-- {% endif %} -->
                                         <br>
                                     </p>
-                                    <p class="AG-pregador"><span><strong>Pregador:</strong> {{ meeting.preacher }}</span></p>
+                                    {% if meeting.preacher %}
+                                        <p class="AG-pregador"><span><strong>Pregador:</strong> {{ meeting.preacher }}</span></p>
+                                    {% else %}
+                                    <p class="AG-pregador"><span><strong>Pregador:</strong> Não informado</span></p>
                                     <div class="clear"></div>
                                 </div>
                             </div>
