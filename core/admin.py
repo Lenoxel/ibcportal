@@ -100,6 +100,9 @@ class ScheduleAdmin(admin.ModelAdmin):
 class AuditAdmin(admin.ModelAdmin):
     readonly_fields = ('responsible', 'changed_model', 'action_type', 'description',)  
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 # class DonateAdmin(admin.ModelAdmin):
 #     readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')
 
