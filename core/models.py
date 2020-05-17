@@ -134,7 +134,7 @@ class PostFile(models.Model):
     post_file = CloudinaryField(
         'Arquivo',
         overwrite=True,
-        resource_type="raw",
+        resource_type="auto",
     )
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
 
