@@ -22,17 +22,22 @@ def home(request):
     videos = Video.objects.order_by('-registering_date')[0:3]
 
     one_week_after_period = datetime.today() + timedelta(days=7)
+
     meetings = Schedule.objects.filter(
         Q(start_date__gte=timezone.now()),
         Q(start_date__lte=one_week_after_period)
     ).order_by('start_date')
+
+    for meeting in meetings:
+        meeting.formatted_title = auxiliar_functions.meeting_types.get(meeting.title)
+
     form = DonateForm()
 
-    video_ids = ""
+    # video_ids = ""
 
-    for video in videos:
-        video_ids += video.youtube_video_code + ","
-    video_ids = video_ids[0:len(video_ids)-1]
+    # for video in videos:
+    #     video_ids += video.youtube_video_code + ","
+    # video_ids = video_ids[0:len(video_ids)-1]
 
     # Utilizar a requisição abaixo para incrementar informações nos vídeos
     # my_request = auxiliar_functions.youtube_request(video_ids)

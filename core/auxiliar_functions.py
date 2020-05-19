@@ -2,6 +2,19 @@ import requests
 from django.conf import settings
 from .models import Audit
 
+
+meeting_types = {
+    'doutrina': 'Culto de Doutrina',
+    'ebd': 'Escola B. Dominical',
+    'intercessao': 'Culto de Intercessão',
+    'domingo': 'Culto de Domingo',
+    'ceia': 'Ceia do Senhor',
+    'casa': 'Cultuando em casa',
+    'infantil': 'Culto Infantil',
+    'oracao': 'Ciclo de Oração',
+    'domestico': 'Culto doméstico'
+}
+
 part = 'id,snippet,player,statistics,status'
 
 headers = {'content-type': 'application/json'}

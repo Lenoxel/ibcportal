@@ -34,7 +34,8 @@
                 <section>
                     <div class="content">
                         <h1>Aqui é o lugar onde Deus nos mostra que somos dependentes Dele.</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt dignissimos quae ut itaque ratione eos temporibus? Aspernatur molestias facilis fuga facere, tenetur, reiciendis consequatur quasi nostrum fugit, consectetur ipsam alias.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at magna consequat, hendrerit est convallis, fermentum nulla. Cras non tellus urna. Nunc ultricies sapien id rhoncus fringilla. Ut malesuada dapibus ipsum non mattis. Mauris in neque gravida, laoreet risus at, rutrum nulla. Cras faucibus varius lectus nec pulvinar. Nullam porta tempus risus, non mattis urna elementum sit amet. In iaculis faucibus nibh et luctus. Aenean ornare in leo quis luctus. Integer dapibus, dolor congue finibus tincidunt, ante nisi porta nisi, sed vulputate risus mauris id dui. Sed posuere dui a mi pellentesque fringilla. Nullam consectetur at eros non mattis. Donec quis congue lectus. Phasellus a mauris lectus.</p>
+                        <p>Curabitur vel aliquet erat. In urna nisi, aliquam in ultrices et, porta vitae mauris. Etiam aliquam pellentesque turpis, vitae elementum purus ornare consequat. Aliquam erat volutpat. Sed lobortis augue arcu, vel molestie nulla semper vitae. Phasellus pellentesque ligula nisi, non laoreet mi euismod vel. Donec vehicula ultricies tellus ut scelerisque. Nulla commodo, dolor sodales rhoncus gravida, purus neque tempor ligula, vel faucibus neque ipsum ut lorem. Duis aliquet dapibus hendrerit.</p>
                     </div>
                 </section>
             </div>
@@ -51,7 +52,7 @@
                         {% for meeting in meetings %}
                             <div class="fx_4">
                                 <div class="noticia">
-                                    <h2 class="NT-titulo">{{ meeting.title }}</h2>
+                                    <h2 class="NT-titulo">{{ meeting.formatted_title }}</h2>
                                     {% if meeting.location %}
                                         <h5 class="NT-categoria">{{ meeting.location }}</h5>
                                     {% elif meeting.category == 'ONLINE'  %}
@@ -89,7 +90,7 @@
                 <section>
                     <div class="content">
                         <h1>Nada impede que Deus chegue até você.</h1>
-                        <div class="flex">
+                        <div class="flexC">
                             {% for video in videos %}
                                 <div class="fx_3">
                                     <div class="video">
@@ -99,7 +100,7 @@
                                 </div>
                             {% endfor %}
                         </div>
-                        <a class="link-btn-youtube" href="https://www.youtube.com/channel/UC-hzq9E2dNoxj29qpSgyfuw" target="_blank">Assista mais cultos em nosso canal no YouTube!</a>
+                        <a class="link-btn-youtube" href="https://www.youtube.com/channel/UC-hzq9E2dNoxj29qpSgyfuw" target="_blank">Assista a mais cultos em nosso canal no YouTube!</a>
                         <div class="clear"></div>
                     </div>
                 </section>
@@ -112,7 +113,7 @@
                     <div class="content">
                         <h1>Comunicados Importantes</h1>
                         
-                        <div class="flex">
+                        <div class="flexC">
 
                         {% for post in posts %}
                             <div class="fx_4">
