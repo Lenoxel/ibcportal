@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from api.views import PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, token_request, device
+from api.views import PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, token_request, device, device_detail
 from rest_framework import routers
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -43,4 +43,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('paypal/', include('paypal.standard.ipn.urls')),
     path('devices/', device),
+    path('devices/<int:device_id>', device_detail),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

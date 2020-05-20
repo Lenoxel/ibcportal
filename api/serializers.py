@@ -149,6 +149,6 @@ class NotificationDeviceSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         """
-        Create and return a new `Snippet` instance, given the validated data.
+        Create and return a new `Device` instance, given the validated data.
         """
         return NotificationDevice.objects.create(**validated_data)

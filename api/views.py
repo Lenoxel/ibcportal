@@ -7,6 +7,7 @@ from groups.models import Group
 from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer
 from datetime import datetime, timedelta
 from calendar import monthrange
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
@@ -101,3 +102,14 @@ def device(request, format=None):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def device_detail(request, device_id):
+    try:
+        device = NotificationDevice.objects.get(device_id=device_id)
+    except ObjectDoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = NotificationDeviceSerializer(device)
+        return Response(serializer.data)
