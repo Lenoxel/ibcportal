@@ -43,5 +43,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('paypal/', include('paypal.standard.ipn.urls')),
     path('devices/', device),
-    path('devices/<int:device_id>', device_detail),
+    path('devices/<slug:device_id>', device_detail),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
