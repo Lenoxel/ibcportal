@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .auxiliar_functions import create_audit
-from .models import Post, Member, PostFile, Video, Schedule, Church, Donate, Event, MembersUnion, Audit
+from .models import Post, Member, PostFile, Video, Schedule, Church, Donate, Event, MembersUnion, Audit, NotificationDevice, PushNotification
 from django.core.exceptions import PermissionDenied
 
 class PostFileInline(admin.TabularInline):
@@ -103,6 +103,12 @@ class AuditAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
+class NotificationDeviceAdmin(admin.ModelAdmin):
+    readonly_fields = ('device_id', 'registration_type',)  
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 # class DonateAdmin(admin.ModelAdmin):
 #     readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')
 
@@ -115,3 +121,5 @@ admin.site.register(Donate)
 admin.site.register(Event, EventAdmin)
 admin.site.register(MembersUnion)
 admin.site.register(Audit, AuditAdmin)
+admin.site.register(PushNotification)
+admin.site.register(NotificationDevice, NotificationDeviceAdmin)

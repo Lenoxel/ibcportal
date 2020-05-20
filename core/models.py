@@ -366,3 +366,45 @@ class Donate(models.Model):
         }
         
         return paypal_dict
+
+class NotificationDevice(models.Model):
+    objects = models.Manager()
+
+    device_id = models.TextField('ID do dispositivo')
+    registration_type = models.CharField('Tipo do registro', max_length=100)
+    creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+
+    def save_device(self, device_object):
+        self.device_id = device_object.get('device_id')
+        self.registration_type = device_object.get('registration_type')
+        self.save()
+
+    class Meta:
+        verbose_name = 'Dispositivo'
+        verbose_name_plural = 'Dispositivos'
+        ordering = ['-creation_date']
+
+    def __str__(self):
+        return self.device_id
+
+class PushNotification(models.Model):
+    objects = models.Manager()
+
+    title = models.CharField('Título', max_length=60)
+    message = models.CharField('Mensagem', max_length=150)
+    push_date = models.DateTimeField('Enviar notificação em')
+    creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+
+    def create_notification(self, notification_object):
+        self.title = notification_object.get('title')
+        self.message = notification_object.get('message')
+        self.push_date = notification_object.get('push_date')
+        self.save()
+
+    class Meta:
+        verbose_name = 'Notificação'
+        verbose_name_plural = 'Notificações'
+        ordering = ['-creation_date']
+
+    def __str__(self):
+        return self.title

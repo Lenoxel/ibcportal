@@ -2,14 +2,17 @@ from django.shortcuts import render
 from rest_framework import viewsets, status
 from django.utils import timezone
 from django.db.models import Q
-from core.models import Post, Video, Schedule, Member, Event, MembersUnion
+from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice
 from groups.models import Group
-from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer
+from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer
 from datetime import datetime, timedelta
 from calendar import monthrange
 
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 # Toquen validator and generator
 def token_request(request):
@@ -84,3 +87,17 @@ class EventViewSet(viewsets.ModelViewSet):
         )
     ).order_by('start_date')
     serializer_class = EventSerializer
+
+@api_view(['GET', 'POST'])
+def device(request, format=None):
+    if request.method == 'GET':
+        devices = NotificationDevice.objects.all()
+        serializer = NotificationDeviceSerializer(devices, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = NotificationDeviceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

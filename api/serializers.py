@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from core.models import Post, PostFile, Member, Video, Schedule, Event, MembersUnion
+from core.models import Post, PostFile, Member, Video, Schedule, Event, MembersUnion, NotificationDevice
 from groups.models import Group, GroupMeetingDate
 from datetime import datetime
 
@@ -141,3 +141,14 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = '__all__'
         depth = 1
+
+class NotificationDeviceSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    device_id = serializers.CharField()
+    registration_type = serializers.CharField(max_length=100)
+
+    def create(self, validated_data):
+        """
+        Create and return a new `Snippet` instance, given the validated data.
+        """
+        return NotificationDevice.objects.create(**validated_data)
