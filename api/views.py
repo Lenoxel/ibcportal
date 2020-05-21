@@ -97,8 +97,15 @@ def device(request, format=None):
         return Response(serializer.data)
 
     if request.method == 'POST':
-        serializer = NotificationDeviceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        new_device_id = request.data.get('device_id')
+        possible_registered_device = NotificationDevice.objects.filter(device_id=new_device_id).values_list('device_id', flat=True).distinct()
+        possible_registered_device = list(possible_registered_device)
+        
+        if len(possible_registered_device) == 0:
+            serializer = NotificationDeviceSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_409_CONFLICT)

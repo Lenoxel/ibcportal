@@ -111,9 +111,6 @@ class AuditAdmin(admin.ModelAdmin):
 class NotificationDeviceAdmin(admin.ModelAdmin):
     readonly_fields = ('device_id', 'registration_type',)  
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
 class DonateAdmin(admin.ModelAdmin):
     readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')
 
