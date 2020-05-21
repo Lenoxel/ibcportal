@@ -26,12 +26,11 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'v@hr_t9%%3j2qo7$=vx6beb18^dog8p5ej30)+8_b21i2kvmdv'
-# SECRET_KEY = os.getenv('IBC_PORTAL_SECRET_KEY', '123')
+SECRET_KEY = os.getenv('IBC_PORTAL_SECRET_KEY', '123')
 # print(SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.herokuapp.com']
 
@@ -179,8 +178,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # PagSeguro Configuration
-PAGSEGURO_TOKEN = 'A5093E82D74349949699411762217053'
-# PAGSEGURO_TOKEN = os.getenv('IBC_PORTAL_PAGSEGURO_TOKEN', '123')
+PAGSEGURO_TOKEN = os.getenv('IBC_PORTAL_PAGSEGURO_TOKEN', '123')
 # print(PAGSEGURO_TOKEN)
 PAGSEGURO_EMAIL = 'glenonsilva@gmail.com'
 PAGSEGURO_SANDBOX = True
@@ -190,7 +188,6 @@ PAYPAL_TEST = True
 PAYPAL_EMAIL = 'glenonsilva@gmail.com'
 
 # Youtube API V3 Configuration
-YOUTUBE_KEY = 'AIzaSyCzaG47Waw7SL4fY4vyyZH9VlBMwzJVkCs'
-# YOUTUBE_KEY = os.getenv('IBC_PORTAL_YOUTUBE_KEY', '123')
+YOUTUBE_KEY = os.getenv('IBC_PORTAL_YOUTUBE_KEY', '123')
 # print(YOUTUBE_KEY)
 YOUTUBE_URL = 'https://www.googleapis.com/youtube/v3/videos'
