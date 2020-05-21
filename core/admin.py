@@ -111,11 +111,15 @@ class AuditAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-class NotificationDeviceAdmin(admin.ModelAdmin):
-    readonly_fields = ('registration_type',)  
-
 class DonateAdmin(admin.ModelAdmin):
     readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')
+
+class NotificationDeviceAdmin(admin.ModelAdmin):
+    readonly_fields = ('device_id', 'registration_type',)
+
+class PushNotificationAdmin(admin.ModelAdmin):
+     readonly_fields = ('title', 'body', 'multicast_id', 'success_count', 'failure_count', 'push_date',)
+
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Member)
@@ -126,5 +130,5 @@ admin.site.register(Donate)
 admin.site.register(Event, EventAdmin)
 admin.site.register(MembersUnion)
 admin.site.register(Audit, AuditAdmin)
-admin.site.register(PushNotification)
+admin.site.register(PushNotification, PushNotificationAdmin)
 admin.site.register(NotificationDevice, NotificationDeviceAdmin)
