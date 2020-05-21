@@ -19,6 +19,7 @@ natsort==7.0.1
 pagseguro==0.3.4
 Pillow==7.0.0
 psycopg2==2.8.5
+pyfcm==1.4.7
 python-dateutil==2.8.1
 pytz==2019.3
 requests==2.23.0
