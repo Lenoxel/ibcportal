@@ -64,12 +64,15 @@ class VideoAdmin(admin.ModelAdmin):
             action_type = "update" if change == True else "save"
             create_audit(request.user, 'Video', action_type, obj)
 
-            # Criando Notificação push - caso seja criação do vídeo
-            if change == False:
-                create_push_notification('video', form)
-
             # Salvando o model
             super().save_model(request, obj, form, change)
+
+            # Criando Notificação push - caso seja criação do vídeo
+            if change == False:
+                video_id = Video.objects.filter(youtube_video_code=form.cleaned_data['youtube_video_code']).values_list('id', flat=True)
+                video_id = list(video_id)
+                if len(video_id) > 0:
+                    create_push_notification('video', form, video_id[0])
         else:
             return PermissionDenied
 
@@ -109,7 +112,7 @@ class AuditAdmin(admin.ModelAdmin):
         return False
 
 class NotificationDeviceAdmin(admin.ModelAdmin):
-    readonly_fields = ('device_id', 'registration_type',)  
+    readonly_fields = ('registration_type',)  
 
 class DonateAdmin(admin.ModelAdmin):
     readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')

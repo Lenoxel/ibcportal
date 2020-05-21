@@ -1,6 +1,8 @@
 import requests
 from django.conf import settings
-from .models import Audit, NotificationDevice
+from datetime import datetime
+from django.utils import timezone
+from .models import Audit, NotificationDevice, PushNotification
 from pyfcm import FCMNotification
 
 meeting_types = {
@@ -37,7 +39,7 @@ def create_audit(responsible, changed_model, action_type, obj_name):
     audit = Audit()
     audit.create_audit(audit_object)
 
-def create_push_notification(entity_type, form):
+def create_push_notification(entity_type, form, entity_id):
     all_devices = NotificationDevice.objects.values_list('device_id', flat=True).distinct()
     all_devices = list(all_devices)
 
@@ -48,10 +50,31 @@ def create_push_notification(entity_type, form):
             title = form.cleaned_data['title']
 
         registration_ids = all_devices
+
         message_title = 'Vídeo novo postado!'
         message_body = 'Um vídeo acabou de ser postado: "' + title + '"' 
-        result = push_service.notify_multiple_devices(registration_ids=registration_ids, message_title=message_title, message_body=message_body)
-        print(result)
+        data_message = {
+            "entity_type" : entity_type,
+            "entity_id" : entity_id,
+            "redirect" : True
+        }
+
+        result = push_service.notify_multiple_devices(registration_ids=registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
+
+        save_push_notification_info(message_title, message_body, result)
+        # Salvando as informações do push notification
+
+def save_push_notification_info(title, body, result):
+    push_notification_object = {
+        'title': title,
+        'body': body,
+        'multicast_id': result.get('multicast_ids')[0],
+        'success_count': result.get('success'),
+        'failure_count': result.get('failure'),
+        'push_date': datetime.now(timezone.utc)
+    }
+    push_notification = PushNotification()
+    push_notification.save_notification(push_notification_object)
 
     
     

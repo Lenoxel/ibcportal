@@ -391,13 +391,19 @@ class PushNotification(models.Model):
     objects = models.Manager()
 
     title = models.CharField('Título', max_length=60)
-    message = models.CharField('Mensagem', max_length=150)
+    body = models.CharField('Mensagem', max_length=150)
+    multicast_id = models.CharField('ID único da mensagem', max_length=200)
+    success_count = models.PositiveIntegerField('Mensagens enviadas')
+    failure_count = models.PositiveIntegerField('Mensagens não enviadas')
     push_date = models.DateTimeField('Data do envio')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
 
-    def create_notification(self, notification_object):
+    def save_notification(self, notification_object):
         self.title = notification_object.get('title')
-        self.message = notification_object.get('message')
+        self.body = notification_object.get('body')
+        self.multicast_id = notification_object.get('multicast_id')
+        self.success_count = notification_object.get('success_count')
+        self.failure_count = notification_object.get('failure_count')
         self.push_date = notification_object.get('push_date')
         self.save()
 
