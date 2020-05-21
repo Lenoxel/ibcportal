@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .auxiliar_functions import create_audit
+from .auxiliar_functions import create_audit, create_push_notification
 from .models import Post, Member, PostFile, Video, Schedule, Church, Donate, Event, MembersUnion, Audit, NotificationDevice, PushNotification
 from django.core.exceptions import PermissionDenied
 
@@ -63,6 +63,11 @@ class VideoAdmin(admin.ModelAdmin):
             # Criando auditoria
             action_type = "update" if change == True else "save"
             create_audit(request.user, 'Video', action_type, obj)
+
+            # Criando Notificação push - caso seja criação do vídeo
+            if change == False:
+                create_push_notification('video', form)
+
             # Salvando o model
             super().save_model(request, obj, form, change)
         else:
@@ -109,8 +114,8 @@ class NotificationDeviceAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-# class DonateAdmin(admin.ModelAdmin):
-#     readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')
+class DonateAdmin(admin.ModelAdmin):
+    readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Member)
