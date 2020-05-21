@@ -392,7 +392,7 @@ class PushNotification(models.Model):
 
     title = models.CharField('Título', max_length=60)
     message = models.CharField('Mensagem', max_length=150)
-    push_date = models.DateTimeField('Enviar notificação em')
+    push_date = models.DateTimeField('Data do envio')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
 
     def create_notification(self, notification_object):
