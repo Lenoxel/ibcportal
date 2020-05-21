@@ -22,7 +22,7 @@ INDEX
 .swiper-button-next::before{
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
-    font-size: 34px;
+    font-size: 38px;
 }
 
 .swiper-button-prev::before { content: "\f053"; }
@@ -60,7 +60,7 @@ INDEX
 
 #swiper-top div.swiper-slide { background-size: cover; }
 #swiper-top .swiper-button-prev::before,
-#swiper-top .swiper-button-next::before { color: rgba(255,255,255,.5); }
+#swiper-top .swiper-button-next::before { color: rgba(255, 255, 255, 0.616); }
 
 /*------------------------------------------------------------  SOBRE  -------------------------*/
 @media screen and (min-width: 879px) {
