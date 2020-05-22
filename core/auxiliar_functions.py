@@ -63,7 +63,7 @@ def create_push_notification(entity_type, form, entity_id):
                     "entity_id" : entity_id,
                     "redirect" : True
                 }
-                push_date = datetime.now()
+                push_date = timezone.now()
                 result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
 
             elif entity_type == 'event':
@@ -75,7 +75,7 @@ def create_push_notification(entity_type, form, entity_id):
                     "redirect" : True
                 }
 
-                now = datetime.now()
+                now = timezone.now()
                 start_date = form.cleaned_data['start_date']
 
                 if (start_date <= now):
@@ -95,7 +95,7 @@ def create_push_notification(entity_type, form, entity_id):
                     "redirect" : True
                 }
 
-                now = datetime.now()
+                now = timezone.now()
                 published_date = form.cleaned_data['published_date']
 
                 if (published_date is not None and published_date > now):
@@ -108,7 +108,7 @@ def create_push_notification(entity_type, form, entity_id):
                 
             elif entity_type == 'meeting':
                 start_date = form.cleaned_data['start_date']
-                now = datetime.now()
+                now = timezone.now()
 
                 message_title = 'Hoje tem culto!'
                 message_body = 'Hoje teremos ' + meeting_types.get(form.cleaned_data['category']) + ' às ' +  start_date.strftime('%H:%M') + '.'
@@ -118,7 +118,7 @@ def create_push_notification(entity_type, form, entity_id):
                     "redirect" : True
                 }
 
-                if (start_date.day == datetime.today().day):
+                if (start_date.day == timezone.today().day):
                     push_date = now
                     result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
                 else:
