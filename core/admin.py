@@ -25,7 +25,7 @@ class PostAdmin(admin.ModelAdmin):
 
             # Criando Notificação push - caso seja criação da postagem
             if change == False and form.cleaned_data['to_notify'] == True:
-                post_id = Post.objects.earliest('-id').values_list('id', flat=True)
+                post_id = Post.objects.filter(title=form.cleaned_data['title']).values_list('id', flat=True)
                 post_id = list(post_id)
                 if len(post_id) > 0:
                     create_push_notification('post', form, post_id[0])
@@ -55,7 +55,7 @@ class EventAdmin(admin.ModelAdmin):
 
             # Criando Notificação push - caso seja criação do evento
             if change == False:
-                event_id = Event.objects.earliest('-id').values_list('id', flat=True)
+                event_id = Event.objects.filter(title=form.cleaned_data['title']).values_list('id', flat=True)
                 event_id = list(event_id)
                 if len(event_id) > 0:
                     create_push_notification('event', form, event_id[0])
@@ -110,7 +110,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
             # Criando Notificação push - caso seja criação do evento
             if change == False:
-                meeting_id = Schedule.objects.earliest('-id').values_list('id', flat=True)
+                meeting_id = Schedule.objects.filter(title=form.cleaned_data['title']).values_list('id', flat=True)
                 meeting_id = list(meeting_id)
                 if len(meeting_id) > 0:
                     create_push_notification('meeting', form, meeting_id[0])
