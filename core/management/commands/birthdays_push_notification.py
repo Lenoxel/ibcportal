@@ -9,7 +9,7 @@ from pyfcm import FCMNotification
 class Command(BaseCommand):
     help = 'Prints all book titles in the database'
 
-    def handle(self):
+    def handle(self, *args, **options):
         try:
             birthdays = NotificationDevice.objects.filter(
                 Q(date_of_birth__month=datetime.now().month),
