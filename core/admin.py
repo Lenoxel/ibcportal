@@ -25,10 +25,8 @@ class PostAdmin(admin.ModelAdmin):
 
             # Criando Notificação push - caso seja criação da postagem
             if change == False and form.cleaned_data['to_notify'] == True:
-                post_id = Post.objects.filter(title=form.cleaned_data['title']).values_list('id', flat=True)
-                post_id = list(post_id)
-                if len(post_id) > 0:
-                    create_push_notification('post', form, post_id[0])
+                post = Post.objects.earliest('-id')
+                create_push_notification('post', form, post.id)
         else:
             return PermissionDenied
 
@@ -55,10 +53,8 @@ class EventAdmin(admin.ModelAdmin):
 
             # Criando Notificação push - caso seja criação do evento
             if change == False:
-                event_id = Event.objects.filter(title=form.cleaned_data['title']).values_list('id', flat=True)
-                event_id = list(event_id)
-                if len(event_id) > 0:
-                    create_push_notification('event', form, event_id[0])
+                event = Event.objects.earliest('-id')
+                create_push_notification('event', form, event.id)
         else:
             return PermissionDenied
 
@@ -83,10 +79,8 @@ class VideoAdmin(admin.ModelAdmin):
 
             # Criando Notificação push - caso seja criação do vídeo
             if change == False:
-                video_id = Video.objects.filter(youtube_video_code=form.cleaned_data['youtube_video_code']).values_list('id', flat=True)
-                video_id = list(video_id)
-                if len(video_id) > 0:
-                    create_push_notification('video', form, video_id[0])
+                video = Video.objects.earliest('-id')
+                create_push_notification('video', form, video.id)
         else:
             return PermissionDenied
 
@@ -110,10 +104,8 @@ class ScheduleAdmin(admin.ModelAdmin):
 
             # Criando Notificação push - caso seja criação do evento
             if change == False:
-                meeting_id = Schedule.objects.filter(title=form.cleaned_data['title']).values_list('id', flat=True)
-                meeting_id = list(meeting_id)
-                if len(meeting_id) > 0:
-                    create_push_notification('meeting', form, meeting_id[0])
+                meeting = Schedule.objects.earliest('-id')
+                create_push_notification('meeting', form, meeting.id)
         else:
             return PermissionDenied
 

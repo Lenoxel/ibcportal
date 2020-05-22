@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from core.models import Member
+from core.models import Event
 from django.db.models import Q
 from datetime import datetime
 from django.conf import settings
@@ -9,16 +9,15 @@ from pyfcm import FCMNotification
 class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
-            birthdays = Member.objects.filter(
-                Q(date_of_birth__month=datetime.now().month),
-                Q(date_of_birth__day=datetime.now().day)
-            ).values_list('nickname', flat=True).order_by('nickname')
-            birthdays = list(birthdays)
+            events = Event.objects.filter(
+                Q(start_date__day=datetime.now().day)
+            ).values_list('title', flat=True).order_by('start_date')
+            events = list(events)
         except Exception:
-            raise CommandError('There are no birthdays today :(')
+            raise CommandError('There are no events today :(')
             return
 
-        if len(birthdays) > 0:
+        if len(events) > 0:
             all_devices = NotificationDevice.objects.values_list('device_id', flat=True).distinct()
             all_devices = list(all_devices)
             
@@ -30,21 +29,22 @@ class Command(BaseCommand):
                 valid_registration_ids = push_service.clean_registration_ids(registration_ids)
 
                 if len(valid_registration_ids) > 0:
-                    message_title = 'Aniversariantes do dia'
-                    message_body = 'Deixe o seu parabéns para'
-
-                    for count, birthday in enumerate(birthdays):
-                        if count == 0:
-                            message_body += ' ' + birthday
-                            if birthday[count] == birthday[-1]:
-                                message_body += '.'
-                        elif count == (len(birthdays)-1):
-                            message_body += ' e ' + birthday + '.'
-                        else:
-                            message_body += ', ' + birthday
+                    if len(events) == 1:
+                        message_title = 'Ei! Dá uma olhada nesse evento que vai acontecer hoje'
+                        message_body = 'Não perde não... Hoje vai rolar o evento "' + events[0].title + '".'
+                    else:
+                        message_title = 'Ei! Dá uma olhada nos eventos de hoje'
+                        message_body = 'Fique ligado, pois hoje teremos alguns eventos:'
+                        for count, event in enumerate(events):
+                            if count == 0:
+                                message_body += ' "' + event + '"'
+                            elif count == (len(event)-1):
+                                message_body += ' e "' + event + '".'
+                            else:
+                                message_body += ', "' + event + '"'
 
                     data_message = {
-                        "entity_type" : 'birthday',
+                        "entity_type" : 'event',
                         "redirect" : True
                     }
 

@@ -68,42 +68,43 @@ def create_push_notification(entity_type, form, entity_id):
                 result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
 
             elif entity_type == 'event':
-                message_title = 'Tem evento logo mais!'
-                message_body = 'Se liga nesse evento que vai acontecer hoje: "' + title + '".' 
-                data_message = {
-                    "entity_type" : entity_type,
-                    "entity_id" : entity_id,
-                    "redirect" : True
-                }
-
                 now = timezone.now()
                 start_date = form.cleaned_data['start_date']
+                end_date = form.cleaned_data['end_date']
+                
+                if start_date.day == timezone.now().day and end_date > now:
+                    if start_date > now:
+                        message_title = 'Tem evento logo mais!'
+                        message_body = 'Se liga nesse evento que vai acontecer hoje: "' + title + '". Fica ligado, pois vai começar às ' + form.cleaned_data['start_date']
+                    elif start_date <= now and end_date > now:
+                        message_title = 'Tem evento acontecendo agora!'
+                        message_body = 'Se liga nesse evento que está acontecedo: "' + title + '".'
 
-                if (start_date <= now):
+                    data_message = {
+                        "entity_type" : entity_type,
+                        "entity_id" : entity_id,
+                        "redirect" : True
+                    }
+
                     push_date = now
                     result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
-                else:
-                    push_date = start_date - timedelta(hours=1)
-                    formatted_push_date = push_date.strftime('%H:%M')
-                    schedule.every().day.at(formatted_push_date).do(schedule_notification_job, push_service=push_service, registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message, push_date=push_date)
 
             elif entity_type == 'post':
-                message_title = 'Postagem nova no app!'
-                message_body = form.cleaned_data['publisher'].nickname + ' acabou de fazer uma postagem: "' + title + '".' 
-                data_message = {
-                    "entity_type" : entity_type,
-                    "entity_id" : entity_id,
-                    "redirect" : True
-                }
-
                 now = timezone.now()
                 published_date = form.cleaned_data['published_date']
 
-                if (published_date is not None and published_date > now):
-                    push_date = published_date
-                    formatted_push_date = push_date.strftime('%H:%M')
-                    schedule.every().day.at(formatted_push_date).do(schedule_notification_job, push_service=push_service, registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message, push_date=push_date)
-                else:
+                if published_date is None or (published_date is not None and published_date <= now):
+                    message_title = 'Postagem nova no app!'
+                    if form.cleaned_data['publisher'].nickname is not None:
+                        message_body = form.cleaned_data['publisher'].nickname + ' acabou de fazer uma postagem: "' + title + '". Clique aqui e confere lá!' 
+                    else:
+                        message_body = form.cleaned_data['publisher'].name + ' acabou de fazer uma postagem: "' + title + '". Clique aqui e confere lá!' 
+                    data_message = {
+                        "entity_type" : entity_type,
+                        "entity_id" : entity_id,
+                        "redirect" : True
+                    }
+
                     push_date = now
                     result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
                 
@@ -111,21 +112,17 @@ def create_push_notification(entity_type, form, entity_id):
                 start_date = form.cleaned_data['start_date']
                 now = timezone.now()
 
-                message_title = 'Hoje tem culto!'
-                message_body = 'Hoje teremos ' + meeting_types.get(form.cleaned_data['category']) + ' às ' +  start_date.strftime('%H:%M') + '.'
-                data_message = {
-                    "entity_type" : entity_type,
-                    "entity_id" : entity_id,
-                    "redirect" : True
-                }
-
-                if (start_date.day == timezone.now().day):
+                if start_date.day == timezone.now().day:
+                    message_title = 'Hoje tem culto!'
+                    message_body = 'Fique ligado, pois hoje teremos ' + meeting_types.get(form.cleaned_data['title']) + ' às ' +  start_date.strftime('%H:%M') + '.'
+                    data_message = {
+                        "entity_type" : entity_type,
+                        "entity_id" : entity_id,
+                        "redirect" : True
+                    }
+                    
                     push_date = now
                     result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
-                else:
-                    push_date = start_date
-                    formatted_push_date = push_date.strftime('%H:%M')
-                    schedule.every().day.at(formatted_push_date).do(schedule_notification_job, push_service=push_service, registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message, push_date=push_date)
 
             # Salvando as informações do push notification no banco
             if result is not None:
@@ -133,14 +130,6 @@ def create_push_notification(entity_type, form, entity_id):
 
         if len(registration_ids) > len(valid_registration_ids):
             delete_invalid_device_ids(valid_registration_ids)
-
-
-def schedule_notification_job(push_service, registration_ids, message_title, message_body, data_message, push_date):
-    result = push_service.notify_multiple_devices(registration_ids=registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
-
-    save_push_notification_info(message_title, message_body, result, push_date)
-
-    return schedule.CancelJob
 
 def save_push_notification_info(title, body, result, push_date):
     push_notification_object = {
@@ -157,3 +146,10 @@ def save_push_notification_info(title, body, result, push_date):
 def delete_invalid_device_ids(valid_device_ids):
     invalid_device_ids = NotificationDevice.objects.exclude(device_id__in=valid_device_ids)
     invalid_device_ids.delete()
+
+# def schedule_notification_job(push_service, registration_ids, message_title, message_body, data_message, push_date):
+#     result = push_service.notify_multiple_devices(registration_ids=registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
+
+#     save_push_notification_info(message_title, message_body, result, push_date)
+
+#     return schedule.CancelJob

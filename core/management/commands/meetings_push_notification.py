@@ -1,24 +1,24 @@
 from django.core.management.base import BaseCommand, CommandError
-from core.models import Member
+from core.models import Schedule
 from django.db.models import Q
 from datetime import datetime
 from django.conf import settings
 from core.models import NotificationDevice, PushNotification
 from pyfcm import FCMNotification
+from core.auxiliar_functions import meeting_types
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
-            birthdays = Member.objects.filter(
-                Q(date_of_birth__month=datetime.now().month),
-                Q(date_of_birth__day=datetime.now().day)
-            ).values_list('nickname', flat=True).order_by('nickname')
-            birthdays = list(birthdays)
+            meetings = Schedule.objects.filter(
+                Q(start_date__day=datetime.now().day)
+            ).values_list('title', flat=True).order_by('start_date')
+            meetings = list(meetings)
         except Exception:
-            raise CommandError('There are no birthdays today :(')
+            raise CommandError('There are no meetings today :(')
             return
 
-        if len(birthdays) > 0:
+        if len(meetings) > 0:
             all_devices = NotificationDevice.objects.values_list('device_id', flat=True).distinct()
             all_devices = list(all_devices)
             
@@ -30,21 +30,16 @@ class Command(BaseCommand):
                 valid_registration_ids = push_service.clean_registration_ids(registration_ids)
 
                 if len(valid_registration_ids) > 0:
-                    message_title = 'Aniversariantes do dia'
-                    message_body = 'Deixe o seu parabéns para'
-
-                    for count, birthday in enumerate(birthdays):
-                        if count == 0:
-                            message_body += ' ' + birthday
-                            if birthday[count] == birthday[-1]:
-                                message_body += '.'
-                        elif count == (len(birthdays)-1):
-                            message_body += ' e ' + birthday + '.'
-                        else:
-                            message_body += ', ' + birthday
+                    message_title = 'Psiu, hoje tem culto visse'
+                    if len(meetings) == 1:
+                        message_body = 'E pode ir se organizando, porque hoje vai ter ' + meeting_types.get(meetings[0].title) + ' às ' + meetings[0].start_date.strftime('%H:%M') + '.'
+                    else:
+                        message_body = 'E pode ir se organizando, porque hoje tem programação:'
+                        for meeting in meetings:
+                            message_body += '\r\n' + '- ' + meeting_types.get(meeting.title) + ' às ' + meeting.start_date.strftime('%H:%M') + '.'
 
                     data_message = {
-                        "entity_type" : 'birthday',
+                        "entity_type" : 'meeting',
                         "redirect" : True
                     }
 
