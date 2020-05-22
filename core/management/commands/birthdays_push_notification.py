@@ -43,7 +43,7 @@ class Command(BaseCommand):
                         elif birthday[count] == birthday[-1]:
                             message_body += ' e ' + birthday + '.'
                         else:
-                            message_body += ', '
+                            message_body += ', ' + birthday
 
                     data_message = {
                         "entity_type" : 'birthday',
