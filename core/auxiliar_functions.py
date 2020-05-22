@@ -54,6 +54,7 @@ def create_push_notification(entity_type, form, entity_id):
 
         if len(valid_registration_ids) > 0:
             title = form.cleaned_data['title']
+            result = None
 
             if entity_type == 'video':
                 message_title = 'Vídeo novo postado!'
@@ -118,7 +119,7 @@ def create_push_notification(entity_type, form, entity_id):
                     "redirect" : True
                 }
 
-                if (start_date.day == timezone.today().day):
+                if (start_date.day == timezone.now().day):
                     push_date = now
                     result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
                 else:
@@ -127,7 +128,7 @@ def create_push_notification(entity_type, form, entity_id):
                     schedule.every().day.at(formatted_push_date).do(schedule_notification_job, push_service=push_service, registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message, push_date=push_date)
 
             # Salvando as informações do push notification no banco
-            if result:
+            if result is not None:
                 save_push_notification_info(message_title, message_body, result, push_date)
 
         if len(registration_ids) > len(valid_registration_ids):
