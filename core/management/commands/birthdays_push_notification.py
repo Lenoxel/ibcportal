@@ -24,7 +24,7 @@ class Command(BaseCommand):
             all_devices = NotificationDevice.objects.values_list('device_id', flat=True).distinct()
             all_devices = list(all_devices)
             
-            if len(all_devices) > 0 and len():
+            if len(all_devices) > 0:
                 push_service = FCMNotification(api_key=settings.FIREBASE_KEY)
 
                 registration_ids = all_devices
