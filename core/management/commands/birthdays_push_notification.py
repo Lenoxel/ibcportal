@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            birthdays = NotificationDevice.objects.filter(
+            birthdays = Member.objects.filter(
                 Q(date_of_birth__month=datetime.now().month),
                 Q(date_of_birth__day=datetime.now().day)
             ).values_list('nickname', flat=True).order_by('nickname')
