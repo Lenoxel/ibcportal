@@ -3,7 +3,7 @@ from core.models import Member
 from django.db.models import Q
 from datetime import datetime
 from django.conf import settings
-from .models import NotificationDevice, PushNotification
+from core.models import NotificationDevice, PushNotification
 from pyfcm import FCMNotification
 
 class Command(BaseCommand):
