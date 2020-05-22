@@ -88,7 +88,7 @@ def create_push_notification(entity_type, form, entity_id):
 
             elif entity_type == 'post':
                 message_title = 'Postagem nova no app!'
-                message_body = form.cleaned_data['publisher'] + ' acabou de fazer uma postagem: "' + title + '".' 
+                message_body = form.cleaned_data['publisher'].nickname + ' acabou de fazer uma postagem: "' + title + '".' 
                 data_message = {
                     "entity_type" : entity_type,
                     "entity_id" : entity_id,
