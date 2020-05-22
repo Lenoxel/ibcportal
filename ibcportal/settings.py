@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'cloudinary',
+    'django_cron',
     # project apps
     'core',
     'groups',

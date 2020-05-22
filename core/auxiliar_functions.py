@@ -4,6 +4,7 @@ from datetime import datetime
 from django.utils import timezone
 from .models import Audit, NotificationDevice, PushNotification
 from pyfcm import FCMNotification
+from django_cron import CronJobBase, Schedule
 
 meeting_types = {
     'doutrina': 'Culto de Doutrina',
@@ -51,18 +52,24 @@ def create_push_notification(entity_type, form, entity_id):
 
         registration_ids = all_devices
 
-        message_title = 'Vídeo novo postado!'
-        message_body = 'Um vídeo acabou de ser postado: "' + title + '"' 
-        data_message = {
-            "entity_type" : entity_type,
-            "entity_id" : entity_id,
-            "redirect" : True
-        }
+        valid_registration_ids = push_service.clean_registration_ids(registration_ids)
 
-        result = push_service.notify_multiple_devices(registration_ids=registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
+        if len(valid_registration_ids) > 0:
+            message_title = 'Vídeo novo postado!'
+            message_body = 'Um vídeo acabou de ser postado: "' + title + '"' 
+            data_message = {
+                "entity_type" : entity_type,
+                "entity_id" : entity_id,
+                "redirect" : True
+            }
 
-        save_push_notification_info(message_title, message_body, result)
-        # Salvando as informações do push notification
+            result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
+
+            # Salvando as informações do push notification no banco
+            save_push_notification_info(message_title, message_body, result)
+
+        if len(registration_ids) > len(valid_registration_ids):
+            delete_invalid_device_ids(valid_registration_ids)
 
 def save_push_notification_info(title, body, result):
     push_notification_object = {
@@ -75,6 +82,14 @@ def save_push_notification_info(title, body, result):
     }
     push_notification = PushNotification()
     push_notification.save_notification(push_notification_object)
+
+def delete_invalid_device_ids(valid_device_ids):
+    invalid_device_ids = NotificationDevice.objects.exclude(device_id__in=valid_device_ids)
+    invalid_device_ids.delete()
+
+# class SchedulePushNotification(CronJobBase):
+
+
 
     
     

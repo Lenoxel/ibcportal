@@ -277,7 +277,7 @@ class Audit(models.Model):
         ordering = ['-creation_date']
 
     def __str__(self):
-       return '{} em "{}" ({}) feito por {} - {}'.format(self.action_type, self.obj_name, self.changed_model, self.responsible, self.creation_date)
+       return '{} em "{}" ({}) feito por {} - {}'.format(self.action_type, self.obj_name, self.changed_model, self.responsible, self.creation_date.strftime('%d/%m/%Y %H:%M'))
 
 class Donate(models.Model):
     objects = models.Manager()
@@ -413,4 +413,4 @@ class PushNotification(models.Model):
         ordering = ['-creation_date']
 
     def __str__(self):
-        return self.title
+        return '{} - Enviar em {}'.format(self.title, self.push_date.strftime('%d/%m/%Y %H:%M'))
