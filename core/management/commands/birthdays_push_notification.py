@@ -48,7 +48,11 @@ class Command(BaseCommand):
                         "redirect" : True
                     }
 
-                    result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
+                    extra_notification_kwargs = {
+                        'image': 'https://cdn0.iconfinder.com/data/icons/tiny-icons-1/100/tiny-08-512.png'
+                    }
+
+                    result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message, extra_notification_kwargs=extra_notification_kwargs)
 
                     push_notification_object = {
                         'title': message_title,
