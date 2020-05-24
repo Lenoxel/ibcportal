@@ -6,14 +6,12 @@
         <div style="border:1px solid #ccc; border-radius: 16px; padding-left:5px; background-color:aliceblue">
             <p>{{ post.text|linebreaksbr }}</p>
             {% if post.published_date %}
-            <p>
+            <p style="font:small-caption;" style="padding-top: 5px;">
                 {% if post.published_date %}
                     <span>Publicado por {{ post.publisher }} em {{ post.published_date }}<span>
                 {% else %}
                     <span>Publicado por {{ post.publisher }} em {{ post.creation_date }}<span>
                 {% endif %}
-                <br>
-                <span style="font:small-caption;">Publicação gerenciada por {{ post.manager }}<span>
             </p>
             {% endif %}
         </div>
