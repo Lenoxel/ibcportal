@@ -565,6 +565,7 @@ aside h3 {
 #agenda .noticia {
     background: var(--color5000);
     padding: 1px 10px 20px;
+    border-radius: 5px;
 }
 
 #agenda .noticia h2 {
