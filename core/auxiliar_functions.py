@@ -56,6 +56,15 @@ def create_push_notification(entity_type, form, entity_id):
             title = form.cleaned_data['title']
             result = None
 
+            # getting current time by OS user timezone
+            local_tz = get_localzone() 
+            ts = time.time()
+            utc_now, now = datetime.utcfromtimestamp(ts), datetime.fromtimestamp(ts)
+            local_now = utc_now.replace(tzinfo=pytz.utc).astimezone(local_tz)
+            # another way
+            utc_now = timezone.now()
+            print(utc_now.day)
+
             if entity_type == 'video':
                 message_title = 'Vídeo novo postado!'
                 message_body = 'Um vídeo acabou de ser postado: "' + title + '".' 
