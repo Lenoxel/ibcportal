@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from core.models import Member
 from django.db.models import Q
 from datetime import datetime
+from django.utils import timezone
 from django.conf import settings
 from core.models import NotificationDevice, PushNotification
 from pyfcm import FCMNotification
@@ -56,7 +57,7 @@ class Command(BaseCommand):
                         'multicast_id': result.get('multicast_ids')[0],
                         'success_count': result.get('success'),
                         'failure_count': result.get('failure'),
-                        'push_date': datetime.now()
+                        'push_date': timezone.now()
                     }
                     push_notification = PushNotification()
                     # Salvando as informações do push notification no banco
