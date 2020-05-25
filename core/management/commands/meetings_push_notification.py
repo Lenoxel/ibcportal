@@ -2,7 +2,10 @@ from django.core.management.base import BaseCommand, CommandError
 from core.models import Schedule
 from django.db.models import Q
 from datetime import datetime
+import pytz
 from django.utils import timezone
+from tzlocal import get_localzone
+import time
 from django.conf import settings
 from core.models import NotificationDevice, PushNotification
 from pyfcm import FCMNotification
@@ -31,13 +34,17 @@ class Command(BaseCommand):
                 valid_registration_ids = push_service.clean_registration_ids(registration_ids)
 
                 if len(valid_registration_ids) > 0:
+                    local_tz = get_localzone() 
+
                     message_title = 'Psiu, hoje tem culto visse'
                     if len(meetings) == 1:
-                        message_body = 'E pode ir se organizando, porque hoje vai ter ' + meeting_types.get(meetings[0][0]) + ' às ' + meetings[0][1].strftime('%H:%M') + '.'
+                        locale_meeting_hour = meetings[0][1].replace(tzinfo=pytz.utc).astimezone(local_tz)
+                        message_body = 'E pode ir se organizando, porque hoje vai ter ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
                     else:
                         message_body = 'E pode ir se organizando, porque hoje tem programação:\r\n'
                         for meeting in meetings:
-                            message_body += '\r\n' + '- ' + meeting_types.get(meeting[0]) + ' às ' + meeting[1].strftime('%H:%M') + '.'
+                            locale_meeting_hour = meeting[1].replace(tzinfo=pytz.utc).astimezone(local_tz)
+                            message_body += '\r\n' + '- ' + meeting_types.get(meeting[0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
 
                     data_message = {
                         "entity_type" : 'meeting',
