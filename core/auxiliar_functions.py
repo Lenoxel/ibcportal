@@ -2,10 +2,10 @@ import requests
 from django.conf import settings
 from datetime import datetime, timedelta
 from django.utils import timezone
+import pytz
+from tzlocal import get_localzone
 from .models import Audit, NotificationDevice, PushNotification
 from pyfcm import FCMNotification
-import schedule
-import time
 
 meeting_types = {
     'doutrina': 'Culto de Doutrina',
@@ -56,14 +56,8 @@ def create_push_notification(entity_type, form, entity_id):
             title = form.cleaned_data['title']
             result = None
 
-            # getting current time by OS user timezone
+            # getting current timezone by OS user timezone
             local_tz = get_localzone() 
-            ts = time.time()
-            utc_now, now = datetime.utcfromtimestamp(ts), datetime.fromtimestamp(ts)
-            local_now = utc_now.replace(tzinfo=pytz.utc).astimezone(local_tz)
-            # another way
-            utc_now = timezone.now()
-            print(utc_now.day)
 
             if entity_type == 'video':
                 message_title = 'Vídeo novo postado!'
@@ -80,12 +74,15 @@ def create_push_notification(entity_type, form, entity_id):
                 now = timezone.now()
                 start_date = form.cleaned_data['start_date']
                 end_date = form.cleaned_data['end_date']
+
+                locale_start_date = start_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
+                locale_end_date = end_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
                 
-                if start_date.day == timezone.now().day and end_date > now:
-                    if start_date > now:
+                if locale_start_date.day == datetime.now().day and locale_end_date > datetime.now():
+                    if locale_start_date > now:
                         message_title = 'Tem evento logo mais!'
-                        message_body = 'Se liga nesse evento que vai acontecer hoje: "' + title + '". Fica ligado, pois vai começar às ' + form.cleaned_data['start_date']
-                    elif start_date <= now and end_date > now:
+                        message_body = 'Se liga nesse evento que vai acontecer hoje: "' + title + '". Fica ligado, pois vai começar às ' + locale_start_date.strftime('%H:%M')
+                    elif locale_start_date <= now and locale_end_date > now:
                         message_title = 'Tem evento acontecendo agora!'
                         message_body = 'Se liga nesse evento que está acontecedo: "' + title + '".'
 
@@ -101,13 +98,15 @@ def create_push_notification(entity_type, form, entity_id):
             elif entity_type == 'post':
                 now = timezone.now()
                 published_date = form.cleaned_data['published_date']
+                if published_date is not None:
+                    locale_published_date = published_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
 
-                if published_date is None or (published_date is not None and published_date <= now):
+                if published_date is None or (published_date is not None and locale_published_date <= datetime.now()):
                     message_title = 'Postagem nova no app!'
                     if form.cleaned_data['publisher'].nickname is not None:
-                        message_body = form.cleaned_data['publisher'].nickname + ' acabou de fazer uma postagem: "' + title + '". Clique aqui e confere lá!' 
+                        message_body = form.cleaned_data['publisher'].nickname + ' acabou de fazer uma postagem: "' + title + '". Confere lá!' 
                     else:
-                        message_body = form.cleaned_data['publisher'].name + ' acabou de fazer uma postagem: "' + title + '". Clique aqui e confere lá!' 
+                        message_body = form.cleaned_data['publisher'].name + ' acabou de fazer uma postagem: "' + title + '". Confere lá!' 
                     data_message = {
                         "entity_type" : entity_type,
                         "entity_id" : entity_id,
@@ -118,12 +117,13 @@ def create_push_notification(entity_type, form, entity_id):
                     result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
                 
             elif entity_type == 'meeting':
-                start_date = form.cleaned_data['start_date']
                 now = timezone.now()
+                start_date = form.cleaned_data['start_date']
+                locale_start_date = start_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
 
-                if start_date.day == timezone.now().day:
+                if locale_start_date.day == datetime.now().day:
                     message_title = 'Hoje tem culto!'
-                    message_body = 'Fique ligado, pois hoje teremos ' + meeting_types.get(form.cleaned_data['title']) + ' às ' +  start_date.strftime('%H:%M') + '.'
+                    message_body = 'Fique ligado, pois hoje teremos ' + meeting_types.get(form.cleaned_data['title']) + ' às ' +  locale_start_date.strftime('%H:%M') + '.'
                     data_message = {
                         "entity_type" : entity_type,
                         "entity_id" : entity_id,

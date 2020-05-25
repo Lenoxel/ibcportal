@@ -5,7 +5,6 @@ from datetime import datetime
 import pytz
 from django.utils import timezone
 from tzlocal import get_localzone
-import time
 from django.conf import settings
 from core.models import NotificationDevice, PushNotification
 from pyfcm import FCMNotification
