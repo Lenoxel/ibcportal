@@ -75,14 +75,14 @@ def create_push_notification(entity_type, form, entity_id):
                 start_date = form.cleaned_data['start_date']
                 end_date = form.cleaned_data['end_date']
 
-                locale_start_date = start_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
-                locale_end_date = end_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
+                # locale_start_date = start_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
+                # locale_end_date = end_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
                 
-                if locale_start_date.day == datetime.now().astimezone(get_localzone()).day and locale_end_date > datetime.now().astimezone(get_localzone()):
-                    if locale_start_date > now:
+                if start_date.day == datetime.now().astimezone(get_localzone()).day and end_date > datetime.now().astimezone(get_localzone()):
+                    if start_date > now:
                         message_title = 'Tem evento logo mais!'
                         message_body = 'Se liga nesse evento que vai acontecer hoje: "' + title + '". Fica ligado, pois vai começar às ' + locale_start_date.strftime('%H:%M')
-                    elif locale_start_date <= now and locale_end_date > now:
+                    elif start_date <= now and end_date > now:
                         message_title = 'Tem evento acontecendo agora!'
                         message_body = 'Se liga nesse evento que está acontecedo: "' + title + '".'
 
@@ -98,10 +98,10 @@ def create_push_notification(entity_type, form, entity_id):
             elif entity_type == 'post':
                 now = timezone.now()
                 published_date = form.cleaned_data['published_date']
-                if published_date is not None:
-                    locale_published_date = published_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
+                # if published_date is not None:
+                #     locale_published_date = published_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
 
-                if published_date is None or (published_date is not None and locale_published_date <= datetime.now().astimezone(get_localzone())):
+                if published_date is None or (published_date is not None and published_date <= datetime.now().astimezone(get_localzone())):
                     message_title = 'Postagem nova no app!'
                     if form.cleaned_data['publisher'].nickname is not None:
                         message_body = form.cleaned_data['publisher'].nickname + ' acabou de fazer uma postagem: "' + title + '". Confere lá!' 
@@ -119,11 +119,11 @@ def create_push_notification(entity_type, form, entity_id):
             elif entity_type == 'meeting':
                 now = timezone.now()
                 start_date = form.cleaned_data['start_date']
-                locale_start_date = start_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
+                # locale_start_date = start_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
 
-                if locale_start_date.day == datetime.now().astimezone(get_localzone()).day:
+                if start_date.day == datetime.now().astimezone(get_localzone()).day:
                     message_title = 'Hoje tem culto!'
-                    message_body = 'Fique ligado, pois hoje teremos ' + meeting_types.get(form.cleaned_data['title']) + ' às ' +  locale_start_date.strftime('%H:%M') + '.'
+                    message_body = 'Fique ligado, pois hoje teremos ' + meeting_types.get(form.cleaned_data['title']) + ' às ' +  start_date.strftime('%H:%M') + '.'
                     data_message = {
                         "entity_type" : entity_type,
                         "entity_id" : entity_id,
