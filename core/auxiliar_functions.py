@@ -81,7 +81,7 @@ def create_push_notification(entity_type, form, entity_id):
                 if start_date.day == datetime.now().astimezone(get_localzone()).day and end_date > datetime.now().astimezone(get_localzone()):
                     if start_date > now:
                         message_title = 'Tem evento logo mais!'
-                        message_body = 'Se liga nesse evento que vai acontecer hoje: "' + title + '". Fica ligado, pois vai começar às ' + locale_start_date.strftime('%H:%M')
+                        message_body = 'Se liga nesse evento que vai acontecer hoje: "' + title + '". Fica ligado, pois vai começar às ' + start_date.strftime('%H:%M')
                     elif start_date <= now and end_date > now:
                         message_title = 'Tem evento acontecendo agora!'
                         message_body = 'Se liga nesse evento que está acontecedo: "' + title + '".'
