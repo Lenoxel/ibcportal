@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 if len(valid_registration_ids) > 0:
                     if len(events) == 1:
                         message_title = 'Ei! Dá uma olhada nesse evento que vai acontecer hoje'
-                        message_body = 'Não perde não... Hoje vai rolar o evento "' + events[0].title + '".'
+                        message_body = 'Não perde não... Hoje vai rolar o evento "' + events[0] + '".'
                     else:
                         message_title = 'Ei! Dá uma olhada nos eventos de hoje'
                         message_body = 'Fique ligado, pois hoje teremos alguns eventos:'

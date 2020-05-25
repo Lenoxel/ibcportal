@@ -2,6 +2,10 @@ from django.core.management.base import BaseCommand, CommandError
 from core.models import Schedule
 from django.db.models import Q
 from datetime import datetime
+import pytz
+from django.utils import timezone
+from tzlocal import get_localzone
+import time
 from django.conf import settings
 from core.models import NotificationDevice, PushNotification
 from pyfcm import FCMNotification
@@ -10,9 +14,10 @@ from core.auxiliar_functions import meeting_types
 class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
+            print(datetime.now().day)
             meetings = Schedule.objects.filter(
                 Q(start_date__day=datetime.now().day)
-            ).values_list('title', flat=True).order_by('start_date')
+            ).values_list('title', 'start_date').order_by('start_date')
             meetings = list(meetings)
         except Exception:
             raise CommandError('There are no meetings today :(')
@@ -32,11 +37,11 @@ class Command(BaseCommand):
                 if len(valid_registration_ids) > 0:
                     message_title = 'Psiu, hoje tem culto visse'
                     if len(meetings) == 1:
-                        message_body = 'E pode ir se organizando, porque hoje vai ter ' + meeting_types.get(meetings[0].title) + ' às ' + meetings[0].start_date.strftime('%H:%M') + '.'
+                        message_body = 'E pode ir se organizando, porque hoje vai ter ' + meeting_types.get(meetings[0][0]) + ' às ' + meetings[0][1].strftime('%H:%M') + '.'
                     else:
                         message_body = 'E pode ir se organizando, porque hoje tem programação:'
                         for meeting in meetings:
-                            message_body += '\r\n' + '- ' + meeting_types.get(meeting.title) + ' às ' + meeting.start_date.strftime('%H:%M') + '.'
+                            message_body += '\r\n' + '- ' + meeting_types.get(meeting[0]) + ' às ' + meeting[1].strftime('%H:%M') + '.'
 
                     data_message = {
                         "entity_type" : 'meeting',
