@@ -52,7 +52,11 @@
                         {% for meeting in meetings %}
                             <div class="fx_4">
                                 <div class="noticia">
-                                    <h2 class="NT-titulo">{{ meeting.formatted_title }}</h2>
+                                    {% if meeting.formatted_title|length > 20  %}
+                                        <h2 class="NT-titulo" style="font-size: 18px !important;">{{ meeting.formatted_title }}</h2>
+                                    {% else %}
+                                        <h2 class="NT-titulo">{{ meeting.formatted_title }}</h2>
+                                    {% endif %}
                                     {% if meeting.location %}
                                         <h5 class="NT-categoria">{{ meeting.location }}</h5>
                                     {% elif meeting.category == 'ONLINE'  %}
