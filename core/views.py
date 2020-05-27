@@ -35,11 +35,8 @@ def home(request):
     ).order_by('start_date')
 
     for meeting in meetings:
-        if meeting.title == 'Geral':
-            if meeting.organizing_group is not None:
-                meeting.formatted_title = 'Programação - ' + meeting.organizing_group.name
-            else:
-               meeting.formatted_title = auxiliar_functions.meeting_types.get(meeting.title) 
+        if meeting.title == 'geral' and meeting.organizing_group is not None::
+            meeting.formatted_title = 'Programação - ' + meeting.organizing_group.name
         else:
             meeting.formatted_title = auxiliar_functions.meeting_types.get(meeting.title)
 
