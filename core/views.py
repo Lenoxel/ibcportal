@@ -24,12 +24,24 @@ def home(request):
     one_week_after_period = datetime.today() + timedelta(days=7)
 
     meetings = Schedule.objects.filter(
-        Q(start_date__gte=timezone.now()),
-        Q(start_date__lte=one_week_after_period)
+        Q(
+            Q(start_date__gte=timezone.now()) |
+            Q(
+                Q(end_date__isnull=False),
+                Q(end_date__gte=timezone.now())
+            )
+        ), Q(start_date__lte=one_week_after_period)
+       
     ).order_by('start_date')
 
     for meeting in meetings:
-        meeting.formatted_title = auxiliar_functions.meeting_types.get(meeting.title)
+        if meeting.title == 'Geral':
+            if meeting.organizing_group is not None:
+                meeting.formatted_title = 'Programação - ' + meeting.organizing_group.name
+            else:
+               meeting.formatted_title = auxiliar_functions.meeting_types.get(meeting.title) 
+        else:
+            meeting.formatted_title = auxiliar_functions.meeting_types.get(meeting.title)
 
     form = DonateForm()
 

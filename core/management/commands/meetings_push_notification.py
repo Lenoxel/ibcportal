@@ -15,7 +15,7 @@ class Command(BaseCommand):
         try:
             meetings = Schedule.objects.filter(
                 Q(start_date__day=datetime.now().day)
-            ).values_list('title', 'start_date').order_by('start_date')
+            ).values_list('title', 'start_date', 'organizing_group').order_by('start_date')
             meetings = list(meetings)
         except Exception:
             raise CommandError('There are no meetings today :(')
@@ -38,12 +38,24 @@ class Command(BaseCommand):
                     message_title = 'Psiu, hoje tem culto visse'
                     if len(meetings) == 1:
                         locale_meeting_hour = meetings[0][1].replace(tzinfo=pytz.utc).astimezone(local_tz)
-                        message_body = 'E pode ir se organizando, porque hoje vai ter ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
+                        if meetings[0][0] == 'geral':
+                            if meetings[0][2] is not None:
+                                message_body = 'E pode ir se organizando, porque hoje vai ter programação - ' + meetings[0][2] + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.' 
+                            else:
+                                message_body = 'E pode ir se organizando, porque hoje vai ter programação ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.' 
+                        else:
+                            message_body = 'E pode ir se organizando, porque hoje vai ter ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
                     else:
                         message_body = 'E pode ir se organizando, porque hoje tem programação:\r\n'
                         for meeting in meetings:
                             locale_meeting_hour = meeting[1].replace(tzinfo=pytz.utc).astimezone(local_tz)
-                            message_body += '\r\n' + '- ' + meeting_types.get(meeting[0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
+                            if meeting[0] == 'geral':
+                                if meeting[2] is not None:
+                                   message_body += '\r\n' + '- Programação: ' + meeting[2] + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
+                                else:
+                                    message_body = 'E pode ir se organizando, porque hoje vai ter programação ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.' 
+                            else:
+                                message_body += '\r\n' + '- ' + meeting_types.get(meeting[0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
 
                     data_message = {
                         "entity_type" : 'meeting',
