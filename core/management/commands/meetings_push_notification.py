@@ -51,9 +51,9 @@ class Command(BaseCommand):
                             locale_meeting_hour = meeting[1].replace(tzinfo=pytz.utc).astimezone(local_tz)
                             if meeting[0] == 'geral':
                                 if meeting[2] is not None:
-                                   message_body += '\r\n' + '- Programação: ' + meeting[2] + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
+                                    message_body += '\r\n' + '- Programação: ' + meeting[2] + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
                                 else:
-                                    message_body = 'E pode ir se organizando, porque hoje vai ter programação ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.' 
+                                    message_body += '\r\n' + '- Programação ' + meeting_types.get(meeting[0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
                             else:
                                 message_body += '\r\n' + '- ' + meeting_types.get(meeting[0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
 
