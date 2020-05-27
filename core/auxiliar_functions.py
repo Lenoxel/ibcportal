@@ -16,7 +16,8 @@ meeting_types = {
     'casa': 'Cultuando em casa',
     'infantil': 'Culto Infantil',
     'oracao': 'Ciclo de Oração',
-    'domestico': 'Culto doméstico'
+    'domestico': 'Culto doméstico',
+    'geral': 'Geral'
 }
 
 part = 'id,snippet,player,statistics,status'
