@@ -10,8 +10,11 @@ from django.utils import timezone
 class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
+            now_datetime = datetime.now()
             events = Event.objects.filter(
-                Q(start_date__day=datetime.now().day)
+                Q(start_date__day=now_datetime.day),
+                Q(start_date__month=now_datetime.month),
+                Q(start_date__year=now_datetime.year)
             ).values_list('title', flat=True).order_by('start_date')
             events = list(events)
         except Exception:

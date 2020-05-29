@@ -14,8 +14,11 @@ from core.auxiliar_functions import meeting_types
 class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
+            now_datetime = datetime.now()
             meetings = Schedule.objects.filter(
-                Q(start_date__day=datetime.now().day)
+                Q(start_date__day=now_datetime.day),
+                Q(start_date__month=now_datetime.month),
+                Q(start_date__year=now_datetime.year)
             ).values_list('title', 'start_date', 'organizing_group').order_by('start_date')
             meetings = list(meetings)
         except Exception:

@@ -10,9 +10,10 @@ from pyfcm import FCMNotification
 class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
+            now_datetime = datetime.now()
             birthdays = Member.objects.filter(
-                Q(date_of_birth__month=datetime.now().month),
-                Q(date_of_birth__day=datetime.now().day)
+                Q(date_of_birth__month=now_datetime.month),
+                Q(date_of_birth__day=now_datetime.day)
             ).values_list('nickname', flat=True).order_by('nickname')
             birthdays = list(birthdays)
         except Exception:

@@ -58,7 +58,7 @@ def create_push_notification(entity_type, form, entity_id):
             result = None
 
             # getting current timezone by OS user timezone
-            local_tz = get_localzone() 
+            # local_tz = get_localzone() 
 
             if entity_type == 'video':
                 message_title = 'Vídeo novo postado!'
