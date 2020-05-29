@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from core.models import Schedule
+from groups.models import Group
 from django.db.models import Q
 from datetime import datetime
 import pytz
@@ -40,7 +41,8 @@ class Command(BaseCommand):
                         locale_meeting_hour = meetings[0][1].replace(tzinfo=pytz.utc).astimezone(local_tz)
                         if meetings[0][0] == 'geral':
                             if meetings[0][2] is not None:
-                                message_body = 'E pode ir se organizando, porque hoje vai ter programação - ' + meetings[0][2] + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.' 
+                                group = Group.objects.get(pk=meetings[0][2])
+                                message_body = 'E pode ir se organizando, porque hoje vai ter programação - ' + group.name + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.' 
                             else:
                                 message_body = 'E pode ir se organizando, porque hoje vai ter programação ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.' 
                         else:
@@ -51,7 +53,8 @@ class Command(BaseCommand):
                             locale_meeting_hour = meeting[1].replace(tzinfo=pytz.utc).astimezone(local_tz)
                             if meeting[0] == 'geral':
                                 if meeting[2] is not None:
-                                    message_body += '\r\n' + '- Programação: ' + meeting[2] + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
+                                    group = Group.objects.get(pk=meetings[0][2])
+                                    message_body += '\r\n' + '- Programação: ' + group.name + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
                                 else:
                                     message_body += '\r\n' + '- Programação ' + meeting_types.get(meeting[0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
                             else:

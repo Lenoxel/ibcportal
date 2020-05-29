@@ -124,7 +124,15 @@ def create_push_notification(entity_type, form, entity_id):
 
                 if start_date.day == datetime.now().astimezone(get_localzone()).day:
                     message_title = 'Hoje tem culto!'
-                    message_body = 'Fique ligado, pois hoje teremos ' + meeting_types.get(form.cleaned_data['title']) + ' às ' +  start_date.strftime('%H:%M') + '.'
+
+                    if form.cleaned_data['title'] is not None:
+                        message_body = 'Fique ligado, pois hoje teremos ' + meeting_types.get(form.cleaned_data['title']) + ' às ' +  start_date.strftime('%H:%M') + '.'
+                    else:
+                        if form.cleaned_data['organizing_group'] is not None:
+                            message_body = 'Fique ligado, pois hoje teremos Programação - ' + form.cleaned_data['organizing_group'].name + ' às ' +  start_date.strftime('%H:%M') + '.'
+                        else:
+                            message_body = 'Fique ligado, pois hoje teremos Programação Geral às' +  start_date.strftime('%H:%M') + '.'
+                    
                     data_message = {
                         "entity_type" : entity_type,
                         "entity_id" : entity_id,
