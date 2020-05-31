@@ -104,6 +104,7 @@ class GroupSerializer(serializers.ModelSerializer):
     leader_picture = serializers.SerializerMethodField()
     vice_leader_picture = serializers.SerializerMethodField()
     third_leader_picture = serializers.SerializerMethodField()
+    general_category_icon = serializers.SerializerMethodField()
 
     def get_background_image(self, obj):
         return obj.background_image.url
