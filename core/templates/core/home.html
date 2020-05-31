@@ -123,9 +123,12 @@
                             <div class="fx_4">
                                 <div class="noticia">
                                     <h1 class="NT-titulo">{{ post.title|slice:"0:41" }}</h1>
-                                    <!-- <h5 class="NT-categoria">Categoria</h5> -->
                                     <h6 class="NT-data">Publicado por {{ post.publisher }} em {{ post.published_date }}.</h6>
-                                    <p class="NT-resumo">{{ post.text|linebreaksbr|slice:"0:140" }}...</p>
+                                    {% if post.text|length < 117  %}
+                                        <p class="NT-resumo" style="margin-bottom: 32px !important;">{{ post.text|linebreaksbr }}...</p>
+                                    {% else %}
+                                        <p class="NT-resumo">{{ post.text|linebreaksbr|slice:"0:140" }}...</p>
+                                    {% endif %}
                                     <a href="{% url 'post_detail' pk=post.pk %}" class="NT-readmore">Saiba +</a>
                                     <div class="clear"></div>
                                 </div>
