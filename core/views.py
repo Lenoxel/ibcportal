@@ -60,7 +60,7 @@ def home(request):
     return render(request, 'core/home.html', context)
 
 def posts(request):
-    posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')
+    posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')[0:10]
     context = {
         'posts': posts
     }
