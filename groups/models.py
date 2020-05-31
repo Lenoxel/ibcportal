@@ -19,6 +19,7 @@ class GeneralCategory(models.Model):
     objects = models.Manager()
 
     name = models.CharField('Nome', max_length=100)
+    icon = CloudinaryField('Ícone da categoria')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
     
