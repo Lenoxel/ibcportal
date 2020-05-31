@@ -69,7 +69,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 
 
 class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all().order_by('name')
+    queryset = Group.objects.all().order_by('general_category')
     serializer_class = GroupSerializer
 
 class EventViewSet(viewsets.ModelViewSet):

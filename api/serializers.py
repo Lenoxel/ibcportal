@@ -128,7 +128,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ('id', 'name', 'description', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates')
+        fields = ('id', 'general_category', 'name', 'description', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates')
         depth = 1
 
 class EventSerializer(serializers.ModelSerializer):
