@@ -108,6 +108,12 @@ class GroupSerializer(serializers.ModelSerializer):
     def get_background_image(self, obj):
         return obj.background_image.url
 
+    def get_category_icon(self, obj):
+        if obj.general_category and obj.general_category.icon:
+            return obj.general_category.icon.url
+        else: 
+            return None
+
     def get_leader_picture(self, obj):
         if obj.leader and obj.leader.picture:
             return obj.leader.picture.url
@@ -128,7 +134,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ('id', 'general_category', 'name', 'description', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates')
+        fields = ('id', 'general_category', 'name', 'description', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates', 'category_icon')
         depth = 1
 
 class EventSerializer(serializers.ModelSerializer):
