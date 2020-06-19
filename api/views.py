@@ -26,7 +26,7 @@ def token_request(request):
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.filter(Q(published_date__lte=datetime.now()) | Q(published_date__isnull=True)).order_by('-published_date')
+    queryset = Post.objects.filter(Q(published_date__lte=datetime.now()) | Q(published_date__isnull=True)).order_by('-published_date')[0:10]
     serializer_class = PostSerializer
 
 class MemberViewSet(viewsets.ModelViewSet):
@@ -55,7 +55,7 @@ class UnionCelebrationViewSet(viewsets.ModelViewSet):
     serializer_class = UnionComemorationSerializer
 
 class VideoViewSet(viewsets.ModelViewSet):
-    queryset = Video.objects.all().order_by('-registering_date')
+    queryset = Video.objects.order_by('-registering_date')[0:10]
     serializer_class = VideoSerializer
 
 class ScheduleViewSet(viewsets.ModelViewSet):
