@@ -83,6 +83,7 @@ main { min-height: 450px; }
 section.has_aside aside {
 	position: relative;
 	padding: 40px 0 63px;
+    background: var(--gray2)
 }
 
 input { border-radius: 0; }
@@ -183,9 +184,6 @@ div.yb section {
     header section { height: 125px; }
 
     header hgroup { display: none; }
-
-	
-	/*  ao sair o coronavirus colocar o #header-social-links com right = 165px e tirar o display none do #hm_buttons */
 	
     #header-social-links {
         /*font-size: 18px !important;*/
@@ -549,11 +547,14 @@ a:hover{
 }
 
 aside h3 {
-	font-size: 1.9em;
     margin-bottom: 0.3em;
-	color: var(--color1000);
 	text-transform: uppercase;
 	text-align:center;
+    font-size: 18px;
+    background: var(--color2000);
+    color: white;
+    padding: 5px 0;
+    /*border-radius: 4px;*/
 }
 
 /*---------------------------------------------------------------  AGENDA  ---------------------*/

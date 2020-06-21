@@ -1,10 +1,22 @@
 {% extends 'core/index.html' %}
 
 {% block content %}
-    <div style="padding: 0.01em 16px; margin-top: 20px; margin-bottom: 20px;">
-        <h2><span style="border-bottom:1px solid #ccc">{{ post.title }}</span></h2>
-        <div style="border:1px solid #ccc; border-radius: 16px; padding-left:5px; background-color:aliceblue">
-            <p>{{ post.text|linebreaksbr }}</p>
+    <section>
+        <div class="content">
+            <h1 style="font-weight: bolder; text-transform: uppercase; color: var(--color1000); text-align: left;">{{ post.title }}</h1>
+            <!-- 
+            {% if post.img_noticia %}
+                <img src=".jpg" alt="" class="imgC"/>
+            {% endif %}
+            {% if post.video_noticia %}
+                <div class="video">
+                    <video src="">
+                        
+                    </video>
+                </div>
+            {% endif %}
+            -->
+            <p>{{ post.text|linebreaks }}</p>
             <p style="font:small-caption; padding-top: 5px;">
                 {% if post.published_date %}
                     <span>Publicado por {{ post.publisher }} em {{ post.published_date }}<span>
@@ -12,6 +24,18 @@
                     <span>Publicado por {{ post.publisher }} em {{ post.creation_date }}<span>
                 {% endif %}
             </p>
+
+            {% if post.attached_files %}
+                <h3>Anexos</h3>
+                <p><a href="link-do-documento.pdf" target="_blank">Nome do documento</a></p>
+            {% endif %}
         </div>
-    </div>
+        
+        <!--
+        <aside>
+            <h3>Comunicados recentes</h3>
+        </aside>
+        -->
+    </section>
+
 {% endblock %}
