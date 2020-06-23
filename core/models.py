@@ -59,6 +59,8 @@ ACTION_TYPES = [
 class MeetingTypeEnum(Enum): 
     PRESENCIAL = "Presencial"
     ONLINE = "Online"
+    HIBRIDO = "Online e Presencial"
+
 
 class Post(models.Model):
     objects = models.Manager()
