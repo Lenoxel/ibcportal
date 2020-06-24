@@ -213,6 +213,7 @@ class Church(models.Model):
     responsible = models.ForeignKey('core.Member', verbose_name='Responsável', related_name='responsible', null=True, blank=True, on_delete=models.SET_NULL)
     chief_pastor = models.ForeignKey('core.Member', verbose_name='Pastor Principal', related_name='chief_pastor', null=True, blank=True, on_delete=models.SET_NULL)
     is_congregation = models.BooleanField('Congregação', default=False)
+    general_category = models.ForeignKey('groups.GeneralCategory', verbose_name='Categoria', null=True, blank=True, on_delete=models.SET_NULL)
     background_image = CloudinaryField('Foto da Igreja')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)

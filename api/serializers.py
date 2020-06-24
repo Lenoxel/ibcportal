@@ -142,6 +142,7 @@ class CongregationSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     responsible_picture = serializers.SerializerMethodField()
     info = serializers.SerializerMethodField()
+    general_category_icon = serializers.SerializerMethodField()
 
     def get_background_image(self, obj):
         return obj.background_image.url
@@ -160,10 +161,16 @@ class CongregationSerializer(serializers.ModelSerializer):
             return obj.description
         else: 
             return None
+
+    def get_general_category_icon(self, obj):
+        if obj.general_category and obj.general_category.icon:
+            return obj.general_category.icon.url
+        else: 
+            return None
     
     class Meta:
         model = Church
-        fields = ('id', 'name', 'description', 'info', 'background_image', 'responsible', 'responsible_picture', 'is_congregation')
+        fields = ('id', 'name', 'description', 'info', 'background_image', 'responsible', 'responsible_picture', 'is_congregation', 'general_category', 'general_category_icon')
         depth = 1
 
 class EventSerializer(serializers.ModelSerializer):
