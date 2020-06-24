@@ -138,17 +138,10 @@ class GroupSerializer(serializers.ModelSerializer):
         depth = 1
 
 class CongregationSerializer(serializers.ModelSerializer):
-    leader = serializers.SerializerMethodField()
-    leader_picture = serializers.SerializerMethodField()
+    responsible_picture = serializers.SerializerMethodField()
     info = serializers.SerializerMethodField()
 
-    def get_leader(self, obj):
-        if obj.responsible:
-            return obj.responsible
-        else: 
-            return None
-
-    def get_leader_picture(self, obj):
+    def get_responsible_picture(self, obj):
         if obj.responsible and obj.responsible.picture:
             return obj.responsible.picture.url
         else: 
@@ -162,7 +155,7 @@ class CongregationSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Church
-        fields = ('id', 'name', 'description', 'info', 'background_image', 'leader', 'leader_picture', 'is_congregation')
+        fields = ('id', 'name', 'description', 'info', 'background_image', 'responsible', 'responsible_picture', 'is_congregation')
         depth = 1
 
 class EventSerializer(serializers.ModelSerializer):
