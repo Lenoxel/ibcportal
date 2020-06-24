@@ -139,11 +139,15 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class CongregationSerializer(serializers.ModelSerializer):
     background_image = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
     responsible_picture = serializers.SerializerMethodField()
     info = serializers.SerializerMethodField()
 
     def get_background_image(self, obj):
         return obj.background_image.url
+
+    def get_name(self, obj):
+        return obj.acronym
 
     def get_responsible_picture(self, obj):
         if obj.responsible and obj.responsible.picture:
