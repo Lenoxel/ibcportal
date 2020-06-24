@@ -138,6 +138,7 @@ class GroupSerializer(serializers.ModelSerializer):
         depth = 1
 
 class CongregationSerializer(serializers.ModelSerializer):
+    leader = serializers.SerializerMethodField()
     leader_picture = serializers.SerializerMethodField()
     info = serializers.SerializerMethodField()
 
