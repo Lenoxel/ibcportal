@@ -134,11 +134,13 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ('id', 'general_category', 'name', 'description', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates', 'general_category_icon')
+        fields = ('id', 'general_category', 'name', 'description', 'info', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates', 'general_category_icon')
         depth = 1
 
 class CongregationSerializer(serializers.ModelSerializer):
     leader_picture = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
+    info = serializers.SerializerMethodField()
 
     def get_leader_picture(self, obj):
         if obj.responsible and obj.responsible.picture:
@@ -148,10 +150,16 @@ class CongregationSerializer(serializers.ModelSerializer):
 
     def get_category(self, obj):
         return "Congregações"
+
+    def get_info(self, obj):
+        if obj.description:
+            return obj.description
+        else: 
+            return None
     
     class Meta:
         model = Church
-        fields = ('id', 'name', 'description', 'background_image', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates', 'general_category_icon')
+        fields = ('id', 'name', 'description', 'info', 'background_image', 'leader', 'leader_picture', 'is_congregation')
         depth = 1
 
 class EventSerializer(serializers.ModelSerializer):

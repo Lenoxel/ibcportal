@@ -2,9 +2,9 @@ from django.shortcuts import render
 from rest_framework import viewsets, status
 from django.utils import timezone
 from django.db.models import Q
-from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice
+from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 from groups.models import Group
-from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer
+from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import datetime, timedelta
 from calendar import monthrange
 from django.core.exceptions import ObjectDoesNotExist
@@ -77,6 +77,10 @@ class ScheduleViewSet(viewsets.ModelViewSet):
 class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all().order_by('general_category', 'name')
     serializer_class = GroupSerializer
+
+class CongregationViewSet(viewsets.ModelViewSet):
+    queryset = Church.objects.filter(is_congregation=True).order_by('name')
+    serializer_class = CongregationSerializer
 
 class EventViewSet(viewsets.ModelViewSet):
     three_months_period = datetime.today() + timedelta(days=90)

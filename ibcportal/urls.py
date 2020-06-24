@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from api.views import PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, token_request, device
+from api.views import PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, token_request, device, CongregationViewSet
 from rest_framework import routers
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -29,6 +29,7 @@ router.register(r'unions', UnionCelebrationViewSet)
 router.register(r'videos', VideoViewSet)
 router.register(r'meetings', ScheduleViewSet)
 router.register(r'groups', GroupViewSet)
+router.register(r'congregations', CongregationViewSet)
 router.register(r'events', EventViewSet)
 
 # url abaixa está depreciada, apenas mantendo-a por enquanto para não quebrar a chamada da última versão de teste do app
