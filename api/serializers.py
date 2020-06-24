@@ -142,14 +142,17 @@ class CongregationSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()
     info = serializers.SerializerMethodField()
 
+    def get_leader(self, obj):
+        if obj.responsible:
+            return obj.responsible
+        else: 
+            return None
+
     def get_leader_picture(self, obj):
         if obj.responsible and obj.responsible.picture:
             return obj.responsible.picture.url
         else: 
             return None
-
-    def get_category(self, obj):
-        return "Congregações"
 
     def get_info(self, obj):
         if obj.description:
