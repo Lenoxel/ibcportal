@@ -139,7 +139,6 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class CongregationSerializer(serializers.ModelSerializer):
     leader_picture = serializers.SerializerMethodField()
-    category = serializers.SerializerMethodField()
     info = serializers.SerializerMethodField()
 
     def get_leader(self, obj):
