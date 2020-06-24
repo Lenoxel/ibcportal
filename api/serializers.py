@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from core.models import Post, PostFile, Member, Video, Schedule, Event, MembersUnion, NotificationDevice
+from core.models import Post, PostFile, Member, Video, Schedule, Event, MembersUnion, NotificationDevice, Church
 from groups.models import Group, GroupMeetingDate
-from datetime import datetime
 
 # Serializers define the API representation.
 class FileSerializer(serializers.ModelSerializer):
@@ -136,6 +135,23 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ('id', 'general_category', 'name', 'description', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates', 'general_category_icon')
+        depth = 1
+
+class CongregationSerializer(serializers.ModelSerializer):
+    leader_picture = serializers.SerializerMethodField()
+
+    def get_leader_picture(self, obj):
+        if obj.responsible and obj.responsible.picture:
+            return obj.responsible.picture.url
+        else: 
+            return None
+
+    def get_category(self, obj):
+        return "Congregações"
+    
+    class Meta:
+        model = Church
+        fields = ('id', 'name', 'description', 'background_image', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates', 'general_category_icon')
         depth = 1
 
 class EventSerializer(serializers.ModelSerializer):
