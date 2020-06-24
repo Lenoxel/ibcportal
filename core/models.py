@@ -207,10 +207,12 @@ class Church(models.Model):
     objects = models.Manager()
 
     name = models.CharField('Nome', max_length=100)
-    acronym = models.CharField('Sigla', max_length=15)
+    acronym = models.CharField('Sigla', max_length=25)
     description = models.TextField('Descrição')
     address = models.CharField('Endereço', max_length=250)
-    chief_pastor = models.ForeignKey('core.Member', verbose_name='Pastor Principal', null=True, on_delete=models.SET_NULL)
+    responsible = models.ForeignKey('core.Member', verbose_name='Responsável', related_name='responsible', null=True, on_delete=models.SET_NULL)
+    chief_pastor = models.ForeignKey('core.Member', verbose_name='Pastor Principal', related_name='chief_pastor', null=True, on_delete=models.SET_NULL)
+    is_congregation = models.BooleanField('Congregação', default=False)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
