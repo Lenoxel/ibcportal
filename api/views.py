@@ -38,6 +38,7 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
 
     def get_queryset(self):
+        two_weeks_before_period = datetime.today() - timedelta(days=14)
          queryset = Post.objects.filter(
             Q(published_date__lte=timezone.now()),
             Q(published_date__gte=two_weeks_before_period)
