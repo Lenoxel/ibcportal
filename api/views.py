@@ -35,8 +35,6 @@ class PostViewSet(viewsets.ModelViewSet):
             Q(published_date__lte=timezone.now()),
             Q(published_date__gte=two_weeks_before_period)
         )
-        |
-        Q(published_date__isnull=True)
     ).order_by('-published_date')
     
     
