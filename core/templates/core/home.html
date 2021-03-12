@@ -38,6 +38,10 @@
                 <section>
                     <div class="content">
                         <h1>Agenda da Semana</h1>
+
+                        {% if not meetings %}
+                            <div class="alert alert-warning">A agenda da semana está em atualização.</div>
+                        {% endif %}
                         
                         <div class="flexC">
 
@@ -86,18 +90,23 @@
                 <section>
                     <div class="content">
                         <h1>Nada impede que Deus chegue até você.</h1>
-                        <div class="flexC">
-                            {% for video in videos %}
-                                <div class="fx_3">
-                                    <div class="video">
-                                        <iframe src="https://www.youtube.com/embed/{{video.youtube_video_code}}?rel=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+                        {% if not videos %}
+                            <div class="alert alert-warning">Os nossos vídeos estão em atualização.</div>
+                        {% else %}
+                            <div class="flexC">
+                                {% for video in videos %}
+                                    <div class="fx_3">
+                                        <div class="video">
+                                            <iframe src="https://www.youtube.com/embed/{{video.youtube_video_code}}?rel=0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                        </div>
+                                        <h4>{{video.title}}</h4>
                                     </div>
-                                    <h4>{{video.title}}</h4>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <a class="link-btn-youtube" href="https://www.youtube.com/channel/UC-hzq9E2dNoxj29qpSgyfuw" target="_blank">Assista a mais cultos em nosso canal no YouTube!</a>
-                        <div class="clear"></div>
+                                {% endfor %}
+                            </div>
+                            <a class="link-btn-youtube" href="https://www.youtube.com/channel/UCmPd3ZVeN9cPjh09WmdEfng" target="_blank">Assista a mais cultos em nosso canal no YouTube!</a>
+                            <div class="clear"></div>
+                        {% endif %}
                     </div>
                 </section>
             </div>
@@ -108,6 +117,10 @@
                 <section>
                     <div class="content">
                         <h1>Comunicados Importantes</h1>
+
+                        {% if not posts %}
+                            <div class="alert alert-warning">Não existem comunicados recentes.</div>
+                        {% endif %}
                         
                         <div class="flexC">
 

@@ -13,7 +13,9 @@ INDEX
     #swiper-top { position: relative; height: 450px !important; }
 }
 
-.swiper-slide { cursor: grab; }
+.swiper-slide { 
+    cursor: grab; 
+}
 
 .swiper-button-prev { background-image: none; }
 .swiper-button-next { background-image: none; }
@@ -83,6 +85,39 @@ INDEX
 
 #sobre .content .major-text:hover {
     text-decoration: underline white;
+}
+
+.alert {
+	padding: 25px;
+	border: 1px solid gray;
+	border-radius: 3px;
+	margin: 10px;
+	font-size: 20px;
+    text-align: center;
+}
+
+.alert-error {
+	border-color: #e8273b;
+	color: #FFF;
+	background-color: #ed5565;
+}
+
+.alert-success {
+	border-color: #87c940;
+	color: #FFF;
+	background-color: #a0d468;
+}
+
+.alert-warning {
+	border-color: #f4a911;
+	color: #FFF;
+	background-color: #f6bb42;
+}
+
+.alert-info {
+	border-color: #2f80e7;
+	color: #FFF;
+	background-color: #5d9cec;
 }
 
 /*--------------------------------------------------------  CULTOS ONLINE  ---------------------*/

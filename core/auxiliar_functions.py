@@ -174,10 +174,10 @@ def delete_invalid_device_ids(valid_device_ids):
 
 def get_now_datetime_utc():
     now_date_time = datetime.now()
-    now_date_time.replace(tzinfo=timezone.utc)
+    # now_date_time.replace(tzinfo=timezone.utc)
     return now_date_time
 
 def get_today_datetime_utc():
     today_date_time = datetime.today()
-    today_date_time.replace(tzinfo=timezone.utc)
+    # today_date_time.replace(tzinfo=timezone.utc)
     return today_date_time
