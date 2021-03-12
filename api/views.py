@@ -39,10 +39,10 @@ class PostViewSet(viewsets.ModelViewSet):
         )
         |
         Q (
-            Q(start_date__year=datetime_now.year),
-            Q(start_date__month=datetime_now.month),
+            Q(published_date__year=datetime_now.year),
+            Q(published_date__month=datetime_now.month),
             Q(published_date__day=datetime_now.day),
-            Q(published_date__day__hour__lte=datetime_now.hour)
+            Q(published_date__hour__lte=datetime_now.hour)
         )
     ).order_by('-published_date')
     
