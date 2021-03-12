@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
-from django.utils import timezone
 from django.db.models import Q
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 from groups.models import Group
@@ -8,6 +7,7 @@ from .serializers import PostSerializer, MemberSerializer, VideoSerializer, Sche
 from datetime import datetime, timedelta
 from calendar import monthrange
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
@@ -15,7 +15,9 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-# Toquen validator and generator
+from core.auxiliar_functions import get_now_datetime_utc, get_today_datetime_utc
+
+# Token validator and generator
 def token_request(request):
     try:
         new_token = Token.objects.get_or_create(user=request.user)
@@ -26,10 +28,12 @@ def token_request(request):
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
 class PostViewSet(viewsets.ModelViewSet):
-    two_weeks_before_period = datetime.today() - timedelta(days=14)
+    two_weeks_before_period = get_today_datetime_utc() - timedelta(days=14)
+    print(get_today_datetime_utc())
+    print(two_weeks_before_period)
     queryset = Post.objects.filter(
         Q(
-            Q(published_date__lte=datetime.now()) | Q(published_date__isnull=True),
+            Q(published_date__lte=get_now_datetime_utc()) | Q(published_date__isnull=True),
             Q(published_date__gte=two_weeks_before_period)
         )).order_by('-published_date')
     
@@ -48,14 +52,14 @@ class MemberViewSet(viewsets.ModelViewSet):
 
 class BirthdayCelebrationViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.filter(
-        Q(date_of_birth__month=datetime.now().month)
+        Q(date_of_birth__month=get_now_datetime_utc().month)
     )
     
     serializer_class = BirthdayComemorationSerializer
 
 class UnionCelebrationViewSet(viewsets.ModelViewSet):
     queryset = MembersUnion.objects.filter(
-        Q(union_date__month=datetime.now().month)
+        Q(union_date__month=get_now_datetime_utc().month)
     )
 
     serializer_class = UnionComemorationSerializer
@@ -65,8 +69,8 @@ class VideoViewSet(viewsets.ModelViewSet):
     serializer_class = VideoSerializer
 
 class ScheduleViewSet(viewsets.ModelViewSet):
-    one_week_after_period = datetime.today() + timedelta(days=7)
-    one_week_before_period = datetime.today() - timedelta(days=7)
+    one_week_after_period = get_today_datetime_utc() + timedelta(days=7)
+    one_week_before_period = get_today_datetime_utc() - timedelta(days=7)
     queryset = Schedule.objects.filter(
         Q(start_date__gte=one_week_before_period), 
         Q(start_date__lte=one_week_after_period)
@@ -83,8 +87,8 @@ class CongregationViewSet(viewsets.ModelViewSet):
     serializer_class = CongregationSerializer
 
 class EventViewSet(viewsets.ModelViewSet):
-    three_months_period = datetime.today() + timedelta(days=90)
-    datetime_now = datetime.now()
+    three_months_period = get_today_datetime_utc() + timedelta(days=90)
+    datetime_now = get_now_datetime_utc()
     queryset = Event.objects.filter(
         Q(
             Q(start_date__day=datetime_now.day),

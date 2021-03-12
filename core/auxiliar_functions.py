@@ -171,3 +171,13 @@ def delete_invalid_device_ids(valid_device_ids):
 #     save_push_notification_info(message_title, message_body, result, push_date)
 
 #     return schedule.CancelJob
+
+def get_now_datetime_utc():
+    now_date_time = datetime.now()
+    now_date_time.replace(tzinfo=timezone.utc)
+    return now_date_time
+
+def get_today_datetime_utc():
+    today_date_time = datetime.today()
+    today_date_time.replace(tzinfo=timezone.utc)
+    return today_date_time

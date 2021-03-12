@@ -76,7 +76,14 @@ INDEX
     background: transparent;
 }
 
-#sobre .content p { text-align: center; }
+#sobre .content .major-text { 
+    text-align: justify;
+    transition: all .5s linear;
+}
+
+#sobre .content .major-text:hover {
+    text-decoration: underline white;
+}
 
 /*--------------------------------------------------------  CULTOS ONLINE  ---------------------*/
 #cultos-online {
@@ -92,6 +99,16 @@ INDEX
 
 #cultos-online .flex {
     margin-top: 30px; margin-bottom: 30px;
+}
+
+#mission .fx_3 {
+    transition: all .3s ease-in-out;
+}
+
+#mission .fx_3:hover {
+    /* transform: rotate(360deg); */
+    border: 3px solid yellow;
+    border-radius: 5px;
 }
 
 #cultos-online .fx_3 h4 {
@@ -141,6 +158,14 @@ INDEX
     background: var(--gray5);
     padding: 20px 15px 0;
     border-radius: 10px;
+    position: relative;
+    top: 0;
+    transition: all .2s ease-in-out;
+}
+
+#comunicados .noticia:hover {
+    top: -8px;
+    box-shadow: 0 8px 8px #fff;
 }
 
 #comunicados .noticia .NT-titulo {
@@ -190,6 +215,7 @@ INDEX
     /*float: right;*/
     margin-left: calc(50% - 40px);
     transition: all 0.2s linear;
+    bottom: 0;
 }
 
 #comunicados .noticia .NT-readmore:hover {

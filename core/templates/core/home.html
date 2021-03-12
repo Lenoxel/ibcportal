@@ -24,8 +24,10 @@
                 <section>
                     <div class="content">
                         <h1>Aqui é o lugar onde Deus nos mostra que somos dependentes Dele.</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at magna consequat, hendrerit est convallis, fermentum nulla. Cras non tellus urna. Nunc ultricies sapien id rhoncus fringilla. Ut malesuada dapibus ipsum non mattis. Mauris in neque gravida, laoreet risus at, rutrum nulla. Cras faucibus varius lectus nec pulvinar. Nullam porta tempus risus, non mattis urna elementum sit amet. In iaculis faucibus nibh et luctus. Aenean ornare in leo quis luctus. Integer dapibus, dolor congue finibus tincidunt, ante nisi porta nisi, sed vulputate risus mauris id dui. Sed posuere dui a mi pellentesque fringilla. Nullam consectetur at eros non mattis. Donec quis congue lectus. Phasellus a mauris lectus.</p>
-                        <p>Curabitur vel aliquet erat. In urna nisi, aliquam in ultrices et, porta vitae mauris. Etiam aliquam pellentesque turpis, vitae elementum purus ornare consequat. Aliquam erat volutpat. Sed lobortis augue arcu, vel molestie nulla semper vitae. Phasellus pellentesque ligula nisi, non laoreet mi euismod vel. Donec vehicula ultricies tellus ut scelerisque. Nulla commodo, dolor sodales rhoncus gravida, purus neque tempor ligula, vel faucibus neque ipsum ut lorem. Duis aliquet dapibus hendrerit.</p>
+                        <div class="major-text">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at magna consequat, hendrerit est convallis, fermentum nulla. Cras non tellus urna. Nunc ultricies sapien id rhoncus fringilla. Ut malesuada dapibus ipsum non mattis. Mauris in neque gravida, laoreet risus at, rutrum nulla. Cras faucibus varius lectus nec pulvinar. Nullam porta tempus risus, non mattis urna elementum sit amet. In iaculis faucibus nibh et luctus. Aenean ornare in leo quis luctus. Integer dapibus, dolor congue finibus tincidunt, ante nisi porta nisi, sed vulputate risus mauris id dui. Sed posuere dui a mi pellentesque fringilla. Nullam consectetur at eros non mattis. Donec quis congue lectus. Phasellus a mauris lectus.</p>
+                            <p>Curabitur vel aliquet erat. In urna nisi, aliquam in ultrices et, porta vitae mauris. Etiam aliquam pellentesque turpis, vitae elementum purus ornare consequat. Aliquam erat volutpat. Sed lobortis augue arcu, vel molestie nulla semper vitae. Phasellus pellentesque ligula nisi, non laoreet mi euismod vel. Donec vehicula ultricies tellus ut scelerisque. Nulla commodo, dolor sodales rhoncus gravida, purus neque tempor ligula, vel faucibus neque ipsum ut lorem. Duis aliquet dapibus hendrerit.</p>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -115,9 +117,9 @@
                                     <h1 class="NT-titulo">{{ post.title|slice:"0:41" }}</h1>
                                     <h6 class="NT-data">Publicado por {{ post.publisher }} em {{ post.published_date }}.</h6>
                                     {% if post.text|length < 117  %}
-                                        <p class="NT-resumo" style="margin-bottom: 32px !important;">{{ post.text|linebreaksbr }}...</p>
+                                        <p class="NT-resumo" style="margin-bottom: 32px !important;">{{ post.text }}</p>
                                     {% else %}
-                                        <p class="NT-resumo">{{ post.text|linebreaksbr|slice:"0:140" }}...</p>
+                                        <p class="NT-resumo">{{ post.text|slice:"0:140" }}...</p>
                                     {% endif %}
                                     <a href="{% url 'post_detail' pk=post.pk %}" class="NT-readmore">Saiba +</a>
                                     <div class="clear"></div>
@@ -196,7 +198,6 @@
                     <p class="statement"><em>"Dele todo o corpo, ajustado e unido pelo auxílio de todas as juntas, cresce e edifica-se a si mesmo em amor, na medida em que cada parte realiza a sua função."</em> <strong>Efésios 4:16</strong></p>
                     
                     <div class="flex">
-
                         <dl class="fx_3">
                             <!-- <dd><img src="img/MS-home-bible.png" style="width: 180px;" class="imgC"></dd> -->
                             <dd><span><i class="fas fa-bible"></i></span></dd>
