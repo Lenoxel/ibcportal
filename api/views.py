@@ -31,10 +31,10 @@ class PostViewSet(viewsets.ModelViewSet):
     two_weeks_before_period = datetime.today() - timedelta(days=14)
     
     queryset = Post.objects.filter(
-        Q(published_date__lte=datetime.now()),
-        Q(published_date__gte=two_weeks_before_period)
+        Q(published_date__gte=two_weeks_before_period),
+        Q(published_date__lte=datetime.now())
+       
     ).order_by('-published_date')
-    
     
     serializer_class = PostSerializer
 
