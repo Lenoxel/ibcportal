@@ -190,8 +190,16 @@ INDEX
     transition: all .2s ease-in-out;
 }
 
-#agenda .noticia:hover {
-    transform: scale(1.5);
+@media screen and (min-width:500px) {
+    #agenda .noticia:hover {
+        transform: scale(1.5);
+    }   
+}
+
+@media screen and (max-width:500px) {
+    #agenda .noticia:hover {
+        transform: scale(1.1);
+    }   
 }
 
 #agenda .noticia h2 {
