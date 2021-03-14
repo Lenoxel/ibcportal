@@ -7,6 +7,7 @@ from cloudinary.models import CloudinaryField
 from django.db.models.signals import pre_delete
 import cloudinary
 from django.dispatch import receiver
+from django.contrib.auth.models import User
 
 
 PAYMENT_OPTION_CHOICES = [
@@ -88,6 +89,7 @@ class Post(models.Model):
 class Member(models.Model):
     objects = models.Manager()
 
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE, null=True, default=None)
     name = models.CharField('Nome', max_length=100)
     nickname = models.CharField('Conhecido como', max_length=25)
     description = models.TextField('Descrição', max_length=300)

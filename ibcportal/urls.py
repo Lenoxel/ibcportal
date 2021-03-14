@@ -44,4 +44,5 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('paypal/', include('paypal.standard.ipn.urls')),
     path('devices/', device),
+    # path('accounts/', include("django.contrib.auth.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
