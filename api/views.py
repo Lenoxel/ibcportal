@@ -28,9 +28,12 @@ def token_request(request):
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
 class PostViewSet(viewsets.ModelViewSet):
-    one_month_before_period = datetime.today() - timedelta(days=30)
+    # one_month_before_period = datetime.today() - timedelta(days=30)
 
     datetime_now = datetime.now()
+
+    print('Horário de agora em PostViewSet')
+    print(datetime_now)
 
     queryset = Post.objects.filter(
         Q (
