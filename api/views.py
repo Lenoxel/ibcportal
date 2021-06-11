@@ -35,7 +35,7 @@ class PostViewSet(viewsets.ModelViewSet):
     datetime_now = datetime.now()
 
     sys.stdout.write('Horário de agora em PostViewSet')
-    sys.stdout.write(datetime_now)
+    sys.stdout.write(datetime_now.strftime('%m/%d/%Y, %H:%M:%S'))
 
     queryset = Post.objects.filter(
         Q (
