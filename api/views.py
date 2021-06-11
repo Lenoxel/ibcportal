@@ -17,6 +17,8 @@ from rest_framework.response import Response
 
 from core.auxiliar_functions import get_now_datetime_utc, get_today_datetime_utc
 
+import sys
+
 # Token validator and generator
 def token_request(request):
     try:
@@ -32,8 +34,8 @@ class PostViewSet(viewsets.ModelViewSet):
 
     datetime_now = datetime.now()
 
-    print('Horário de agora em PostViewSet')
-    print(datetime_now)
+    sys.stdout.write('Horário de agora em PostViewSet')
+    sys.stdout.write(datetime_now)
 
     queryset = Post.objects.filter(
         Q (
