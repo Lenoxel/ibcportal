@@ -32,19 +32,25 @@ class PostViewSet(viewsets.ModelViewSet):
 
     datetime_now = datetime.now()
     
-    queryset = Post.objects.filter(
-        Q (
-            Q(published_date__gte=two_weeks_before_period),
-            Q(published_date__lte=datetime_now)
-        )
-        |
-        Q (
-            Q(published_date__year=datetime_now.year),
-            Q(published_date__month=datetime_now.month),
-            Q(published_date__day=datetime_now.day),
-            Q(published_date__hour__lte=datetime_now.hour)
-        )
-    ).order_by('-published_date')
+    # queryset = Post.objects.filter(
+    #     Q (
+    #         Q(published_date__gte=two_weeks_before_period),
+    #         Q(published_date__lte=datetime_now)
+    #     )
+    #     |
+    #     Q (
+    #         Q(published_date__year=datetime_now.year),
+    #         Q(published_date__month=datetime_now.month),
+    #         Q(published_date__day=datetime_now.day),
+    #         Q(published_date__hour__lte=datetime_now.hour)
+    #     )
+    # ).order_by('-published_date')
+
+    queryset =  Post.objects.filter(
+        Q(published_date__lte=timezone.now()) 
+        | 
+        Q(published_date__isnull=True)
+    ).order_by('-published_date')[0:20]
     
     serializer_class = PostSerializer
 

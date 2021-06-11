@@ -21,26 +21,26 @@ from api.views import PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, Un
 from rest_framework import routers
 
 # Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
-router.register(r'posts', PostViewSet)
-router.register(r'members', MemberViewSet, basename='Member')
-router.register(r'birthdays', BirthdayCelebrationViewSet)
-router.register(r'unions', UnionCelebrationViewSet)
-router.register(r'videos', VideoViewSet)
-router.register(r'meetings', ScheduleViewSet)
-router.register(r'groups', GroupViewSet)
-router.register(r'congregations', CongregationViewSet)
-router.register(r'events', EventViewSet)
+api_router = routers.DefaultRouter()
+api_router.register(r'posts', PostViewSet)
+api_router.register(r'members', MemberViewSet, basename='Member')
+api_router.register(r'birthdays', BirthdayCelebrationViewSet)
+api_router.register(r'unions', UnionCelebrationViewSet)
+api_router.register(r'videos', VideoViewSet)
+api_router.register(r'meetings', ScheduleViewSet)
+api_router.register(r'groups', GroupViewSet)
+api_router.register(r'congregations', CongregationViewSet)
+api_router.register(r'events', EventViewSet)
 
 # url abaixa está depreciada, apenas mantendo-a por enquanto para não quebrar a chamada da última versão de teste do app
-router.register(r'celebrations', BirthdayCelebrationViewSet)
+api_router.register(r'celebrations', BirthdayCelebrationViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
     path('grupos/', include('groups.urls')),
     path('token/', token_request, name='token'),
-    path('api/', include(router.urls)),
+    path('api/', include(api_router.urls)),
     path('api-auth/', include('rest_framework.urls')),
     path('paypal/', include('paypal.standard.ipn.urls')),
     path('devices/', device),
