@@ -28,13 +28,13 @@ def token_request(request):
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
 class PostViewSet(viewsets.ModelViewSet):
-    two_weeks_before_period = datetime.today() - timedelta(days=14)
+    one_month_before_period = datetime.today() - timedelta(days=30)
 
     datetime_now = datetime.now()
 
     queryset = Post.objects.filter(
         Q (
-            Q(published_date__gte=two_weeks_before_period),
+            # Q(published_date__gte=two_weeks_before_period),
             Q(published_date__lte=datetime_now)
         )
     ).order_by('-published_date')
