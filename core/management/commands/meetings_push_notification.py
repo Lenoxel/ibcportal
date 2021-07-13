@@ -28,7 +28,7 @@ class Command(BaseCommand):
         if len(meetings) > 0:
             all_devices = NotificationDevice.objects.values_list('device_id', flat=True).distinct()
             all_devices = list(all_devices)
-            
+
             if len(all_devices) > 0:
                 push_service = FCMNotification(api_key=settings.FIREBASE_KEY)
 
@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 valid_registration_ids = push_service.clean_registration_ids(registration_ids)
 
                 if len(valid_registration_ids) > 0:
-                    local_tz = get_localzone() 
+                    local_tz = get_localzone()
 
                     message_title = 'Psiu, hoje tem culto visse'
                     if len(meetings) == 1:
@@ -45,9 +45,9 @@ class Command(BaseCommand):
                         if meetings[0][0] == 'geral':
                             if meetings[0][2] is not None:
                                 group = Group.objects.get(pk=meetings[0][2])
-                                message_body = 'E pode ir se organizando, porque hoje vai ter programação - ' + group.name + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.' 
+                                message_body = 'E pode ir se organizando, porque hoje vai ter programação - ' + group.name + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
                             else:
-                                message_body = 'E pode ir se organizando, porque hoje vai ter programação ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.' 
+                                message_body = 'E pode ir se organizando, porque hoje vai ter programação ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
                         else:
                             message_body = 'E pode ir se organizando, porque hoje vai ter ' + meeting_types.get(meetings[0][0]) + ' às ' + locale_meeting_hour.strftime('%H:%M') + '.'
                     else:

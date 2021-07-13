@@ -5,9 +5,10 @@ from core.models import Post, Video, Schedule, Member, Event, MembersUnion, Noti
 from groups.models import Group
 from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import datetime, timedelta
-from calendar import monthrange
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils import timezone
+import pytz
+# from calendar import monthrange
+# from django.core.exceptions import ObjectDoesNotExist
+# from django.utils import timezone
 
 from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
@@ -32,10 +33,7 @@ def token_request(request):
 class PostViewSet(viewsets.ModelViewSet):
     # one_month_before_period = datetime.today() - timedelta(days=30)
 
-    datetime_now = datetime.now()
-
-    sys.stdout.write('Horário de agora em PostViewSet')
-    sys.stdout.write(datetime_now.strftime('%m/%d/%Y, %H:%M:%S'))
+    datetime_now = datetime.now(pytz.timezone('America/Recife'))
 
     queryset = Post.objects.filter(
         Q (
@@ -43,7 +41,7 @@ class PostViewSet(viewsets.ModelViewSet):
             Q(published_date__lte=datetime_now)
         )
     ).order_by('-published_date')
-    
+
     # queryset = Post.objects.filter(
     #     Q (
     #         Q(published_date__gte=two_weeks_before_period),
@@ -75,7 +73,7 @@ class BirthdayCelebrationViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.filter(
         Q(date_of_birth__month=get_now_datetime_utc().month)
     )
-    
+
     serializer_class = BirthdayComemorationSerializer
 
 class UnionCelebrationViewSet(viewsets.ModelViewSet):
@@ -93,7 +91,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     one_week_after_period = get_today_datetime_utc() + timedelta(days=7)
     one_week_before_period = get_today_datetime_utc() - timedelta(days=7)
     queryset = Schedule.objects.filter(
-        Q(start_date__gte=one_week_before_period), 
+        Q(start_date__gte=one_week_before_period),
         Q(start_date__lte=one_week_after_period)
     ).order_by('-start_date')
     serializer_class = ScheduleSerializer
@@ -116,14 +114,14 @@ class EventViewSet(viewsets.ModelViewSet):
             Q(start_date__month=datetime_now.month),
             Q(start_date__year=datetime_now.year),
         )
-        | 
+        |
         Q(
-            Q(start_date__lte=datetime_now), 
+            Q(start_date__lte=datetime_now),
             Q(end_date__gte=datetime_now)
         )
         |
         Q(
-            Q(start_date__gte=datetime_now), 
+            Q(start_date__gte=datetime_now),
             Q(start_date__lte=three_months_period)
         )
     ).order_by('start_date')
@@ -140,7 +138,7 @@ def device(request, format=None):
         new_device_id = request.data.get('device_id')
         possible_registered_device = NotificationDevice.objects.filter(device_id=new_device_id).values_list('device_id', flat=True).distinct()
         possible_registered_device = list(possible_registered_device)
-        
+
         if len(possible_registered_device) == 0:
             serializer = NotificationDeviceSerializer(data=request.data)
             if serializer.is_valid():
