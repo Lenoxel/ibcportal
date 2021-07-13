@@ -33,7 +33,7 @@ def token_request(request):
 class PostViewSet(viewsets.ModelViewSet):
     # one_month_before_period = datetime.today() - timedelta(days=30)
 
-    datetime_now = datetime.now(pytz.timezone('America/Recife'))
+    datetime_now = datetime.now(pytz.timezone('America/Recife')) + timedelta(minutes=8)
 
     queryset = Post.objects.filter(
         Q (
