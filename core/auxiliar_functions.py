@@ -15,7 +15,7 @@ meeting_types = {
     'ceia': 'Ceia do Senhor',
     'casa': 'Cultuando em casa',
     'infantil': 'Culto Infantil',
-    'oracao': 'Ciclo de Oração',
+    'oracao': 'Círculo de Oração',
     'domestico': 'Culto doméstico',
     'consagracao': 'Consagração',
     'geral': 'Geral'

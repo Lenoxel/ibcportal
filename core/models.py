@@ -40,7 +40,7 @@ MEETING_CATEGORY_OPTIONS = [
     ('ceia', 'Ceia do Senhor'),
     ('casa', 'Cultuando em casa'),
     ('infantil', 'Culto Infantil'),
-    ('oracao', 'Ciclo de Oração'),
+    ('oracao', 'Círculo de Oração'),
     ('domestico', 'Culto doméstico'),
     ('consagracao', 'Consagração'),
     ('geral', 'Geral')
@@ -58,7 +58,7 @@ ACTION_TYPES = [
     ('create', 'create')
 ]
 
-class MeetingTypeEnum(Enum): 
+class MeetingTypeEnum(Enum):
     PRESENCIAL = "Presencial"
     ONLINE = "Online"
     HIBRIDO = "Online e Presencial"
