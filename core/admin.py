@@ -8,8 +8,8 @@ class PostFileInline(admin.TabularInline):
     extra = 1
 
 class PostAdmin(admin.ModelAdmin):
-    inlines = [ 
-        PostFileInline 
+    inlines = [
+        PostFileInline
     ]
 
     readonly_fields = ('manager', 'views_count', 'claps_count', 'dislike_count')
@@ -119,10 +119,16 @@ class ScheduleAdmin(admin.ModelAdmin):
             return PermissionDenied
 
 class AuditAdmin(admin.ModelAdmin):
-    readonly_fields = ('responsible', 'changed_model', 'action_type', 'description', 'obj_name',)  
+    readonly_fields = ('responsible', 'changed_model', 'action_type', 'description', 'obj_name',)
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
+
+    # def has_add_permission(self, request, obj=None):
+    #     return False
+
+    # def has_change_permission(self, request, obj=None):
+    #     return False
 
 class DonateAdmin(admin.ModelAdmin):
     readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')

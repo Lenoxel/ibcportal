@@ -161,7 +161,7 @@ class Video(models.Model):
     youtube_video_code = models.CharField('Código do Youtube', max_length=150, null=True)
 
     registering_date = models.DateTimeField('Cadastrado em', auto_now_add=True)
-    
+
     class Meta:
         verbose_name = 'Vídeo'
         verbose_name_plural = 'Vídeos'
@@ -230,7 +230,7 @@ class Church(models.Model):
 
 class Event(models.Model):
     objects = models.Manager()
-    
+
     title = models.CharField('Evento', max_length=100)
     start_date = models.DateTimeField('Início')
     end_date = models.DateTimeField('Término')
@@ -331,7 +331,7 @@ class Donate(models.Model):
 
     def pagseguro(self):
         pg = PagSeguro(
-            email=settings.PAGSEGURO_EMAIL, 
+            email=settings.PAGSEGURO_EMAIL,
             token=settings.PAGSEGURO_TOKEN,
             config={'sandbox': settings.PAGSEGURO_SANDBOX}
         )
@@ -340,22 +340,22 @@ class Donate(models.Model):
             'name': self.donor_name,
             'email': self.donor_email
         }
-        
+
         pg.reference_prefix = None
         pg.shipping = None
         pg.reference = self.pk
 
         pg.items.append(
             {
-                "id": self.pk, 
-                "description": format_string(DONATE_TYPE_CHOICES, self.donate_type), 
-                "amount": '%.2f' % self.amount, 
+                "id": self.pk,
+                "description": format_string(DONATE_TYPE_CHOICES, self.donate_type),
+                "amount": '%.2f' % self.amount,
                 "quantity": 1
             },
         )
 
         return pg
-    
+
     def paypal(self):
         paypal_dict = {
             'upload': '1',
@@ -372,7 +372,7 @@ class Donate(models.Model):
             # "cancel_return": request.build_absolute_uri(reverse('your-cancel-view')),
             # "custom": "premium_plan"
         }
-        
+
         return paypal_dict
 
 class NotificationDevice(models.Model):
