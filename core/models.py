@@ -89,7 +89,7 @@ class Post(models.Model):
 class Member(models.Model):
     objects = models.Manager()
 
-    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE, null=True, default=None)
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE, null=True, blank=True, default=None)
     name = models.CharField('Nome', max_length=100)
     nickname = models.CharField('Conhecido como', max_length=25)
     description = models.TextField('Descrição', max_length=300)

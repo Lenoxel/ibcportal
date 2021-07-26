@@ -58,11 +58,11 @@ def create_push_notification(entity_type, form, entity_id):
             result = None
 
             # getting current timezone by OS user timezone
-            # local_tz = get_localzone() 
+            # local_tz = get_localzone()
 
             if entity_type == 'video':
                 message_title = 'Vídeo novo postado!'
-                message_body = 'Um vídeo acabou de ser postado: "' + title + '".' 
+                message_body = 'Um vídeo acabou de ser postado: "' + title + '".'
                 data_message = {
                     "entity_type" : entity_type,
                     "entity_id" : entity_id,
@@ -132,13 +132,13 @@ def create_push_notification(entity_type, form, entity_id):
                             message_body = 'Fique ligado, pois hoje teremos Programação - ' + form.cleaned_data['organizing_group'].name + ' às ' +  start_date.strftime('%H:%M') + '.'
                         else:
                             message_body = 'Fique ligado, pois hoje teremos Programação Geral às' +  start_date.strftime('%H:%M') + '.'
-                    
+
                     data_message = {
                         "entity_type" : entity_type,
                         "entity_id" : entity_id,
                         "redirect" : True
                     }
-                    
+
                     push_date = now
                     result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
 
