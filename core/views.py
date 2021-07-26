@@ -18,7 +18,7 @@ from . import auxiliar_functions
 
 def home(request):
     posts = Post.objects.filter(Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)).order_by('-published_date')[0:4]
-    
+
     videos = Video.objects.order_by('-registering_date')[0:3]
 
     one_week_after_period = datetime.today() + timedelta(days=7)

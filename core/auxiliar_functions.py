@@ -78,7 +78,7 @@ def create_push_notification(entity_type, form, entity_id):
 
                 # locale_start_date = start_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
                 # locale_end_date = end_date.replace(tzinfo=pytz.utc).astimezone(local_tz)
-                
+
                 if start_date.day == datetime.now().astimezone(get_localzone()).day and end_date > datetime.now().astimezone(get_localzone()):
                     if start_date > now:
                         message_title = 'Tem evento logo mais!'
@@ -105,9 +105,9 @@ def create_push_notification(entity_type, form, entity_id):
                 if published_date is None or (published_date is not None and published_date <= datetime.now().astimezone(get_localzone())):
                     message_title = 'Postagem nova no app!'
                     if form.cleaned_data['publisher'].nickname is not None:
-                        message_body = form.cleaned_data['publisher'].nickname + ' acabou de fazer uma postagem: "' + title + '". Confere lá!' 
+                        message_body = form.cleaned_data['publisher'].nickname + ' acabou de fazer uma postagem: "' + title + '". Confere lá!'
                     else:
-                        message_body = form.cleaned_data['publisher'].name + ' acabou de fazer uma postagem: "' + title + '". Confere lá!' 
+                        message_body = form.cleaned_data['publisher'].name + ' acabou de fazer uma postagem: "' + title + '". Confere lá!'
                     data_message = {
                         "entity_type" : entity_type,
                         "entity_id" : entity_id,
@@ -116,7 +116,7 @@ def create_push_notification(entity_type, form, entity_id):
 
                     push_date = now
                     result = push_service.notify_multiple_devices(registration_ids=valid_registration_ids, message_title=message_title, message_body=message_body, data_message=data_message)
-                
+
             elif entity_type == 'meeting':
                 now = timezone.now()
                 start_date = form.cleaned_data['start_date']

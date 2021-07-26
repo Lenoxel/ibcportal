@@ -26,18 +26,19 @@ def token_request(request):
         new_token = Token.objects.get_or_create(user=request.user)
         return JsonResponse({'token': new_token[0].key}, status=status.HTTP_200_OK)
     except Exception as message:
-        return JsonResponse({'messagem': 'você não tem permissão.'}, status=status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({'mensagem': 'você não tem permissão.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
 class PostViewSet(viewsets.ModelViewSet):
     # one_month_before_period = datetime.today() - timedelta(days=30)
+    two_weeks_before_period = datetime.today() - timedelta(days=14)
 
     datetime_now = datetime.now(pytz.timezone('America/Recife')) + timedelta(minutes=8)
 
     queryset = Post.objects.filter(
         Q (
-            # Q(published_date__gte=two_weeks_before_period),
+            Q(published_date__gte=two_weeks_before_period),
             Q(published_date__lte=datetime_now)
         )
     ).order_by('-published_date')

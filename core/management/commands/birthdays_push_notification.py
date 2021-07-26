@@ -18,7 +18,6 @@ class Command(BaseCommand):
             birthdays = list(birthdays)
         except Exception:
             raise CommandError('There are no birthdays today :(')
-            return
 
         if len(birthdays) > 0:
             all_devices = NotificationDevice.objects.values_list('device_id', flat=True).distinct()

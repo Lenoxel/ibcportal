@@ -111,25 +111,25 @@ class GroupSerializer(serializers.ModelSerializer):
     def get_general_category_icon(self, obj):
         if obj.general_category and obj.general_category.icon:
             return obj.general_category.icon.url
-        else: 
+        else:
             return None
 
     def get_leader_picture(self, obj):
         if obj.leader and obj.leader.picture:
             return obj.leader.picture.url
-        else: 
+        else:
             return None
-    
+
     def get_vice_leader_picture(self, obj):
         if obj.vice_leader and obj.vice_leader.picture:
             return obj.vice_leader.picture.url
-        else: 
+        else:
             return None
 
     def get_third_leader_picture(self, obj):
         if obj.third_leader and obj.third_leader.picture:
             return obj.third_leader.picture.url
-        else: 
+        else:
             return None
 
     class Meta:
@@ -153,21 +153,21 @@ class CongregationSerializer(serializers.ModelSerializer):
     def get_responsible_picture(self, obj):
         if obj.responsible and obj.responsible.picture:
             return obj.responsible.picture.url
-        else: 
+        else:
             return None
 
     def get_info(self, obj):
         if obj.description:
             return obj.description
-        else: 
+        else:
             return None
 
     def get_general_category_icon(self, obj):
         if obj.general_category and obj.general_category.icon:
             return obj.general_category.icon.url
-        else: 
+        else:
             return None
-    
+
     class Meta:
         model = Church
         fields = ('id', 'name', 'description', 'info', 'background_image', 'responsible', 'responsible_picture', 'is_congregation', 'general_category', 'general_category_icon')
