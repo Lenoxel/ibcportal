@@ -42,6 +42,7 @@ MEETING_CATEGORY_OPTIONS = [
     ('infantil', 'Culto Infantil'),
     ('oracao', 'Ciclo de Oração'),
     ('domestico', 'Culto doméstico'),
+    ('consagracao', 'Consagração'),
     ('geral', 'Geral')
 ]
 

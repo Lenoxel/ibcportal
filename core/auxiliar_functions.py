@@ -17,6 +17,7 @@ meeting_types = {
     'infantil': 'Culto Infantil',
     'oracao': 'Ciclo de Oração',
     'domestico': 'Culto doméstico',
+    'consagracao': 'Consagração',
     'geral': 'Geral'
 }
 
