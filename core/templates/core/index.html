@@ -4,7 +4,7 @@
 
 <html>
     <head>
-        <meta charset="utf-8">        
+        <meta charset="utf-8">
         <title>IBC Portal</title>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" >
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,17 +18,19 @@
         <meta property="og:description" content="Visite o Portal de conteúdo e informações da IBCC2.">
         <meta property="og:image" content="https://i.imgur.com/th39ITk.jpg">
         <meta property="og:url" content="https://ibcportal.herokuapp.com">
-		
+
+        <meta name="google-site-verification" content="w13ALbsLIkQpilBOslev1a8m8qYvmg3vrKVB1QeRZ5M" />
+
         <script src="{% static 'js/jquery.3.4.1.js'%}"></script>
 		<link rel="stylesheet" href="{% static 'css/smartmenu-css.css'%}">
 		<script src="{% static 'js/smartmenus.min.js'%}"></script>
-		
+
         <link rel="stylesheet" href="{% static 'css/all.css'%}">
         <link rel="stylesheet" href="{% static 'css/fontawesome.css'%}">
         <script src="https://kit.fontawesome.com/fa27a66148.js" crossorigin="anonymous"></script>
-        <link href="https://fonts.googleapis.com/css?family=Lato|Quicksand:400,700&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css?family=Lato|Quicksand:400,700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="{% static 'css/style.css'%}">
-        
+
         <script type="text/javascript">
             $(function() {
                 var window_width = $(window).width();
@@ -38,18 +40,18 @@
                     markCurrentItem: true,
                     markCurrentTree: true,
                     hideDuration: 100,
-        			subMenusSubOffsetY: 10            
-                });       
+        			subMenusSubOffsetY: 10
+                });
             });
         </script>
-	        
+
         <script src="{% static 'js/main.js'%}"></script>
         <link rel="stylesheet" href="{% static 'css/swiper.min.css'%}">
         <script src="{% static 'js/swiper.min.js'%}"></script>
         <link rel="stylesheet" href="{% static 'css/home.css'%}">
         <script src="{% static 'js/home.js'%}"></script>
-    </head>    
-    
+    </head>
+
     <body>
         <header>
             <section>
@@ -57,14 +59,14 @@
                 <!-- <hgroup>
                     <h1>Igreja Batista Central | Curado II</h1>
                 </hgroup> -->
-                
+
                 <div id="header-social-links">
                     <a href="https://www.facebook.com/ibccurado2oficial" target="_blank">
                         <i class="fab fa-facebook"></i>
                     </a>
                     <a href="https://instagram.com/ibccurado2" target="_blank">
                         <i class="fab fa-instagram"></i>
-                    </a> 
+                    </a>
                     <a href="https://www.youtube.com/channel/UC-hzq9E2dNoxj29qpSgyfuw" target="_blank" class="header-social-link">
                         <i class="fab fa-youtube-square"></i>
                     </a>
@@ -78,11 +80,11 @@
             <div class="menu_bar">
                 <section>
                     <nav id="main-nav" class="hmenu01">	<input id="main-menu-state" type="checkbox" />
-                        
+
                         <label class="main-menu-btn" for="main-menu-state">
                             <span class="main-menu-btn-icon"></span>
                         </label>
-                        
+
                         <ul id="main-menu" class="sm">
                             <li><a href="{% url 'home' %}#sobre">A Igreja</a></li>
                             <li><a href="{% url 'home' %}#agenda">Agenda da semana</a></li>
@@ -137,7 +139,7 @@
                         </a>
                         <a href="https://instagram.com/ibccurado2" target="_blank">
                             <i class="fab fa-instagram"></i>
-                        </a> 
+                        </a>
                         <a href="https://www.youtube.com/channel/UC-hzq9E2dNoxj29qpSgyfuw" target="_blank" class="header-social-link">
                             <i class="fab fa-youtube-square"></i>
                         </a>
@@ -150,7 +152,7 @@
                     <h1>Como chegar</h1>
                     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.2419918784244!2d-35.00378858522009!3d-8.076783994184845!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ab1c8ebd656aaf%3A0x8c512dda5c846965!2sIgreja%20Batista%20Central!5e0!3m2!1spt-BR!2sbr!4v1587324272308!5m2!1spt-BR!2sbr" width="100%" height="150" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                 </div>
-                
+
             </section>
             <div class="wrap_admin">
                 <p>Desenvolvido por <a>Called</a> e <a>Lenon</a></p>
@@ -158,7 +160,7 @@
         </footer>
 
         <div id="scrollToTop" ><i class="fas fa-chevron-circle-up"></i></div>
-            
+
         <script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
