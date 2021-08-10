@@ -92,7 +92,6 @@ class Member(models.Model):
 
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE, null=True, blank=True, default=None)
     name = models.CharField('Nome', max_length=100)
-    email = models.EmailField('Email', null=True, blank=True)
     nickname = models.CharField('Conhecido como', max_length=25)
     description = models.TextField('Descrição', null=True, blank=True, max_length=300)
     address = models.CharField('Endereço', null=True, blank=True, max_length=100)
