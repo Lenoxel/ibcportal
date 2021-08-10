@@ -12,17 +12,17 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='group',
             name='another_leader',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='another_group_leader', to='core.Member', verbose_name='Outro líder'),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='group',
             name='another_vice_leader',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='another_vice_leader', to='core.Member', verbose_name='Outro vice-líder'),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='groupmeetingdate',
             name='title',
             field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Tipo do encontro'),
