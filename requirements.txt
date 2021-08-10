@@ -1,4 +1,4 @@
-apturl==0.5.2
+# apturl==0.5.2
 arrow==0.15.5
 asgiref==3.2.7
 bcrypt==3.1.7
