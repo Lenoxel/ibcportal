@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='member',
             name='email',
             field=models.EmailField(blank=True, max_length=254, null=True, verbose_name='Email'),
