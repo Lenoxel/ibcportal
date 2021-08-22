@@ -12,12 +12,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.AddField(
             model_name='group',
             name='another_leader',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='another_group_leader', to='core.Member', verbose_name='Outro líder'),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='group',
             name='another_vice_leader',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='another_vice_leader', to='core.Member', verbose_name='Outro vice-líder'),
