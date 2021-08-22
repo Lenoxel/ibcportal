@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
             name='another_vice_leader',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='another_vice_leader', to='core.Member', verbose_name='Outro vice-líder'),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='groupmeetingdate',
             name='title',
             field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Tipo do encontro'),
