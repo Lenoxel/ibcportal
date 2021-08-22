@@ -6,4 +6,4 @@ def groups(request):
     context = {
         'groups': groups
     }
-    return render(request, 'groups/groups.html', context) 
+    return render(request, 'groups/groups.html', context)

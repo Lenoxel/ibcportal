@@ -34,7 +34,8 @@ class PostViewSet(viewsets.ModelViewSet):
     # one_month_before_period = datetime.today() - timedelta(days=30)
     # two_weeks_before_period = datetime.today() - timedelta(days=14)
 
-    datetime_now = datetime.now(pytz.timezone('America/Recife')) + timedelta(minutes=8)
+    # datetime_now = datetime.now(pytz.timezone('America/Recife')) + timedelta(minutes=8)
+    datetime_now = get_now_datetime_utc()
 
     queryset = Post.objects.filter(
         Q (

@@ -31,7 +31,7 @@ def home(request):
                 Q(end_date__gte=timezone.now())
             )
         ), Q(start_date__lte=one_week_after_period)
-       
+
     ).order_by('start_date')
 
     for meeting in meetings:
