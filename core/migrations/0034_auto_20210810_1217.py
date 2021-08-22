@@ -13,26 +13,26 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # migrations.AlterField(
-        #     model_name='member',
-        #     name='email',
-        #     field=models.EmailField(blank=True, max_length=254, null=True, verbose_name='Email'),
-        # ),
-        # migrations.AddField(
-        #     model_name='member',
-        #     name='facebook',
-        #     field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Facebook'),
-        # ),
-        # migrations.AddField(
-        #     model_name='member',
-        #     name='instagram',
-        #     field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Instagram'),
-        # ),
-        # migrations.AddField(
-        #     model_name='member',
-        #     name='whatsapp',
-        #     field=models.CharField(blank=True, max_length=100, null=True, verbose_name='WhatsApp'),
-        # ),
+        migrations.AddField(
+            model_name='member',
+            name='email',
+            field=models.EmailField(blank=True, max_length=254, null=True, verbose_name='Email'),
+        ),
+        migrations.AddField(
+            model_name='member',
+            name='facebook',
+            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Facebook'),
+        ),
+        migrations.AddField(
+            model_name='member',
+            name='instagram',
+            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Instagram'),
+        ),
+        migrations.AddField(
+            model_name='member',
+            name='whatsapp',
+            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='WhatsApp'),
+        ),
         migrations.AlterField(
             model_name='member',
             name='address',
