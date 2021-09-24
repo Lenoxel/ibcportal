@@ -36,6 +36,7 @@ api_router.register(r'events', EventViewSet)
 api_router.register(r'celebrations', BirthdayCelebrationViewSet)
 
 urlpatterns = [
+    path('jet/', include('jet.urls', 'jet')),
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
     path('grupos/', include('groups.urls')),
