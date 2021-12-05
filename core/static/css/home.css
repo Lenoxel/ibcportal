@@ -3,7 +3,6 @@ INDEX
     - SWIPER
     - MISSION
     - NEWS & EVENTS
-    - ADMISSIONS
 */
 
 /*-----------------------------------------------------------  SWIPER --------------------------*/
@@ -429,27 +428,6 @@ p.statement {
 #news-rotator01 .swiper-pagination { margin-top: 10px; position: static; }
 
 #news-rotator01 .swiper-pagination .swiper-pagination-bullet { background-color: var(--gray3); }
-
-
-/*-----------------------------------------------------------  ADMISSIONS ----------------------*/
-
-@media screen and (max-width: 1179px) {
-    #admissions .flex .fx_2 { width: 100%; }
-}
-
-#admissions {
-    background: url(../images/bg_OLOL.jpeg);
-    padding: 25px 0;
-}
-
-#admissions .content { background-color: inherit; }
-
-#admissions h1 {
-    text-transform: uppercase;
-    font-size: 37px;
-    text-align: center;
-    padding-bottom: 15px;
-}
 
 .hm_actions { margin-top: 40px; }
 
