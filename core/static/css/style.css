@@ -383,19 +383,6 @@ footer p {
 
 #ft_schedule { font-size: 12px; }
 
-footer a.facts {
-	background: url("../images/facts.png") no-repeat 1px 1px;
-	display: inline-block;
-	width: 58px;
-	height: 19px;
-	background-size: cover;
-	position: relative;
-	top: 4px;
-	left: 7px;
-}
-
-footer a.facts:hover { background-position-y: -21px; }
-
 footer a { color: var(--color2000); }
 footer a:hover { color: var(--color5000); }
 
