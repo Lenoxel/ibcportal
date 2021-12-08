@@ -6,8 +6,8 @@ class GroupMeetingDateInline(admin.TabularInline):
     extra = 1
 
 class GroupAdmin(admin.ModelAdmin):
-    inlines = [ 
-        GroupMeetingDateInline 
+    inlines = [
+        GroupMeetingDateInline
     ]
 
 admin.site.register(Group, GroupAdmin)

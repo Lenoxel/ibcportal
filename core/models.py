@@ -52,10 +52,29 @@ MEMBERS_UNION_OPTIONS = [
     ('casamento', 'Casamento'),
 ]
 
+CHURCH_RELATION_OPTIONS = [
+    ('membro', 'Membro'),
+    ('congregado', 'Congregado'),
+]
+
+EBD_RELATION_OPTIONS = [
+    ('aluno', 'Aluno'),
+    ('visitante', 'Visitante'),
+]
+
 ACTION_TYPES = [
     ('delete', 'delete'),
     ('update', 'update'),
     ('create', 'create')
+]
+
+CHURCH_FUNCTION_OPTIONS = [
+    ('lider_de_departamento', 'Líder de Departamento'),
+    ('pastor_principal', 'Pastor Principal'),
+    ('pastor_auxiliar', 'Pastor Auxiliar'),
+    ('professor_de_ebd', 'Professor de EBD'),
+    ('superintendente', 'Superintendente'),
+    ('membro', 'Membro')
 ]
 
 class MeetingTypeEnum(Enum):
@@ -94,12 +113,20 @@ class Member(models.Model):
     name = models.CharField('Nome', max_length=100)
     nickname = models.CharField('Conhecido como', max_length=25)
     description = models.TextField('Descrição', null=True, blank=True, max_length=300)
-    address = models.CharField('Endereço', null=True, blank=True, max_length=100)
+    address = models.CharField('Endereço', null=True, blank=True, max_length=150)
+    district = models.CharField('Bairro', null=True, blank=True, max_length=50)
+    city = models.CharField('Cidade', null=True, blank=True, max_length=50)
+    state = models.CharField('Estado', null=True, blank=True, max_length=50)
+    cep = models.CharField('CEP', null=True, blank=True, max_length=10)
+    marital_status = models.CharField('Estado civil', null=True, blank=True, max_length=30)
+    educational_level = models.CharField('Grau de escolaridade', null=True, blank=True, max_length=30)
     whatsapp = models.CharField('WhatsApp', null=True, blank=True, max_length=100)
     facebook = models.CharField('Facebook', null=True, blank=True, max_length=100)
     instagram = models.CharField('Instagram', null=True, blank=True, max_length=100)
-    church_function = models.CharField('Função na Igreja', max_length=40)
+    church_function = models.CharField('Função na Igreja', max_length=50)
     date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
+    church_relation = models.CharField('Relação com a Igreja', choices=CHURCH_RELATION_OPTIONS, max_length=20, null=True, blank=True)
+    ebd_relation = models.CharField('Relação com a EBD', choices=EBD_RELATION_OPTIONS, max_length=20, null=True, blank=True)
     picture = CloudinaryField('Foto')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)

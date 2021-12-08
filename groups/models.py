@@ -30,6 +30,7 @@ class GeneralCategory(models.Model):
 
     def __str__(self):
         return self.name
+
 class Group(models.Model):
     objects = models.Manager()
 
