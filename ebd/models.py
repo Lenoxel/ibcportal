@@ -9,7 +9,7 @@ class EBDClass(models.Model):
     objects = models.Manager()
 
     name = models.CharField('Nome', max_length=50)
-    description = models.CharField('Descrição', max_length=200)
+    description = models.CharField('Descrição', max_length=200, null=True, blank=True)
     background_image = CloudinaryField('Imagem da turma', null=True, blank=True)
     church = models.ForeignKey(Church, verbose_name='Igreja', null=True, blank=True, on_delete=models.SET_NULL)
     students = models.ManyToManyField(Member, 'Aluno')
