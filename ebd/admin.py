@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import EBDClass, EBDClassLesson
 
-# Register your models here.
+admin.site.register(EBDClass)
+admin.site.register(EBDClassLesson)
