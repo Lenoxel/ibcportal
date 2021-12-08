@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # project apps
     'core',
     'groups',
+    'ebd',
 ]
 
 cloudinary.config(
