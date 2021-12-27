@@ -86,6 +86,16 @@ MARITAL_STATUS_OPTIONS = [
     ('viuvo', 'Viúvo (a)'),
 ]
 
+EDUCATIONAL_LEVEL_OPTIONS = [
+    ('educacao_infantil', 'Educação infantil'),
+    ('ensino_fundamental', 'Ensino fundamental'),
+    ('ensino_medio', 'Ensino médio'),
+    ('ensino_superior', 'Ensino superior'),
+    ('pos_graduacao', 'Pós-graduação'),
+    ('mestrado', 'Mestrado'),
+    ('doutorado', 'Doutorado'),
+]
+
 class MeetingTypeEnum(Enum):
     PRESENCIAL = "Presencial"
     ONLINE = "Online"
@@ -130,7 +140,7 @@ class Member(models.Model):
     date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
     marital_status = models.CharField('Estado civil', choices=
 MARITAL_STATUS_OPTIONS, null=True, blank=True, max_length=30)
-    educational_level = models.CharField('Grau de escolaridade', null=True, blank=True, max_length=30)
+    educational_level = models.CharField('Grau de escolaridade', choices=EDUCATIONAL_LEVEL_OPTIONS, null=True, blank=True, max_length=50)
     job_title = models.CharField('Profissão', null=True, blank=True, max_length=50)
     church_function = models.CharField('Função na Igreja',choices=
 CHURCH_FUNCTION_OPTIONS, null=True, blank=True, max_length=50)
