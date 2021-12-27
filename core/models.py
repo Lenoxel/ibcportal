@@ -181,7 +181,7 @@ class MembersUnion(models.Model):
     man = models.OneToOneField('core.Member', verbose_name='Homem', related_name='man', on_delete=models.CASCADE)
     woman = models.OneToOneField('core.Member', verbose_name='Mulher', related_name='woman', on_delete=models.CASCADE)
     union_type = models.CharField('Tipo da união', choices=MEMBERS_UNION_OPTIONS, max_length=20)
-    union_date = models.DateTimeField('Data da união')
+    union_date = models.DateField('Data da união')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
