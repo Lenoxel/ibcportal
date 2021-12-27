@@ -69,12 +69,21 @@ ACTION_TYPES = [
 ]
 
 CHURCH_FUNCTION_OPTIONS = [
-    ('lider_de_departamento', 'Líder de Departamento'),
+    ('lider_de_departamento', 'Líder de Grupo ou Departamento'),
+    ('lideranca_de_departamento', 'Liderança de Grupo ou Departamento'),
     ('pastor_principal', 'Pastor Principal'),
     ('pastor_auxiliar', 'Pastor Auxiliar'),
     ('professor_de_ebd', 'Professor de EBD'),
+    ('secretario_de_ebd', 'Secretário de sala de EBD'),
     ('superintendente', 'Superintendente'),
     ('membro', 'Membro')
+]
+
+MARITAL_STATUS_OPTIONS = [
+    ('solteiro', 'Solteiro (a)'),
+    ('casado', 'Casado (a)'),
+    ('divorciado', 'Divorciado (a)'),
+    ('viuvo', 'Viúvo (a)'),
 ]
 
 class MeetingTypeEnum(Enum):
@@ -113,21 +122,31 @@ class Member(models.Model):
     name = models.CharField('Nome', max_length=100)
     nickname = models.CharField('Conhecido como', max_length=25)
     description = models.TextField('Descrição', null=True, blank=True, max_length=300)
-    address = models.CharField('Endereço', null=True, blank=True, max_length=150)
+    address = models.CharField('Endereço', null=True, blank=True, max_length=250)
     district = models.CharField('Bairro', null=True, blank=True, max_length=50)
     city = models.CharField('Cidade', null=True, blank=True, max_length=50)
     state = models.CharField('Estado', null=True, blank=True, max_length=50)
     cep = models.CharField('CEP', null=True, blank=True, max_length=10)
-    marital_status = models.CharField('Estado civil', null=True, blank=True, max_length=30)
+    date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
+    marital_status = models.CharField('Estado civil', choices=
+MARITAL_STATUS_OPTIONS, null=True, blank=True, max_length=30)
     educational_level = models.CharField('Grau de escolaridade', null=True, blank=True, max_length=30)
+    job_title = models.CharField('Profissão', null=True, blank=True, max_length=50)
+    church_function = models.CharField('Função na Igreja',choices=
+CHURCH_FUNCTION_OPTIONS, null=True, blank=True, max_length=50)
+    conversion_date = models.DateField('Data de conversão', null=True, blank=True)
+    baptism_date = models.DateField('Data de batismo', null=True, blank=True)
+    church_relation = models.CharField('Relação com a Igreja', choices=CHURCH_RELATION_OPTIONS, max_length=20, null=True, blank=True)
+    ebd_relation = models.CharField('Relação com a EBD', choices=EBD_RELATION_OPTIONS, max_length=20, null=True, blank=True)
+    have_a_job = models.BooleanField('Trabalha atualmente', default=True)
+    is_retired = models.BooleanField('É aposentado', default=False)
+    work_on_sundays = models.BooleanField('Trabalha aos domingos', default=False)
+    children = models.PositiveIntegerField('Tem quantos filhos', default=0)
     whatsapp = models.CharField('WhatsApp', null=True, blank=True, max_length=100)
     facebook = models.CharField('Facebook', null=True, blank=True, max_length=100)
     instagram = models.CharField('Instagram', null=True, blank=True, max_length=100)
-    church_function = models.CharField('Função na Igreja', max_length=50)
-    date_of_birth = models.DateField('Data de nascimento', null=True, blank=True)
-    church_relation = models.CharField('Relação com a Igreja', choices=CHURCH_RELATION_OPTIONS, max_length=20, null=True, blank=True)
-    ebd_relation = models.CharField('Relação com a EBD', choices=EBD_RELATION_OPTIONS, max_length=20, null=True, blank=True)
     picture = CloudinaryField('Foto')
+    registration_date = models.DateField('Data do cadastro', null=True, blank=True, default=timezone.now)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
@@ -157,8 +176,8 @@ class MembersUnion(models.Model):
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
     class Meta:
-        verbose_name = 'União'
-        verbose_name_plural = 'Uniões'
+        verbose_name = 'Relacionamento'
+        verbose_name_plural = 'Relacionamentos'
         ordering = ['-union_date']
 
     def __str__(self):

@@ -137,7 +137,7 @@ class NotificationDeviceAdmin(admin.ModelAdmin):
     readonly_fields = ('device_id', 'registration_type',)
 
 class PushNotificationAdmin(admin.ModelAdmin):
-     readonly_fields = ('title', 'body', 'multicast_id', 'success_count', 'failure_count', 'push_date',)
+    readonly_fields = ('title', 'body', 'multicast_id', 'success_count', 'failure_count', 'push_date',)
 
 
 admin.site.register(Post, PostAdmin)
