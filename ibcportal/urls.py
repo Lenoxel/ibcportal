@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from api.views import PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, token_request, device, CongregationViewSet
 from rest_framework import routers
+from rest_framework.authtoken import views
 
 # Routers provide an easy way of automatically determining the URL conf.
 api_router = routers.DefaultRouter()
@@ -41,9 +42,10 @@ urlpatterns = [
     path('', include('core.urls')),
     path('grupos/', include('groups.urls')),
     path('token/', token_request, name='token'),
+    path('api-token-auth/', views.obtain_auth_token),
     path('api/', include(api_router.urls)),
     path('api-auth/', include('rest_framework.urls')),
     path('paypal/', include('paypal.standard.ipn.urls')),
     path('devices/', device),
-    # path('accounts/', include("django.contrib.auth.urls")),
+    path('accounts/', include('django.contrib.auth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

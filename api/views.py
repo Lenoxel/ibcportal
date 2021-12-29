@@ -22,6 +22,7 @@ import sys
 
 # Token validator and generator
 def token_request(request):
+    print(request.user)
     try:
         new_token = Token.objects.get_or_create(user=request.user)
         return JsonResponse({'token': new_token[0].key}, status=status.HTTP_200_OK)
