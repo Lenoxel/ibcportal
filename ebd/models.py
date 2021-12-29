@@ -12,9 +12,9 @@ class EBDClass(models.Model):
     description = models.CharField('Descrição', max_length=200, null=True, blank=True)
     background_image = CloudinaryField('Imagem da turma', null=True, blank=True)
     church = models.ForeignKey(Church, verbose_name='Igreja', null=True, blank=True, on_delete=models.SET_NULL)
-    students = models.ManyToManyField(Member, related_name='Aluno', verbose_name='Aluno', blank=True)
-    teachers = models.ManyToManyField(Member, related_name='Professor', verbose_name='Professor', blank=True)
-    secretaries = models.ManyToManyField(Member, related_name='Secretário', verbose_name='Secretário', blank=True)
+    students = models.ManyToManyField(Member, related_name='Aluno', verbose_name='Alunos', blank=True)
+    teachers = models.ManyToManyField(Member, related_name='Professor', verbose_name='Professores', blank=True)
+    secretaries = models.ManyToManyField(Member, related_name='Secretário', verbose_name='Secretários', blank=True)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 

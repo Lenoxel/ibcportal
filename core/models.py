@@ -217,8 +217,9 @@ class Video(models.Model):
     src = models.CharField('URL', max_length=100, null=True)
     category = models.CharField('Categoria', choices=MEETING_CATEGORY_OPTIONS, max_length=20)
     title = models.CharField('Título do vídeo', max_length=100)
-    description = models.TextField('Descrição do vídeo', max_length=800, null = True, blank = True)
-    youtube_video_code = models.CharField('Código do Youtube', max_length=150, null=True)
+    description = models.TextField('Descrição do vídeo', max_length=800, null=True, blank=True)
+    youtube_video_code = models.CharField('Código do Youtube', max_length=150, null=True, blank=True)
+    embed_code = models.TextField('Código de incorporação do vídeo', null=True, blank=True)
 
     registering_date = models.DateTimeField('Cadastrado em', auto_now_add=True)
 
