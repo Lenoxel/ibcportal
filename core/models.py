@@ -9,7 +9,6 @@ import cloudinary
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 
-
 PAYMENT_OPTION_CHOICES = [
     ('deposit', 'Depósito'),
     ('pagseguro', 'PagSeguro'),
@@ -96,11 +95,12 @@ EDUCATIONAL_LEVEL_OPTIONS = [
     ('doutorado', 'Doutorado'),
 ]
 
+DEFAULT_CHURCH_ID = 1
+
 class MeetingTypeEnum(Enum):
     PRESENCIAL = "Presencial"
     ONLINE = "Online"
     HIBRIDO = "Online e Presencial"
-
 
 class Post(models.Model):
     objects = models.Manager()
@@ -142,7 +142,7 @@ class Member(models.Model):
 MARITAL_STATUS_OPTIONS, null=True, blank=True, max_length=30)
     educational_level = models.CharField('Grau de escolaridade', choices=EDUCATIONAL_LEVEL_OPTIONS, null=True, blank=True, max_length=50)
     job_title = models.CharField('Profissão', null=True, blank=True, max_length=50)
-    church_function = models.CharField('Função na Igreja',choices=
+    church_function = models.CharField('Função na Igreja', choices=
 CHURCH_FUNCTION_OPTIONS, null=True, blank=True, max_length=50)
     conversion_date = models.DateField('Data de conversão', null=True, blank=True)
     baptism_date = models.DateField('Data de batismo', null=True, blank=True)
@@ -237,7 +237,7 @@ class Schedule(models.Model):
     title = models.CharField('Encontro', choices=MEETING_CATEGORY_OPTIONS, max_length=20)
     start_date = models.DateTimeField('Horário de início')
     end_date = models.DateTimeField('Horário de fim', null=True, blank=True)
-    location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
+    location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL, default=DEFAULT_CHURCH_ID)
     description = models.TextField('Descrição', max_length=1000, blank=True, null=True)
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', related_name='pregador', blank=True, null=True, on_delete=models.SET_NULL)
     leader = models.ForeignKey('core.Member', verbose_name='Dirigente', related_name='dirigente', blank=True, null=True, on_delete=models.SET_NULL)
@@ -296,7 +296,7 @@ class Event(models.Model):
     start_date = models.DateTimeField('Início')
     end_date = models.DateTimeField('Término')
     description = models.TextField('Descrição', max_length=1000, blank=True, null=True)
-    location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL)
+    location = models.ForeignKey('core.Church', verbose_name='Local', null=True, blank=True, on_delete=models.SET_NULL, default=DEFAULT_CHURCH_ID)
     event_type =  models.CharField('Tipo do evento', max_length=30)
     price = models.FloatField('Valor (R$)', null=True, blank=True)
     preacher = models.ForeignKey('core.Member', verbose_name='Pregador', null=True, blank=True, on_delete=models.SET_NULL)
