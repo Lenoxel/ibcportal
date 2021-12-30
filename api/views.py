@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from django.db.models import Q
+from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 from groups.models import Group
 from .serializers import PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
-from datetime import datetime, timedelta
-import pytz
+from datetime import timedelta
+from django.contrib.auth.models import User
 # from calendar import monthrange
 # from django.core.exceptions import ObjectDoesNotExist
 # from django.utils import timezone
@@ -18,19 +19,39 @@ from rest_framework.response import Response
 
 from core.auxiliar_functions import get_now_datetime_utc, get_today_datetime_utc
 
-import sys
-
 # Token validator and generator
 def token_request(request):
-    print(request.user)
     try:
         new_token = Token.objects.get_or_create(user=request.user)
         return JsonResponse({'token': new_token[0].key}, status=status.HTTP_200_OK)
     except Exception as message:
         return JsonResponse({'mensagem': 'você não tem permissão.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+# Generate token for all users
+def create_auth_token(request):
+    print(request)
+    try:
+        for user in User.objects.all():
+            Token.objects.get_or_create(user=user)
+        return JsonResponse({'mensagem': 'Todos os usuário têm um token agora'}, status=status.HTTP_200_OK)
+    except Exception as message:
+        return JsonResponse({'mensagem': 'você não tem permissão.'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email,
+            'name': (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
+        })
+
 class PostViewSet(viewsets.ModelViewSet):
     # one_month_before_period = datetime.today() - timedelta(days=30)
     # two_weeks_before_period = datetime.today() - timedelta(days=14)
