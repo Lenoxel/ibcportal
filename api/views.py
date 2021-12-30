@@ -29,7 +29,6 @@ def token_request(request):
 
 # Generate token for all users
 def create_auth_token(request):
-    print(request)
     try:
         for user in User.objects.all():
             Token.objects.get_or_create(user=user)
@@ -44,7 +43,14 @@ class CustomAuthToken(ObtainAuthToken):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+
+        if request.query_params.get('reset_token'):
+            user_to_delete = Token.objects.get(user=user)
+            if (user_to_delete):
+                user_to_delete.delete()
+
         token, created = Token.objects.get_or_create(user=user)
+
         return Response({
             'token': token.key,
             'user_id': user.pk,
