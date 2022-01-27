@@ -9,7 +9,7 @@ INDEX
 /*@media screen and (max-width:649px) { .swiper-pagination { display: none; } }*/
 
 @media screen and (min-width: 879px) {
-    #swiper-top { position: relative; height: 450px !important; }
+    #swiper-top { position: relative; height: 700px !important; }
 }
 
 .swiper-slide { 
@@ -77,14 +77,14 @@ INDEX
     background: transparent;
 }
 
-#sobre .content .major-text { 
+/* #sobre .content .major-text { 
     text-align: justify;
     transition: all .5s linear;
 }
 
 #sobre .content .major-text:hover {
     text-decoration: underline white;
-}
+} */
 
 .alert {
 	padding: 25px;

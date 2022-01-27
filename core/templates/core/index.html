@@ -31,6 +31,8 @@
         <link href="https://fonts.googleapis.com/css?family=Lato|Quicksand:400,700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="{% static 'css/style.css'%}">
 
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
         <script type="text/javascript">
             $(function() {
                 var window_width = $(window).width();
@@ -53,7 +55,7 @@
     </head>
 
     <body>
-        <header>
+        <header data-aos="fade-down" data-aos-duration="1000">
             <section>
                 <a id="logo" href="{% url 'home' %}"></a>
                 <!-- <hgroup>
@@ -116,7 +118,7 @@
         {% block content %}
         {% endblock %}
 
-        <footer>
+        <footer data-aos="fade-down" data-aos-duration="1000">
             <section class="flex">
                 <div class="fx_4">
                     <h1>Igreja Batista Central</h1>
@@ -169,5 +171,11 @@
             ga('send', 'pageview');
         </script>
         {% block scripts %}{% endblock %}
+
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+        <script>
+            AOS.init();
+        </script>
     </body>
 </html>

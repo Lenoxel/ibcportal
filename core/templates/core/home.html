@@ -2,7 +2,7 @@
 
 {% block content %}
    <main>
-        <div>
+        <div data-aos="fade-down" data-aos-duration="1000">
             <div id="swiper-top">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide" style="background-image:url(/media/general_images/ibc_portal_church_inside.jfif);"></div>
@@ -25,10 +25,11 @@
             <div id="sobre">
                 <section>
                     <div class="content">
-                        <h1>Aqui é o lugar onde Deus nos mostra que somos dependentes Dele.</h1>
-                        <div class="major-text">
+                        <h1 data-aos="fade-down" data-aos-duration="1000">Aqui é o lugar onde Deus nos mostra que somos dependentes Dele.</h1>
+                        <div class="major-text" data-aos="fade-down" data-aos-duration="1000">
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at magna consequat, hendrerit est convallis, fermentum nulla. Cras non tellus urna. Nunc ultricies sapien id rhoncus fringilla. Ut malesuada dapibus ipsum non mattis. Mauris in neque gravida, laoreet risus at, rutrum nulla. Cras faucibus varius lectus nec pulvinar. Nullam porta tempus risus, non mattis urna elementum sit amet. In iaculis faucibus nibh et luctus. Aenean ornare in leo quis luctus. Integer dapibus, dolor congue finibus tincidunt, ante nisi porta nisi, sed vulputate risus mauris id dui. Sed posuere dui a mi pellentesque fringilla. Nullam consectetur at eros non mattis. Donec quis congue lectus. Phasellus a mauris lectus.</p>
                             <p>Curabitur vel aliquet erat. In urna nisi, aliquam in ultrices et, porta vitae mauris. Etiam aliquam pellentesque turpis, vitae elementum purus ornare consequat. Aliquam erat volutpat. Sed lobortis augue arcu, vel molestie nulla semper vitae. Phasellus pellentesque ligula nisi, non laoreet mi euismod vel. Donec vehicula ultricies tellus ut scelerisque. Nulla commodo, dolor sodales rhoncus gravida, purus neque tempor ligula, vel faucibus neque ipsum ut lorem. Duis aliquet dapibus hendrerit.</p>
+                            <p>Donec pulvinar, enim sed consequat pretium, diam leo suscipit lectus, ac suscipit sapien arcu non lectus. Fusce elit nulla, cursus nec eros et, dictum finibus arcu. Mauris a fermentum augue. Donec ut mauris mattis, bibendum sapien ut, tincidunt erat. Nunc non mattis sapien, in auctor nisl. In sodales eu nisl et dignissim. Nulla vitae rutrum arcu, vel mattis ex. Cras urna mauris, dignissim at justo ultrices, porta vehicula libero. Ut mattis arcu vel diam finibus elementum. Proin varius augue dolor. Vestibulum non imperdiet velit, sed dapibus leo. Suspendisse pulvinar ipsum sit amet ex consectetur, in convallis ligula commodo. </p>
                         </div>
                     </div>
                 </section>
@@ -39,13 +40,13 @@
             <div id="agenda">
                 <section>
                     <div class="content">
-                        <h1>Agenda da Semana</h1>
+                        <h1 data-aos="fade-down" data-aos-duration="1000">Agenda da Semana</h1>
 
                         {% if not meetings %}
-                            <div class="alert alert-warning">A agenda da semana está em atualização.</div>
+                            <div class="alert alert-warning" data-aos="fade-down" data-aos-duration="1000">A agenda da semana está em atualização.</div>
                         {% endif %}
 
-                        <div class="flexC">
+                        <div class="flexC" data-aos="fade-down" data-aos-duration="1000">
 
                         {% for meeting in meetings %}
                             <div class="fx_4">
@@ -91,12 +92,12 @@
             <div id="cultos-online">
                 <section>
                     <div class="content">
-                        <h1>Nada impede que Deus chegue até você.</h1>
+                        <h1 data-aos="fade-down" data-aos-duration="1000">Nada impede que Deus chegue até você.</h1>
 
                         {% if not videos %}
-                            <div class="alert alert-warning">Os nossos vídeos estão em atualização.</div>
+                            <div class="alert alert-warning" data-aos="fade-down" data-aos-duration="1000">Os nossos vídeos estão em atualização.</div>
                         {% else %}
-                            <div class="flexC">
+                            <div class="flexC" data-aos="fade-down" data-aos-duration="1000">
                                 {% for video in videos %}
                                     <div class="fx_3">
                                         <div class="video">
@@ -122,13 +123,13 @@
             <div id="comunicados">
                 <section>
                     <div class="content">
-                        <h1>Comunicados Importantes</h1>
+                        <h1 data-aos="fade-down" data-aos-duration="1000">Comunicados Importantes</h1>
 
                         {% if not posts %}
-                            <div class="alert alert-warning">Não existem comunicados recentes.</div>
+                            <div class="alert alert-warning" data-aos="fade-down" data-aos-duration="1000">Não existem comunicados recentes.</div>
                         {% endif %}
 
-                        <div class="flexC">
+                        <div class="flexC" data-aos="fade-down" data-aos-duration="1000">
 
                         {% for post in posts %}
                             <div class="fx_4">
@@ -148,17 +149,17 @@
 
                         </div>
 
-                        <p style="text-align: right; font-size: 14px; display: none;"><a style="border-bottom: 1px solid;" href="{% url 'posts' %}"><strong><em>Veja mais notícias</em></strong></a></p>
+                        <p style="text-align: right; font-size: 14px; display: none;"><a style="border-bottom: 1px solid;" href="{% url 'posts' %}" data-aos="fade-down" data-aos-duration="1000"><strong><em>Veja mais notícias</em></strong></a></p>
                     </div>
                 </section>
             </div>
         </div>
 
         <div style="margin-bottom: 100px; display: none;">
-            <div id="contribuicao">
+            <div id="contribuicao" data-aos="fade-down" data-aos-duration="1000">
                 <section>
                     <div class="content">
-                        <h1>Deus ama ao que dá com alegria.</h1>
+                        <h1 >Deus ama ao que dá com alegria.</h1>
                         <img src=" /media/general_images/oferta-home.jpg" class="imgL" alt="">
                         <h3>Faça sua contribuição abaixo</h3>
 
@@ -213,10 +214,10 @@
         <div>
             <div id="mission">
                 <section>
-                    <h1>Como Igreja, somos o corpo de Cristo</h1>
-                    <p class="statement"><em>"Dele todo o corpo, ajustado e unido pelo auxílio de todas as juntas, cresce e edifica-se a si mesmo em amor, na medida em que cada parte realiza a sua função."</em> <strong>Efésios 4:16</strong></p>
+                    <h1 data-aos="fade-down" data-aos-duration="1000">Como Igreja, somos o corpo de Cristo</h1>
+                    <p class="statement" data-aos="fade-down" data-aos-duration="1000"><em>"Dele todo o corpo, ajustado e unido pelo auxílio de todas as juntas, cresce e edifica-se a si mesmo em amor, na medida em que cada parte realiza a sua função."</em> <strong>Efésios 4:16</strong></p>
 
-                    <div class="flex">
+                    <div class="flex" data-aos="fade-down" data-aos-duration="1000">
                         <dl class="fx_3">
                             <!-- <dd><img src="img/MS-home-bible.png" style="width: 180px;" class="imgC"></dd> -->
                             <dd><span><i class="fas fa-bible"></i></span></dd>
