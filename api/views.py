@@ -45,9 +45,9 @@ class CustomAuthToken(ObtainAuthToken):
         user = serializer.validated_data['user']
 
         if request.query_params.get('reset_token'):
-            user_to_delete = Token.objects.get(user=user)
-            if (user_to_delete):
-                user_to_delete.delete()
+            user_token_to_delete = Token.objects.get(user=user)
+            if (user_token_to_delete):
+                user_token_to_delete.delete()
 
         token, created = Token.objects.get_or_create(user=user)
 
