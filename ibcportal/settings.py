@@ -1,5 +1,5 @@
 import os
-import dj_database_url
+# import dj_database_url
 
 import cloudinary  # cloudinary
 import cloudinary.uploader  # cloudinary
@@ -163,6 +163,8 @@ REST_FRAMEWORK = {
 # DATABASES['default'].update(db_from_env)
 
 SECURE_PROXY_SSL_HEADER = ('https_X_FORWARDED_PROTO', 'https')
+
+X_FRAME_OPTIONS = 'ALLOW-FROM self'
 
 # ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']

@@ -1,0 +1,4 @@
+name: ibcportalenv
+channels:
+  - defaults
+prefix: /home/lenon/miniconda3/envs/ibcportalenv
