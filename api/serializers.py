@@ -1,4 +1,8 @@
+from httplib2 import Response
+from ebd.models import EBDLessonPresenceRecord
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from core.models import Post, PostFile, Member, Video, Schedule, Event, MembersUnion, NotificationDevice, Church
 from groups.models import Group, GroupMeetingDate
 
@@ -194,3 +198,22 @@ class NotificationDeviceSerializer(serializers.Serializer):
         Create and return a new `Device` instance, given the validated data.
         """
         return NotificationDevice.objects.create(**validated_data)
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['user_id'] = user.pk
+        token['email'] = user.email
+        token['name'] = (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
+
+        return token
+
+
+class EBDLessonPresenceRecordSerializer(serializers.Serializer):
+    lesson_date = serializers.CharField()
+    class_id = serializers.CharField()
+    user_id = serializers.CharField()
+    attended = serializers.BooleanField()
+    register_on = serializers.CharField()

@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from api.views import MyTokenObtainPairView, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
+from api.views import EBDLessonPresenceRecordView, MyTokenObtainPairView, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
 
 from rest_framework import routers
 
@@ -43,4 +43,5 @@ urlpatterns = [
     path('paypal/', include('paypal.standard.ipn.urls')),
     path('devices/', device),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('api/ebd/records/', EBDLessonPresenceRecordView.as_view(), name="ebd_lesson_presence_record"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

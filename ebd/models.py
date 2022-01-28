@@ -4,6 +4,11 @@ from django.db.models.signals import pre_delete
 import cloudinary
 from django.dispatch import receiver
 from core.models import Church, Member
+from ibcportal import settings
+
+from pynamodb.models import Model
+from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
+from pynamodb.attributes import UnicodeAttribute
 
 class EBDClass(models.Model):
     objects = models.Manager()
@@ -46,3 +51,43 @@ class EBDClassLesson(models.Model):
 
     def __str__(self):
         return self.title
+
+# Below: dynamoDB - EBD lesson presence record
+
+class UserIdIndex(GlobalSecondaryIndex):
+    user_id = UnicodeAttribute(hash_key=True)
+
+    class Meta:
+        read_capacity_units = 1
+        write_capacity_units = 1
+        projection = AllProjection()
+
+class ClassIdIndex(GlobalSecondaryIndex):
+    class_id = UnicodeAttribute(hash_key=True)
+    lesson_date = UnicodeAttribute(hash_key=True)
+
+    class Meta:
+        read_capacity_units = 1
+        write_capacity_units = 1
+        projection = AllProjection()
+
+class EBDLessonPresenceRecord(Model):
+    lesson_date = UnicodeAttribute(hash_key=True)
+    user_id = UnicodeAttribute(range_key=True)
+    class_id = UnicodeAttribute()
+    attended = UnicodeAttribute(null=True)
+    register_on = UnicodeAttribute(null=True)
+
+    user_id_index = UserIdIndex()
+    class_id_index = ClassIdIndex()
+
+    class Meta:
+        aws_access_key_id = settings.AWS_ACCESS_KEY_ID
+        aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
+        table_name = 'IBCProject-EBDLessonPresenceRecord'
+        region = 'us-west-2'
+        verbose_name = 'Registro de Presença na aula'
+        verbose_name_plural = 'Registros de Presença nas aulas'
+
+    def __str__(self):
+        return '{} - {} - {}'.format(self.lesson_date, self.class_id, self.user_id)

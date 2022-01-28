@@ -205,5 +205,9 @@ SIMPLE_JWT = {
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
 
+# AWS Keys
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'AKIAIDLTPYUPPJD5YSMQ')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', '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')
+
 
 django_on_heroku.settings(locals())
