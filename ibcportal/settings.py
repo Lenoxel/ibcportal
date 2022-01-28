@@ -206,8 +206,8 @@ SIMPLE_JWT = {
 }
 
 # AWS Keys
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'AKIAIDLTPYUPPJD5YSMQ')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', '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')
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 
 django_on_heroku.settings(locals())
