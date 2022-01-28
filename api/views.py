@@ -17,46 +17,65 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 from core.auxiliar_functions import get_now_datetime_utc, get_today_datetime_utc
 
 # Token validator and generator
-def token_request(request):
-    try:
-        new_token = Token.objects.get_or_create(user=request.user)
-        return JsonResponse({'token': new_token[0].key}, status=status.HTTP_200_OK)
-    except Exception as message:
-        return JsonResponse({'mensagem': 'você não tem permissão.'}, status=status.HTTP_401_UNAUTHORIZED)
+# def token_request(request):
+#     try:
+#         new_token = Token.objects.get_or_create(user=request.user)
+#         return JsonResponse({'token': new_token[0].key}, status=status.HTTP_200_OK)
+#     except Exception as message:
+#         return JsonResponse({'mensagem': 'você não tem permissão.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 # Generate token for all users
-def create_auth_token(request):
-    try:
-        for user in User.objects.all():
-            Token.objects.get_or_create(user=user)
-        return JsonResponse({'mensagem': 'Todos os usuário têm um token agora'}, status=status.HTTP_200_OK)
-    except Exception as message:
-        return JsonResponse({'mensagem': 'você não tem permissão.'}, status=status.HTTP_401_UNAUTHORIZED)
+# def create_auth_token(request):
+#     try:
+#         for user in User.objects.all():
+#             Token.objects.get_or_create(user=user)
+#         return JsonResponse({'mensagem': 'Todos os usuário têm um token agora'}, status=status.HTTP_200_OK)
+#     except Exception as message:
+#         return JsonResponse({'mensagem': 'você não tem permissão.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
-class CustomAuthToken(ObtainAuthToken):
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
 
-        if request.query_params.get('reset_token'):
-            user_token_to_delete = Token.objects.get(user=user)
-            if (user_token_to_delete):
-                user_token_to_delete.delete()
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
 
-        token, created = Token.objects.get_or_create(user=user)
+        token['user_id'] = user.pk
+        token['email'] = user.email
+        token['name'] = (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
 
-        return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email,
-            'name': (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
-        })
+        return token
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+
+# class CustomAuthToken(ObtainAuthToken):
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(data=request.data, context={'request': request})
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data['user']
+
+#         if request.query_params.get('reset_token'):
+#             user_token_to_delete = Token.objects.get(user=user)
+#             if (user_token_to_delete):
+#                 user_token_to_delete.delete()
+
+#         token, created = Token.objects.get_or_create(user=user)
+
+#         return Response({
+#             'token': token.key,
+#             'user_id': user.pk,
+#             'email': user.email,
+#             'name': (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
+#         })
 
 class PostViewSet(viewsets.ModelViewSet):
     # one_month_before_period = datetime.today() - timedelta(days=30)

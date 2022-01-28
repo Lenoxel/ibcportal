@@ -5,6 +5,7 @@ import cloudinary  # cloudinary
 import cloudinary.uploader  # cloudinary
 import cloudinary.api  # cloudinary
 import django_on_heroku
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,7 +38,8 @@ INSTALLED_APPS = [
     'paypal.standard.ipn',
     'corsheaders',
     'rest_framework',
-    'rest_framework.authtoken',
+    # 'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     'cloudinary',
     # project apps
     'core',
@@ -136,8 +138,8 @@ CORS_ALLOW_METHODS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-       'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
+       'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -190,6 +192,18 @@ YOUTUBE_URL = 'https://www.googleapis.com/youtube/v3/videos'
 
 # Firebase API Key (Chave do Servidor)
 FIREBASE_KEY = os.getenv('FIREBASE_KEY', '123')
+
+# JWT Config
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=5),
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+}
 
 
 django_on_heroku.settings(locals())
