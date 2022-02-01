@@ -197,7 +197,7 @@ class NotificationDeviceSerializer(serializers.Serializer):
         """
         return NotificationDevice.objects.create(**validated_data)
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)

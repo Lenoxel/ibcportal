@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status, generics
 from django.db.models import Q
-from rest_framework.authtoken.views import ObtainAuthToken
+# from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 from ebd.models import EBDClass, EBDClassLesson, EBDLessonPresenceRecord
 from groups.models import Group
-from .serializers import EBDLessonPresenceRecordSerializer, MyTokenObtainPairSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
+from .serializers import EBDLessonPresenceRecordSerializer, CustomTokenObtainPairSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
@@ -42,10 +42,6 @@ from core.auxiliar_functions import get_now_datetime_utc, get_today_datetime_utc
 
 # Below, the ViewSets that define the view behavior - just to be called by api (app ibc).
 
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
-
-
 # class CustomAuthToken(ObtainAuthToken):
 #     def post(self, request, *args, **kwargs):
 #         serializer = self.serializer_class(data=request.data, context={'request': request})
@@ -65,6 +61,9 @@ class MyTokenObtainPairView(TokenObtainPairView):
 #             'email': user.email,
 #             'name': (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
 #         })
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 class PostViewSet(viewsets.ModelViewSet):
     # one_month_before_period = datetime.today() - timedelta(days=30)

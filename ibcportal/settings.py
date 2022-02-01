@@ -195,8 +195,8 @@ FIREBASE_KEY = os.getenv('FIREBASE_KEY', '123')
 
 # JWT Config
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
