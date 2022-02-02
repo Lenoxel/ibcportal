@@ -5,7 +5,7 @@ from django.db.models import Q
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
-from .serializers import EBDLessonPresenceRecordSerializer, CustomTokenObtainPairSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
+from .serializers import CustomEBDTokenObtainPairSerializer, EBDLessonPresenceRecordSerializer, CustomTokenObtainPairSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
@@ -65,6 +65,9 @@ from core.auxiliar_functions import get_now_datetime_utc, get_sunday, get_today_
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    
+class CustomEBDTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomEBDTokenObtainPairSerializer
 
 class PostViewSet(viewsets.ModelViewSet):
     # one_month_before_period = datetime.today() - timedelta(days=30)
@@ -199,7 +202,7 @@ class EBDClassPresencesView(generics.ListAPIView):
             else:
                 raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
         else:
-            if  self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+            if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
                 data = EBDLessonPresenceRecord.class_id_index.query(class_id)
             else:
                 raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from core.models import Post, PostFile, Member, Video, Schedule, Event, MembersUnion, NotificationDevice, Church
@@ -208,7 +209,19 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return token
 
+class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Secretários de classes de EBD').exists():
+            token = super().get_token(user)
 
+            token['user_id'] = user.pk
+            token['email'] = user.email
+            token['name'] = (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
+
+            return token
+        else:
+          raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
 class EBDLessonPresenceRecordSerializer(serializers.Serializer):
     lesson_date = serializers.CharField()
     user_id = serializers.CharField()
