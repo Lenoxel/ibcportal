@@ -215,3 +215,4 @@ class EBDLessonPresenceRecordSerializer(serializers.Serializer):
     user_id = serializers.CharField()
     attended = serializers.BooleanField()
     register_on = serializers.CharField()
+    register_by = serializers.CharField()

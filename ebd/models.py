@@ -8,7 +8,7 @@ from ibcportal import settings
 
 from pynamodb.models import Model
 from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
-from pynamodb.attributes import UnicodeAttribute
+from pynamodb.attributes import UnicodeAttribute, UTCDateTimeAttribute
 
 class EBDClass(models.Model):
     objects = models.Manager()
@@ -75,8 +75,11 @@ class EBDLessonPresenceRecord(Model):
     lesson_date = UnicodeAttribute(hash_key=True)
     user_id = UnicodeAttribute(range_key=True)
     class_id = UnicodeAttribute()
+    created_by = UnicodeAttribute()
+    creation_date = UTCDateTimeAttribute()
     attended = UnicodeAttribute(null=True)
     register_on = UnicodeAttribute(null=True)
+    register_by = UnicodeAttribute(null=True)
 
     user_id_index = UserIdIndex()
     class_id_index = ClassIdIndex()

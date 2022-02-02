@@ -3,7 +3,7 @@ from rest_framework import viewsets, status, generics
 from django.db.models import Q
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
-from ebd.models import EBDClass, EBDClassLesson, EBDLessonPresenceRecord
+from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
 from .serializers import EBDLessonPresenceRecordSerializer, CustomTokenObtainPairSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import timedelta
