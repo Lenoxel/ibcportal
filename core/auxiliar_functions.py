@@ -2,7 +2,6 @@ import requests
 from django.conf import settings
 from datetime import datetime, timedelta
 from django.utils import timezone
-import pytz
 from tzlocal import get_localzone
 from .models import Audit, NotificationDevice, PushNotification
 from pyfcm import FCMNotification

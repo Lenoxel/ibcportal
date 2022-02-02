@@ -2,6 +2,7 @@ from datetime import datetime
 from django.contrib import admin
 from .models import EBDClass, EBDClassLesson, EBDLessonPresenceRecord
 from django.core.exceptions import PermissionDenied
+from django.utils import timezone
 
 class EBDClassLessonAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
@@ -18,7 +19,7 @@ class EBDClassLessonAdmin(admin.ModelAdmin):
                     user_id = str(student.user)
                     class_id = str(ebd_class.pk)
 
-                    ebd_lesson_presence_record_item = EBDLessonPresenceRecord(lesson_date, user_id, class_id=class_id, created_by=str(request.user), creation_date=datetime.now())
+                    ebd_lesson_presence_record_item = EBDLessonPresenceRecord(lesson_date, user_id, class_id=class_id, created_by=str(request.user), creation_date=timezone.now())
                     ebd_lesson_presence_record_item.save()
         else:
             return PermissionDenied
