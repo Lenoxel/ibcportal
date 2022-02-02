@@ -239,7 +239,12 @@ class EBDPresencesAnalyticsView(generics.ListAPIView):
         sundays_before_quantity = self.request.query_params.get('sundaysBeforeQuantity', None)
         lesson_date = self.request.query_params.get('lessonDate', None)
 
-        if sundays_before_quantity:
+        if lesson_date:
+            if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+                data = EBDLessonPresenceRecord.query(lesson_date, scan_index_forward = True)
+            else:
+                raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
+        elif sundays_before_quantity:
             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
                 data = []
                 for sundays_before in range(int(sundays_before_quantity)):
@@ -247,11 +252,6 @@ class EBDPresencesAnalyticsView(generics.ListAPIView):
 
                     for item in EBDLessonPresenceRecord.church_lesson_date_index.query('ibcc2', EBDLessonPresenceRecord.lesson_date == get_sunday(sundays_before), scan_index_forward = True):
                         data.append(item)
-            else:
-                raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
-        elif lesson_date:
-            if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
-                data = EBDLessonPresenceRecord.query(lesson_date, scan_index_forward = True)
             else:
                 raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
         else:
