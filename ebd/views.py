@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from .models import Group
+from .models import EBDClass
 
-def groups(request):
-    groups = Group.objects.all()
+def ebd_classes(request):
+    ebd_classes = EBDClass.objects.all()
     context = {
-        'groups': groups
+        'ebd_classes': ebd_classes
     }
     return render(request, 'ebd/ebd.html', context)

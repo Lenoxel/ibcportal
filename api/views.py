@@ -13,14 +13,15 @@ from datetime import timedelta
 # from django.utils import timezone
 
 # from rest_framework.authtoken.models import Token
-# from django.http import JsonResponse
+from django.http import JsonResponse
 
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from core.auxiliar_functions import get_now_datetime_utc, get_today_datetime_utc
+from core.auxiliar_functions import get_now_datetime_utc, get_sunday, get_today_datetime_utc
 
 # Token validator and generator
 # def token_request(request):
@@ -185,21 +186,78 @@ def device(request, format=None):
         else:
             return Response(status=status.HTTP_409_CONFLICT)
 
-class EBDLessonPresenceRecordView(generics.ListAPIView):
+class EBDClassPresencesView(generics.ListAPIView):
     def get_queryset(self):
+        class_id = str(self.kwargs['class_id']) if self.kwargs['class_id'] is not None else None;
         lesson_date = self.request.query_params.get('lessonDate', None)
-        class_id = self.request.query_params.get('classId', None)
-        user_id = self.request.query_params.get('userId', None)
 
-        if user_id is not None:
-            records = EBDLessonPresenceRecord.user_id_index.query(user_id)
-        else:
-            if class_id is not None:
-                records = EBDLessonPresenceRecord.class_id_index.query(class_id, EBDLessonPresenceRecord.lesson_date == lesson_date)
+        if not class_id:
+            raise ValidationError('id da classe não informado.', code=400)
+        elif lesson_date:
+            if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Secretários de classes de EBD').exists():
+                data = EBDLessonPresenceRecord.class_id_index.query(class_id, EBDLessonPresenceRecord.lesson_date == lesson_date)
             else:
-                records = EBDLessonPresenceRecord.query(lesson_date)
+                raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
+        else:
+            if  self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+                data = EBDLessonPresenceRecord.class_id_index.query(class_id)
+            else:
+                raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
 
-        return records
+        return data
+
+    def get_serializer_class(self):
+        serializer = EBDLessonPresenceRecordSerializer
+        return serializer
+
+class EBDUserPresencesView(generics.ListAPIView):
+    def get_queryset(self):
+        user_id = str(self.kwargs['user_id']) if self.kwargs['user_id'] is not None else None;
+        lesson_date = self.request.query_params.get('lessonDate', None)
+
+        if not user_id:
+            raise ValidationError('id do usuário não informado.', code=400)
+        elif lesson_date:
+            if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Secretários de classes de EBD').exists():
+                data = EBDLessonPresenceRecord.query(lesson_date, EBDLessonPresenceRecord.user_id == user_id, scan_index_forward = True)
+            else:
+                raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
+        else:
+            if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+                data = EBDLessonPresenceRecord.user_id_index.query(user_id, scan_index_forward = True)
+            else:
+                raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
+
+        return data
+
+    def get_serializer_class(self):
+        serializer = EBDLessonPresenceRecordSerializer
+        return serializer
+
+class EBDPresencesAnalyticsView(generics.ListAPIView):
+    def get_queryset(self):
+        sundays_before_quantity = self.request.query_params.get('sundaysBeforeQuantity', None)
+        lesson_date = self.request.query_params.get('lessonDate', None)
+
+        if sundays_before_quantity:
+            if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+                data = []
+                for sundays_before in range(int(sundays_before_quantity)):
+                    sunday_before_date =  get_sunday(sundays_before)
+
+                    for item in EBDLessonPresenceRecord.church_lesson_date_index.query('ibcc2', EBDLessonPresenceRecord.lesson_date == get_sunday(sundays_before), scan_index_forward = True):
+                        data.append(item)
+            else:
+                raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
+        elif lesson_date:
+            if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+                data = EBDLessonPresenceRecord.query(lesson_date, scan_index_forward = True)
+            else:
+                raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
+        else:
+            data = []
+
+        return data
 
     def get_serializer_class(self):
         serializer = EBDLessonPresenceRecordSerializer

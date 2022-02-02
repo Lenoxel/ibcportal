@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from api.views import EBDLessonPresenceRecordView, CustomTokenObtainPairView, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
+from api.views import CustomTokenObtainPairView, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
 
 from rest_framework import routers
 
@@ -28,20 +28,20 @@ api_router.register(r'events', EventViewSet)
 api_router.register(r'celebrations', BirthdayCelebrationViewSet)
 
 urlpatterns = [
+    path('', include('core.urls')),
     path('jet/', include('jet.urls', 'jet')),
     path('admin/', admin.site.urls),
-    path('', include('core.urls')),
-    path('grupos/', include('groups.urls')),
+    path('groups/', include('groups.urls')),
+    path('api/', include(api_router.urls)),
+    path('api/', include('api.urls')),
+    path('api-auth/', include('rest_framework.urls')),
     path('api/login/', CustomTokenObtainPairView.as_view(), name='my_token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     # path('token/', token_request, name='token'),
     # path('api/token/all/', create_auth_token, name='token_all'),
     # path('api/login/', CustomAuthToken.as_view()),
-    path('api/', include(api_router.urls)),
-    path('api-auth/', include('rest_framework.urls')),
     path('paypal/', include('paypal.standard.ipn.urls')),
     path('devices/', device),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('api/ebd/records/', EBDLessonPresenceRecordView.as_view(), name="ebd_lesson_presence_record"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

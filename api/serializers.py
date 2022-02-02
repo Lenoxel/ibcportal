@@ -211,8 +211,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class EBDLessonPresenceRecordSerializer(serializers.Serializer):
     lesson_date = serializers.CharField()
-    class_id = serializers.CharField()
     user_id = serializers.CharField()
+    class_id = serializers.CharField()
+    lesson_name = serializers.CharField()
+    church = serializers.CharField()
+    created_by = serializers.CharField()
+    creation_date = serializers.DateTimeField()
     attended = serializers.BooleanField()
     register_on = serializers.CharField()
     register_by = serializers.CharField()

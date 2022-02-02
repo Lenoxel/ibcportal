@@ -8,7 +8,7 @@ from ibcportal import settings
 
 from pynamodb.models import Model
 from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
-from pynamodb.attributes import UnicodeAttribute, UTCDateTimeAttribute
+from pynamodb.attributes import BooleanAttribute, UnicodeAttribute, UTCDateTimeAttribute
 
 class EBDClass(models.Model):
     objects = models.Manager()
@@ -64,7 +64,16 @@ class UserIdIndex(GlobalSecondaryIndex):
 
 class ClassIdIndex(GlobalSecondaryIndex):
     class_id = UnicodeAttribute(hash_key=True)
-    lesson_date = UnicodeAttribute(hash_key=True)
+    lesson_date = UnicodeAttribute(range_key=True)
+
+    class Meta:
+        read_capacity_units = 1
+        write_capacity_units = 1
+        projection = AllProjection()
+
+class ChurchLessonDateIndex(GlobalSecondaryIndex):
+    church = UnicodeAttribute(hash_key=True)
+    lesson_date = UnicodeAttribute(range_key=True)
 
     class Meta:
         read_capacity_units = 1
@@ -76,14 +85,16 @@ class EBDLessonPresenceRecord(Model):
     user_id = UnicodeAttribute(range_key=True)
     class_id = UnicodeAttribute()
     lesson_name = UnicodeAttribute()
+    church = UnicodeAttribute()
     created_by = UnicodeAttribute()
     creation_date = UTCDateTimeAttribute()
-    attended = UnicodeAttribute(null=True)
+    attended = BooleanAttribute(null=True)
     register_on = UnicodeAttribute(null=True)
     register_by = UnicodeAttribute(null=True)
 
     user_id_index = UserIdIndex()
     class_id_index = ClassIdIndex()
+    church_lesson_date_index = ChurchLessonDateIndex()
 
     class Meta:
         aws_access_key_id = settings.AWS_ACCESS_KEY_ID

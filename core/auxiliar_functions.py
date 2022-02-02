@@ -181,3 +181,9 @@ def get_today_datetime_utc():
     today_date_time = datetime.today()
     # today_date_time.replace(tzinfo=timezone.utc)
     return today_date_time
+
+def get_sunday(sundays_before_index: int):
+    today = datetime.today()
+    sunday_date = today.strftime('%d/%m/%Y') if today.weekday() == 6 and sundays_before_index == 0 else (today - (timedelta(today.weekday() + 1 + (sundays_before_index * 7)))).strftime('%d/%m/%Y')
+    return sunday_date
+    
