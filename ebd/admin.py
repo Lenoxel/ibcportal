@@ -18,8 +18,9 @@ class EBDClassLessonAdmin(admin.ModelAdmin):
                     lesson_date = form.cleaned_data['date'].strftime('%d/%m/%Y')
                     user_id = str(student.user)
                     class_id = str(ebd_class.pk)
+                    lesson_name = form.cleaned_data['title']
 
-                    ebd_lesson_presence_record_item = EBDLessonPresenceRecord(lesson_date, user_id, class_id=class_id, created_by=str(request.user), creation_date=timezone.now())
+                    ebd_lesson_presence_record_item = EBDLessonPresenceRecord(lesson_date, user_id, class_id=class_id, lesson_name=lesson_name, created_by=str(request.user), creation_date=timezone.now())
                     ebd_lesson_presence_record_item.save()
         else:
             return PermissionDenied

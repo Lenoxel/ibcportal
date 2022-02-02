@@ -75,6 +75,7 @@ class EBDLessonPresenceRecord(Model):
     lesson_date = UnicodeAttribute(hash_key=True)
     user_id = UnicodeAttribute(range_key=True)
     class_id = UnicodeAttribute()
+    lesson_name = UnicodeAttribute()
     created_by = UnicodeAttribute()
     creation_date = UTCDateTimeAttribute()
     attended = UnicodeAttribute(null=True)
