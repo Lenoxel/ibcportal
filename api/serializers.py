@@ -227,6 +227,7 @@ class EBDLessonPresenceRecordSerializer(serializers.Serializer):
     user_id = serializers.CharField()
     class_id = serializers.CharField()
     lesson_name = serializers.CharField()
+    class_name = serializers.CharField()
     church = serializers.CharField()
     created_by = serializers.CharField()
     creation_date = serializers.DateTimeField()
