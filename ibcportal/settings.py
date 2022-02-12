@@ -133,6 +133,7 @@ USE_TZ = True
 
 CORS_ALLOW_METHODS = [
     'GET',
+    'POST',
 ]
 
 
