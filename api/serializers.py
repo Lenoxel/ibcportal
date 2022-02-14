@@ -216,10 +216,11 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Secretários de classes de EBD').exists():
             token = super().get_token(user)
 
+
             token['user_id'] = user.pk
             token['email'] = user.email
             token['name'] = (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
-            token['groups'] = user.groups.all().values_list()
+            token['groups'] = list(user.groups.all().values_list())
             token['is_superuser'] = user.is_superuser
 
             return token
