@@ -218,7 +218,7 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
             token['user_id'] = user.pk
             token['email'] = user.email
             token['name'] = (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
-            token['groups'] = user.groups;
+            token['groups'] = user.groups.all();
             token['is_superuser'] = user.is_superuser;
 
             return token
