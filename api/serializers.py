@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -218,8 +219,8 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
             token['user_id'] = user.pk
             token['email'] = user.email
             token['name'] = (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
-            token['groups'] = user.groups.all();
-            token['is_superuser'] = user.is_superuser;
+            token['groups'] = JsonResponse(user.groups.all(), safe=False)
+            token['is_superuser'] = user.is_superuser
 
             return token
         else:
