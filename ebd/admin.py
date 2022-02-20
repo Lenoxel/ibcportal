@@ -2,7 +2,8 @@ from django.contrib import admin
 from .models import EBDClass, EBDClassLesson, EBDLessonPresenceRecord
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
-from import_export.admin import ExportActionMixin
+from import_export import resources
+from import_export.admin import ExportActionMixin, ExportMixin
 
 class EBDClassLessonAdmin(ExportActionMixin, admin.ModelAdmin):
     list_filter = ('title', 'date')
@@ -34,7 +35,13 @@ class EBDClassLessonAdmin(ExportActionMixin, admin.ModelAdmin):
         else:
             return PermissionDenied
 
+# class EBDClassResource(resources.ModelResource):
+#     class Meta:
+#         model = EBDClass
+#         fields = ('name', 'church__name', 'students__name', 'teachers__name', 'secretaries__name')
+
 class EBDClassAdmin(ExportActionMixin, admin.ModelAdmin):
+    # resource_class = EBDClassResource
     list_filter = ('name', 'students', 'teachers', 'secretaries')
 
 
