@@ -2,6 +2,7 @@ from django.contrib import admin
 from .auxiliar_functions import create_audit, create_push_notification
 from .models import Post, Member, PostFile, Video, Schedule, Church, Donate, Event, MembersUnion, Audit, NotificationDevice, PushNotification
 from django.core.exceptions import PermissionDenied
+from import_export.admin import ExportActionMixin
 
 class PostFileInline(admin.TabularInline):
     model = PostFile
@@ -139,9 +140,11 @@ class NotificationDeviceAdmin(admin.ModelAdmin):
 class PushNotificationAdmin(admin.ModelAdmin):
     readonly_fields = ('title', 'body', 'multicast_id', 'success_count', 'failure_count', 'push_date',)
 
+class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
+    list_filter = ('name', 'marital_status', 'church_function', 'ebd_relation')
 
 admin.site.register(Post, PostAdmin)
-admin.site.register(Member)
+admin.site.register(Member, MemberAdmin)
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Schedule, ScheduleAdmin)
 admin.site.register(Church)

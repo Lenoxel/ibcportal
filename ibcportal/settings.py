@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # 'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'cloudinary',
+    'import_export',
     # project apps
     'core',
     'groups',

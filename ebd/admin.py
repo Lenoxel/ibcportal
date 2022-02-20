@@ -1,10 +1,12 @@
-from datetime import datetime
 from django.contrib import admin
 from .models import EBDClass, EBDClassLesson, EBDLessonPresenceRecord
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
+from import_export.admin import ExportActionMixin
 
-class EBDClassLessonAdmin(admin.ModelAdmin):
+class EBDClassLessonAdmin(ExportActionMixin, admin.ModelAdmin):
+    list_filter = ('title', 'date')
+
     def save_model(self, request, obj, form, change):
         # groups_values = request.user.groups.values_list('name', flat = True)
         # groups_values_as_list = list(groups_values)
@@ -32,6 +34,9 @@ class EBDClassLessonAdmin(admin.ModelAdmin):
         else:
             return PermissionDenied
 
+class EBDClassAdmin(ExportActionMixin, admin.ModelAdmin):
+    list_filter = ('name', 'students', 'teachers', 'secretaries')
 
-admin.site.register(EBDClass)
+
+admin.site.register(EBDClass, EBDClassAdmin)
 admin.site.register(EBDClassLesson, EBDClassLessonAdmin)
