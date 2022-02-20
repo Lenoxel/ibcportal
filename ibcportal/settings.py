@@ -161,6 +161,8 @@ REST_FRAMEWORK = {
     ]
 }
 
+JET_SIDE_MENU_COMPACT = True
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 

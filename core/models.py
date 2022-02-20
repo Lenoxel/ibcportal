@@ -54,6 +54,7 @@ MEMBERS_UNION_OPTIONS = [
 CHURCH_RELATION_OPTIONS = [
     ('membro', 'Membro'),
     ('congregado', 'Congregado'),
+    ('convidado', 'Convidado'),
 ]
 
 EBD_RELATION_OPTIONS = [
@@ -128,7 +129,7 @@ class Post(models.Model):
 class Member(models.Model):
     objects = models.Manager()
 
-    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE, null=True, blank=True, default=None)
+    user = models.OneToOneField(User, related_name='profile', verbose_name='Usuário', on_delete=models.CASCADE, null=True, blank=True, default=None)
     name = models.CharField('Nome', max_length=100)
     nickname = models.CharField('Conhecido como', max_length=25)
     description = models.TextField('Descrição', null=True, blank=True, max_length=300)
@@ -155,7 +156,7 @@ CHURCH_FUNCTION_OPTIONS, null=True, blank=True, max_length=50)
     whatsapp = models.CharField('WhatsApp', null=True, blank=True, max_length=100)
     facebook = models.CharField('Facebook', null=True, blank=True, max_length=100)
     instagram = models.CharField('Instagram', null=True, blank=True, max_length=100)
-    picture = CloudinaryField('Foto')
+    picture = CloudinaryField('Foto', null=True, blank=True)
     registration_date = models.DateField('Data do cadastro', null=True, blank=True, default=timezone.now)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
@@ -164,8 +165,8 @@ CHURCH_FUNCTION_OPTIONS, null=True, blank=True, max_length=50)
     # birthday_objects = managers.BirthdayManager()
 
     class Meta:
-        verbose_name = 'Membro'
-        verbose_name_plural = 'membros'
+        verbose_name = 'Pessoa'
+        verbose_name_plural = 'Pessoas'
         ordering = ['name']
 
     def __str__(self):
