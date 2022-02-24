@@ -1,11 +1,12 @@
 from django.shortcuts import render
+from ebd.models import EBDPresenceRecord
 from rest_framework import viewsets, status, generics
 from django.db.models import Q
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
-from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
+from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
@@ -167,6 +168,23 @@ class EventViewSet(viewsets.ModelViewSet):
         )
     ).order_by('start_date')
     serializer_class = EventSerializer
+
+class EBDPresenceViewSet(viewsets.ModelViewSet):
+    serializer_class = EBDPresenceRecordSerializer
+    def get_queryset(self):
+        return EBDPresenceRecord.objects.all()
+
+        # lesson_date = self.request.query_params.get('lessonDate', None)
+        # classId = self.request.query_params.get('classId', None)
+        # member_id = self.request.query_params.get('memberId', None)
+
+        # queryset = EBDPresenceRecord.objects.filter(
+        #     Q(lesson__lesson_date=lesson_date)
+        #     # Q(classId=classId),
+        #     # Q(member_id=member_id)
+        # ).order_by('-creation_date', 'ebd_class', 'student')
+
+        # return queryset
 
 @api_view(['GET', 'POST'])
 def device(request, format=None):

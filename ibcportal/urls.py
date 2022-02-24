@@ -1,9 +1,10 @@
+from posixpath import basename
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from api.views import CustomEBDTokenObtainPairView, CustomTokenObtainPairView, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
+from api.views import CustomEBDTokenObtainPairView, CustomTokenObtainPairView, EBDPresenceViewSet, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
 
 from rest_framework import routers
 
@@ -23,6 +24,7 @@ api_router.register(r'meetings', ScheduleViewSet)
 api_router.register(r'groups', GroupViewSet)
 api_router.register(r'congregations', CongregationViewSet)
 api_router.register(r'events', EventViewSet)
+api_router.register(r'ebd/presences', EBDPresenceViewSet, basename='EBDPresence')
 
 # url abaixa está depreciada, apenas mantendo-a por enquanto para não quebrar a chamada da última versão de teste do app
 api_router.register(r'celebrations', BirthdayCelebrationViewSet)

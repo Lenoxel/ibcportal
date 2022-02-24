@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from ebd.models import EBDPresenceRecord
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -185,6 +186,51 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
+        fields = '__all__'
+        depth = 1
+
+class EBDPresenceRecordSerializer(serializers.ModelSerializer):
+    student = serializers.SerializerMethodField()
+    lesson = serializers.SerializerMethodField()
+    ebd_class = serializers.SerializerMethodField()
+    ebd_church = serializers.SerializerMethodField()
+    created_by = serializers.SerializerMethodField()
+
+    def get_student(self, obj):
+        return {
+            'id': obj.student.id,
+            'name': obj.student.name,
+            'nickname': obj.student.nickname,
+            'picture': obj.student.picture.url
+        }
+
+    def get_lesson(self, obj):
+        return {
+            'id': obj.lesson.id,
+            'title': obj.lesson.title,
+            'date': obj.lesson.date
+        }
+
+    def get_ebd_class(self, obj):
+        return {
+            'id': obj.ebd_class.id,
+            'name': obj.ebd_class.name
+        }
+
+    def get_ebd_church(self, obj):
+        return {
+            'id': obj.ebd_church.id,
+            'name': obj.ebd_church.name
+        }
+
+    def get_created_by(self, obj):
+        return {
+            'id': obj.created_by.id,
+            'name': '{} {}'.format(obj.created_by.first_name, obj.created_by.last_name) if obj.created_by.first_name else ''
+        }
+
+    class Meta:
+        model = EBDPresenceRecord
         fields = '__all__'
         depth = 1
 

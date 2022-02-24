@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import EBDClass, EBDLesson, EBDPresenceRecord
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
@@ -23,14 +24,16 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
                         presence_record = presence_record.first() if presence_record else EBDPresenceRecord()
                     else:
                         presence_record = EBDPresenceRecord()
-                       
-                    presence_record.lesson = EBDLesson.objects.earliest('-id')
-                    presence_record.student = student
-                    presence_record.ebd_class = ebd_class
-                    presence_record.created_by = request.user
-                    print(presence_record)
-                    presence_record.save()
 
+                    ebdPresenceRecordObject = {
+                        'lesson': EBDLesson.objects.earliest('-id'),
+                        'student': student,
+                        'ebd_class': ebd_class,
+                        'created_by': request.user
+                    }
+                    presence_record.initialize_object(ebdPresenceRecordObject)
+                    presence_record.save()
+                       
                     # lesson_date = form.cleaned_data['date'].strftime('%d/%m/%Y')
                     # user_id = str(student.user)
                     # class_id = str(ebd_class.pk)
@@ -58,6 +61,7 @@ class EBDClassAdmin(ExportActionMixin, admin.ModelAdmin):
     list_filter = ('name', 'students', 'teachers', 'secretaries')
 
 class EBDPresenceRecordAdmin(ExportActionMixin, admin.ModelAdmin):
+    readonly_fields = ('lesson', 'student', 'ebd_class', 'ebd_church', 'created_by') 
     list_filter = ('lesson', 'student', 'ebd_class', 'attended', 'register_on')
 
 admin.site.register(EBDClass, EBDClassAdmin)

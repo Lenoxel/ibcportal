@@ -71,7 +71,13 @@ class EBDPresenceRecord(models.Model):
         ordering = ['-creation_date']
 
     def __str__(self):
-        return '{} - {} ({})'.format(self.lesson, self.student, self.ebd_class)
+        return '{} - {} ({})'.format(self.lesson.date.strftime('%d/%m/%Y'), self.student, self.ebd_class)
+
+    def initialize_object(self, ebdPresenceRecordObject):
+        self.lesson = ebdPresenceRecordObject.get('lesson')
+        self.student = ebdPresenceRecordObject.get('student')
+        self.ebd_class = ebdPresenceRecordObject.get('ebd_class')
+        self.created_by = ebdPresenceRecordObject.get('created_by')
 
 
 # Below: dynamoDB - EBD lesson presence record
