@@ -233,7 +233,7 @@ class EBDPresenceRecordSerializer(serializers.ModelSerializer):
         model = EBDPresenceRecord
         fields = '__all__'
         depth = 1
-
+    
 class NotificationDeviceSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     device_id = serializers.CharField()

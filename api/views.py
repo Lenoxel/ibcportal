@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from ebd.models import EBDPresenceRecord
+from ebd.models import EBDClass, EBDLesson, EBDPresenceRecord
 from rest_framework import viewsets, status, generics
 from django.db.models import Q
 # from rest_framework.authtoken.views import ObtainAuthToken
@@ -169,23 +169,6 @@ class EventViewSet(viewsets.ModelViewSet):
     ).order_by('start_date')
     serializer_class = EventSerializer
 
-class EBDPresenceViewSet(viewsets.ModelViewSet):
-    serializer_class = EBDPresenceRecordSerializer
-    def get_queryset(self):
-        return EBDPresenceRecord.objects.all()
-
-        # lesson_date = self.request.query_params.get('lessonDate', None)
-        # classId = self.request.query_params.get('classId', None)
-        # member_id = self.request.query_params.get('memberId', None)
-
-        # queryset = EBDPresenceRecord.objects.filter(
-        #     Q(lesson__lesson_date=lesson_date)
-        #     # Q(classId=classId),
-        #     # Q(member_id=member_id)
-        # ).order_by('-creation_date', 'ebd_class', 'student')
-
-        # return queryset
-
 @api_view(['GET', 'POST'])
 def device(request, format=None):
     if request.method == 'GET':
@@ -283,3 +266,88 @@ def device(request, format=None):
 #     def get_serializer_class(self):
 #         serializer = EBDLessonPresenceRecordSerializer
 #         return serializer
+
+
+class EBDPresenceViewSet(viewsets.ModelViewSet):
+    serializer_class = EBDPresenceRecordSerializer
+    def get_queryset(self):
+        # return EBDPresenceRecord.objects.all()
+
+        return EBDPresenceRecord.objects.raw('''
+            SELECT * from ebd_EBDPresenceRecord
+        ''')
+
+        # lesson_date = self.request.query_params.get('lessonDate', None)
+        # classId = self.request.query_params.get('classId', None)def get_queryset
+        # ).order_by('-creation_date', 'ebd_class', 'student')
+
+        # return queryset
+
+class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
+    def list(self, request):
+        classes_count = EBDClass.objects.count()
+        lessons_count = EBDLesson.objects.count()
+        students_average_count = EBDPresenceRecord.objects.raw('''
+            SELECT 1 as id, AVG(count) average FROM (
+                SELECT id, lesson_id, COUNT(*) count
+                FROM ebd_EBDPresenceRecord
+                WHERE attended = 1
+                GROUP BY lesson_id
+            ) AS T
+        ''')
+
+        return Response({
+            'classes_count': classes_count or 0,
+            'lessons_count': lessons_count or 0,
+            'students_average_count': students_average_count[0].average or 0
+        })
+
+
+class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
+    def list(self, request):
+        presence_history = EBDPresenceRecord.objects.raw('''
+            SELECT id, lesson_id, (CASE WHEN attended = 1 THEN 1 END) presents, (CASE WHEN attended = 0 THEN 1 END) absents
+            FROM ebd_EBDPresenceRecord
+            GROUP BY lesson_id
+        ''')
+
+        formatted_presence_history = []
+
+        for data in presence_history:
+            formatted_presence_history.append({
+                'lesson_title': data.lesson.title,
+                'lesson_date': data.lesson.date,
+                'presents': data.presents or 0,
+                'absents': data.absents or 0
+            })
+
+        return Response(formatted_presence_history)
+
+class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
+    def list(self, request):
+        presence_users = EBDPresenceRecord.objects.raw('''
+            SELECT * FROM (SELECT id, student_id, true role_model, (CASE WHEN attended = 1 THEN 1 END) presences, (CASE WHEN attended = 0 THEN 1 END) absences
+            FROM ebd_EBDPresenceRecord
+            GROUP BY student_id
+            ORDER BY presences DESC
+            LIMIT 5)
+            UNION
+            SELECT * FROM (SELECT id, student_id, false role_model, (CASE WHEN attended = 1 THEN 1 END) presences, (CASE WHEN attended = 0 THEN 1 END) absences
+            FROM ebd_EBDPresenceRecord
+            GROUP BY student_id
+            ORDER BY absences DESC
+            LIMIT 5)
+        ''')
+
+        formatted_presence_users = []
+
+        for data in presence_users:
+            formatted_presence_users.append({
+                'student_name': data.student.name,
+                'student_picture_url': data.student.picture.url,
+                'presences': data.presences or 0,
+                'absences': data.absences or 0,
+                'role_model': data.role_model
+            })
+
+        return Response(formatted_presence_users)
