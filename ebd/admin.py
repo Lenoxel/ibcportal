@@ -2,7 +2,6 @@ from django.contrib import admin
 
 from .models import EBDClass, EBDLesson, EBDPresenceRecord
 from django.core.exceptions import PermissionDenied
-from django.utils import timezone
 from import_export import resources
 from import_export.admin import ExportActionMixin, ExportMixin
 
