@@ -292,7 +292,7 @@ class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
                 SELECT id, lesson_id, COUNT(*) count
                 FROM ebd_EBDPresenceRecord
                 WHERE attended = TRUE
-                GROUP BY lesson_id
+                GROUP BY id, lesson_id
             ) AS T
         ''')
 
@@ -306,7 +306,7 @@ class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
 class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
     def list(self, request):
         presence_history = EBDPresenceRecord.objects.raw('''
-            SELECT id, lesson_id, (CASE WHEN attended = TRUE THEN 1 END) presents, (CASE WHEN attended = FALSE THEN 1 END) absents
+            SELECT 1 as id, lesson_id, (CASE WHEN attended = TRUE THEN 1 END) presents, (CASE WHEN attended = FALSE THEN 1 END) absents
             FROM ebd_EBDPresenceRecord
             GROUP BY lesson_id
         ''')
@@ -326,17 +326,17 @@ class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
         presence_users = EBDPresenceRecord.objects.raw('''
-            SELECT * FROM (SELECT id, student_id, true role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
+            SELECT * FROM (SELECT 1 as id, student_id, true role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
             FROM ebd_EBDPresenceRecord
             GROUP BY student_id
             ORDER BY presences DESC
-            LIMIT 5)
+            LIMIT 5) AS T
             UNION
-            SELECT * FROM (SELECT id, student_id, false role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
+            SELECT * FROM (SELECT 1 as id, student_id, false role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
             FROM ebd_EBDPresenceRecord
             GROUP BY student_id
             ORDER BY absences DESC
-            LIMIT 5)
+            LIMIT 5) AS T2
         ''')
 
         formatted_presence_users = []
