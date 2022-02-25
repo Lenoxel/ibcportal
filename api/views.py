@@ -291,7 +291,7 @@ class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
             SELECT 1 as id, AVG(count) average FROM (
                 SELECT id, lesson_id, COUNT(*) count
                 FROM ebd_EBDPresenceRecord
-                WHERE attended = 1
+                WHERE attended = TRUE
                 GROUP BY lesson_id
             ) AS T
         ''')
@@ -306,7 +306,7 @@ class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
 class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
     def list(self, request):
         presence_history = EBDPresenceRecord.objects.raw('''
-            SELECT id, lesson_id, (CASE WHEN attended = 1 THEN 1 END) presents, (CASE WHEN attended = 0 THEN 1 END) absents
+            SELECT id, lesson_id, (CASE WHEN attended = TRUE THEN 1 END) presents, (CASE WHEN attended = FALSE THEN 1 END) absents
             FROM ebd_EBDPresenceRecord
             GROUP BY lesson_id
         ''')
@@ -326,13 +326,13 @@ class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
         presence_users = EBDPresenceRecord.objects.raw('''
-            SELECT * FROM (SELECT id, student_id, true role_model, (CASE WHEN attended = 1 THEN 1 END) presences, (CASE WHEN attended = 0 THEN 1 END) absences
+            SELECT * FROM (SELECT id, student_id, true role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
             FROM ebd_EBDPresenceRecord
             GROUP BY student_id
             ORDER BY presences DESC
             LIMIT 5)
             UNION
-            SELECT * FROM (SELECT id, student_id, false role_model, (CASE WHEN attended = 1 THEN 1 END) presences, (CASE WHEN attended = 0 THEN 1 END) absences
+            SELECT * FROM (SELECT id, student_id, false role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
             FROM ebd_EBDPresenceRecord
             GROUP BY student_id
             ORDER BY absences DESC
