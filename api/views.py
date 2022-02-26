@@ -6,7 +6,7 @@ from django.db.models import Q
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
-from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
+from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDLessonSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
@@ -267,6 +267,9 @@ def device(request, format=None):
 #         serializer = EBDLessonPresenceRecordSerializer
 #         return serializer
 
+class EBDLessonViewSet(viewsets.ModelViewSet):
+    queryset = EBDLesson.objects.all().order_by('-date')
+    serializer_class = EBDLessonSerializer
 
 class EBDPresenceViewSet(viewsets.ModelViewSet):
     serializer_class = EBDPresenceRecordSerializer
@@ -288,8 +291,8 @@ class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
         classes_count = EBDClass.objects.count()
         lessons_count = EBDLesson.objects.count()
         students_average_count = EBDPresenceRecord.objects.raw('''
-            SELECT 1 as id, AVG(count) average FROM (
-                SELECT id, lesson_id, COUNT(*) count
+            SELECT MAX(id) id, AVG(count) average FROM (
+                SELECT MAX(id) id, lesson_id, COUNT(*) count
                 FROM ebd_EBDPresenceRecord
                 WHERE attended = TRUE
                 GROUP BY
@@ -307,9 +310,9 @@ class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
 class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
     def list(self, request):
         presence_history = EBDPresenceRecord.objects.raw('''
-            SELECT 1 as id, lesson_id, (CASE WHEN attended = TRUE THEN 1 END) presents, (CASE WHEN attended = FALSE THEN 1 END) absents
+            SELECT MAX(id) id, lesson_id, (CASE WHEN attended = TRUE THEN 1 END) presents, (CASE WHEN attended = FALSE THEN 1 END) absents, MAX(id) id
             FROM ebd_EBDPresenceRecord
-            GROUP BY 
+            GROUP BY
             lesson_id
         ''')
 
@@ -328,14 +331,14 @@ class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
         presence_users = EBDPresenceRecord.objects.raw('''
-            SELECT * FROM (SELECT 1 as id, student_id, true role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
+            SELECT * FROM (SELECT MAX(id) id, student_id, true role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
             FROM ebd_EBDPresenceRecord
             GROUP BY
             student_id
             ORDER BY presences DESC
             LIMIT 5) AS T
             UNION
-            SELECT * FROM (SELECT 1 as id, student_id, false role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
+            SELECT * FROM (SELECT MAX(id) id, student_id, false role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
             FROM ebd_EBDPresenceRecord
             GROUP BY 
             id,

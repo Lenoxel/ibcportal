@@ -5,11 +5,11 @@ import cloudinary
 from django.dispatch import receiver
 from core.models import DEFAULT_CHURCH_ID, Church, Member
 # from ibcportal import settings
-from django.conf import settings
+# from django.conf import settings
 
 from pynamodb.models import Model
 # from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
-from pynamodb.attributes import BooleanAttribute, UnicodeAttribute, UTCDateTimeAttribute
+# from pynamodb.attributes import BooleanAttribute, UnicodeAttribute, UTCDateTimeAttribute
 from django.contrib.auth.models import User
 
 class EBDClass(models.Model):

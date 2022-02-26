@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from ebd.models import EBDPresenceRecord
+from ebd.models import EBDLesson, EBDPresenceRecord
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -186,6 +186,12 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
+        fields = '__all__'
+        depth = 1
+
+class EBDLessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EBDLesson
         fields = '__all__'
         depth = 1
 
