@@ -1,4 +1,6 @@
-from django.http import JsonResponse
+from datetime import date
+# from django.http import JsonResponse
+from django.db.models import Avg, Count
 from ebd.models import EBDLesson, EBDPresenceRecord
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -190,6 +192,19 @@ class EventSerializer(serializers.ModelSerializer):
         depth = 1
 
 class EBDLessonSerializer(serializers.ModelSerializer):
+    is_next_lesson = serializers.SerializerMethodField()
+    presence_records = serializers.SerializerMethodField()
+
+    def get_is_next_lesson(self, obj):
+        return True if obj.date > date.today() else False
+
+    def get_presence_records(self, obj):
+        return {
+            'presents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, attended = True).count(),
+            'absents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, attended = False).count(),
+            'pending_calls': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk).values('ebd_class__name').filter(attended=False).annotate(count=Count('attended'))
+        }
+
     class Meta:
         model = EBDLesson
         fields = '__all__'
