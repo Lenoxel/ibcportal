@@ -200,8 +200,9 @@ class EBDLessonSerializer(serializers.ModelSerializer):
 
     def get_presence_records(self, obj):
         return {
-            'presents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, attended = True).count(),
-            'absents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, attended = False).count(),
+            'presents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended = True).count(),
+            'absents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended = False).count(),
+            'pending':  EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=True).count(),
             'pending_calls': (EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=True)).values('ebd_class__name').annotate(count=Count('ebd_class__name', distinct=True))
         }
 
