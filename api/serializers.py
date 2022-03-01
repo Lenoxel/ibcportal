@@ -202,7 +202,7 @@ class EBDLessonSerializer(serializers.ModelSerializer):
         return {
             'presents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, attended = True).count(),
             'absents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, attended = False).count(),
-            'pending_calls': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, attended=False).values('ebd_class__id', 'ebd_class__name').annotate(count=Count('ebd_class__id', distinct=True))
+            'pending_calls': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, attended=False).values('ebd_class__name').annotate(count=Count('ebd_class__id', distinct=True))
         }
 
     class Meta:
