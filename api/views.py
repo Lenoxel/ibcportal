@@ -278,9 +278,9 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
         classes = EBDPresenceRecord.objects.filter(lesson__pk=pk).values(class_id=F('ebd_class__id'), class_name=F('ebd_class__name')).order_by('class_name').distinct('class_name')
         return Response(classes)
 
-    # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/students
-    @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='students_by_class_and_lesson')
-    def get_students_by_class_and_lesson(self, request, pk=None, class_id=None):
+    # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences
+    @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='presences_by_class_and_lesson')
+    def get_presences_by_class_and_lesson(self, request, pk=None, class_id=None):
         presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'register_on', student_name=F('student__name'), student_nickname=F('student__nickname'), student_ebd_relation=F('student__ebd_relation')).order_by('student__name').distinct('student__name')
         return Response(presences)
 
