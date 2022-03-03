@@ -1,7 +1,7 @@
 from datetime import date
 # from django.http import JsonResponse
-from django.db.models import Avg, Count
-from ebd.models import EBDLesson, EBDPresenceRecord
+from django.db.models import Count, F
+from ebd.models import EBDClass, EBDLesson, EBDPresenceRecord
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -203,11 +203,17 @@ class EBDLessonSerializer(serializers.ModelSerializer):
             'presents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended = True).count(),
             'absents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended = False).count(),
             'pending':  EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=True).count(),
-            'pending_calls': (EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=True)).values('ebd_class__name').annotate(count=Count('ebd_class__name', distinct=True))
+            'pending_calls': (EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=True)).values(class_name=F('ebd_class__name')).annotate(count=Count('ebd_class__name', distinct=True))
         }
 
     class Meta:
         model = EBDLesson
+        fields = '__all__'
+        depth = 1
+
+class EBDClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EBDClass
         fields = '__all__'
         depth = 1
 

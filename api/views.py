@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from ebd.models import EBDClass, EBDLesson, EBDPresenceRecord
 from rest_framework import viewsets, status, generics
-from django.db.models import Q
+from django.db.models import Q, F
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
-from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDLessonSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
+from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDClassSerializer, EBDLessonSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
@@ -16,7 +16,7 @@ from datetime import timedelta
 # from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
@@ -270,6 +270,19 @@ def device(request, format=None):
 class EBDLessonViewSet(viewsets.ModelViewSet):
     queryset = EBDLesson.objects.all().order_by('-date')
     serializer_class = EBDLessonSerializer
+
+    # Cria a rota api/ebd/lessons/{pk}/classes
+    @action(detail=True, url_path='classes', url_name='classes_by_lesson')
+    def get_classes_by_lesson(self, request, pk=None):
+        # ebd_lesson = self.get_object()
+        classes = EBDPresenceRecord.objects.filter(lesson__pk=pk).values(class_id=F('ebd_class__id'), class_name=F('ebd_class__name'))
+        return Response(classes)
+
+    # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/students
+    @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/students', url_name='students_by_class_and_lesson')
+    def get_students_by_class_and_lesson(self, request, pk=None, class_id=None):
+        students = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values(student_name=F('student__name'), student_nickname=F('student__nickname'), ebd_relation=F('student__ebd_relation'), student_attended=F('attended'), presence_register_on=F('register_on'))
+        return Response(students)
 
 class EBDPresenceViewSet(viewsets.ModelViewSet):
     serializer_class = EBDPresenceRecordSerializer

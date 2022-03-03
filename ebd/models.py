@@ -13,8 +13,6 @@ from pynamodb.models import Model
 from django.contrib.auth.models import User
 
 class EBDClass(models.Model):
-    objects = models.Manager()
-
     name = models.CharField('Nome', max_length=50)
     description = models.CharField('Descrição', max_length=200, null=True, blank=True)
     background_image = CloudinaryField('Imagem da turma', null=True, blank=True)

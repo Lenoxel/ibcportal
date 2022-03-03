@@ -25,7 +25,7 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
                         presence_record = EBDPresenceRecord()
 
                     ebdPresenceRecordObject = {
-                        'lesson': EBDLesson.objects.earliest('-id'),
+                        'lesson': EBDLesson.objects.filter(pk=obj.pk) if change else EBDLesson.objects.earliest('-id'),
                         'student': student,
                         'ebd_class': ebd_class,
                         'created_by': request.user
