@@ -281,7 +281,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/students
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/students', url_name='students_by_class_and_lesson')
     def get_students_by_class_and_lesson(self, request, pk=None, class_id=None):
-        students = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values(student_name=F('student__name'), student_nickname=F('student__nickname'), ebd_relation=F('student__ebd_relation'), student_attended=F('attended'), presence_register_on=F('register_on'))
+        students = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'register_on', student_name=F('student__name'), student_nickname=F('student__nickname'), student_ebd_relation=F('student__ebd_relation'))
         return Response(students)
 
 class EBDPresenceViewSet(viewsets.ModelViewSet):
