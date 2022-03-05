@@ -297,11 +297,11 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
             token['is_superuser'] = user.is_superuser
 
             if not user.is_superuser and not user.groups.all().values():
-                classes = EBDClass.objects.filter(
+                classes = list(EBDClass.objects.filter(
                     Q(secretaries__in=[user.pk])
                     |
                     Q(teachers__in=[user.pk])
-                )
+                ).values())
                 token['classes'] = classes
 
             return token
