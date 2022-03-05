@@ -1,6 +1,6 @@
 from datetime import date
 # from django.http import JsonResponse
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 from ebd.models import EBDClass, EBDLesson, EBDPresenceRecord
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -290,12 +290,19 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Secretários de classes de EBD').exists():
             token = super().get_token(user)
 
-
             token['user_id'] = user.pk
             token['email'] = user.email
             token['name'] = (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
             token['groups'] = list(user.groups.all().values())
             token['is_superuser'] = user.is_superuser
+
+            if not user.is_superuser and not user.groups.all().values():
+                classes = EBDClass.objects.filter(
+                    Q(secretaries__in=[user.pk])
+                    |
+                    Q(teachers__in=[user.pk])
+                )
+                token['classes'] = classes
 
             return token
         else:
