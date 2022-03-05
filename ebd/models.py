@@ -33,7 +33,8 @@ class EBDClass(models.Model):
 
 @receiver(pre_delete, sender=EBDClass)
 def ebd_class_background_image_delete(sender, instance, **kwargs):
-    cloudinary.uploader.destroy(instance.background_image.public_id)
+    if instance.background_image:
+        cloudinary.uploader.destroy(instance.background_image.public_id)
 
 class EBDLesson(models.Model):
     title = models.CharField('Lição', max_length=100)
