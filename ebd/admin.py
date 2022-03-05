@@ -19,13 +19,13 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
             for ebd_class in ebd_classes:
                 for student in ebd_class.students.all():
                     if change:
-                        presence_record = EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, student__pk=student.pk)
-                        presence_record = presence_record.first() if presence_record else EBDPresenceRecord()
+                        presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, student__pk=student.pk)
+                        presence_record = presence_record or EBDPresenceRecord()
                     else:
                         presence_record = EBDPresenceRecord()
 
                     ebdPresenceRecordObject = {
-                        'lesson': EBDLesson.objects.filter(pk=obj.pk) if change else EBDLesson.objects.earliest('-id'),
+                        'lesson': EBDLesson.objects.get(pk=obj.pk) if change else EBDLesson.objects.earliest('-id'),
                         'student': student,
                         'ebd_class': ebd_class,
                         'created_by': request.user
