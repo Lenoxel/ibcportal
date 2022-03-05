@@ -12,7 +12,7 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
         # groups_values = request.user.groups.values_list('name', flat = True)
         # groups_values_as_list = list(groups_values)
 
-        if request.user.is_superuser or request.user.groups.filter(name='Secretaria da Igreja').exists():
+        if request.user.is_superuser or request.user.groups.filter(name='Secretaria da Igreja').exists() or request.user.groups.filter(name='Admin').exists():
             super().save_model(request, obj, form, change)
 
             ebd_classes = [form.cleaned_data['ebd_class']] if form.cleaned_data['ebd_class'] is not None else EBDClass.objects.all()
@@ -47,7 +47,7 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
             return PermissionDenied
 
     def delete_model(self, request, obj):
-        if request.user.is_superuser or request.user.groups.filter(name='Secretaria da Igreja').exists():
+        if request.user.is_superuser or request.user.groups.filter(name='Secretaria da Igreja').exists() or request.user.groups.filter(name='Admin').exists():
             super().delete_model(request, obj)
         else:
             return PermissionDenied
