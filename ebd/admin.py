@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import EBDClass, EBDLesson, EBDPresenceRecord
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from import_export import resources
 from import_export.admin import ExportActionMixin, ExportMixin
 
@@ -19,8 +19,10 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
             for ebd_class in ebd_classes:
                 for student in ebd_class.students.all():
                     if change:
-                        presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, student__pk=student.pk)
-                        presence_record = presence_record or EBDPresenceRecord()
+                        try:
+                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, student__pk=student.pk)
+                        except ObjectDoesNotExist:
+                            presence_record = EBDPresenceRecord()
                     else:
                         presence_record = EBDPresenceRecord()
 
