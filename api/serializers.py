@@ -1,7 +1,7 @@
 from datetime import date
 # from django.http import JsonResponse
 from django.db.models import Count, F, Q
-from ebd.models import EBDClass, EBDLesson, EBDPresenceRecord
+from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -223,6 +223,7 @@ class EBDPresenceRecordSerializer(serializers.ModelSerializer):
     ebd_class = serializers.SerializerMethodField()
     ebd_church = serializers.SerializerMethodField()
     created_by = serializers.SerializerMethodField()
+    labels = serializers.SerializerMethodField()
 
     def get_student(self, obj):
         return {
@@ -257,9 +258,23 @@ class EBDPresenceRecordSerializer(serializers.ModelSerializer):
             'name': '{} {}'.format(obj.created_by.first_name, obj.created_by.last_name) if obj.created_by.first_name else ''
         }
 
+    def get_labels(self, obj):
+        return EBDPresenceRecordLabels.objects.filter(ebd_presence_record__pk=obj.pk).values('creation_date', 'last_updated_date', label=F('ebd_label_option'))
+
     class Meta:
         model = EBDPresenceRecord
         fields = '__all__'
+        depth = 1
+
+class EBDLabelOptionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EBDLabelOptions
+        fields = ('id', 'title', 'type')
+
+class EBDPresenceRecordLabelsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EBDPresenceRecordLabels
+        fields = ('id', 'ebd_presence_record', 'ebd_label_option', 'creation_date', 'last_updated_date')
         depth = 1
     
 class NotificationDeviceSerializer(serializers.Serializer):

@@ -1,12 +1,12 @@
 from django.shortcuts import render
-from ebd.models import EBDClass, EBDLesson, EBDPresenceRecord
+from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import viewsets, status, generics
 from django.db.models import Q, F
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
-from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDClassSerializer, EBDLessonSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
+from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDClassSerializer, EBDLabelOptionsSerializer, EBDLessonSerializer, EBDPresenceRecordLabelsSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
@@ -298,6 +298,15 @@ class EBDPresenceViewSet(viewsets.ModelViewSet):
         # ).order_by('-creation_date', 'ebd_class', 'student')
 
         # return queryset
+
+
+class EBDLabelOptionsViewSet(viewsets.ModelViewSet):
+    queryset = EBDLabelOptions.objects.all().order_by('-type')
+    serializer_class = EBDLabelOptionsSerializer
+
+class EBDPresenceRecordLabelsViewSet(viewsets.ModelViewSet):
+    queryset = EBDPresenceRecordLabels.objects.all().order_by('-ebd_presence_record__lesson__date', 'ebd_presence_record__student__name')
+    serializer_class = EBDPresenceRecordLabelsSerializer
 
 class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
     def list(self, request):

@@ -12,6 +12,12 @@ from pynamodb.models import Model
 # from pynamodb.attributes import BooleanAttribute, UnicodeAttribute, UTCDateTimeAttribute
 from django.contrib.auth.models import User
 
+EBD_PRESENCE_RECORD_LABEL_OPTIONS = [
+    ('positive', 'Positivo'),
+    ('negative', 'Negativo'),
+    ('neutral', 'Neutro'),
+]
+
 class EBDClass(models.Model):
     name = models.CharField('Nome', max_length=50)
     description = models.CharField('Descrição', max_length=200, null=True, blank=True)
@@ -61,6 +67,7 @@ class EBDPresenceRecord(models.Model):
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     created_by = models.ForeignKey(User, verbose_name='Criado por', null=True, on_delete=models.SET_NULL)
     attended = models.BooleanField('Presente', default=False)
+    justification = models.CharField('Justificativa da Falta', max_length=500, null=True, blank=True)
     register_on = models.DateTimeField('Registro em', blank=True, null=True)
     # register_by = models.ForeignKey(User, verbose_name='Última atualização por', null=True, on_delete=models.SET_NULL)
 
@@ -78,6 +85,33 @@ class EBDPresenceRecord(models.Model):
         self.ebd_class = ebdPresenceRecordObject.get('ebd_class')
         self.created_by = ebdPresenceRecordObject.get('created_by')
 
+class EBDLabelOptions(models.Model):
+    title = models.CharField('Label', max_length=100)
+    type = models.CharField('Tipo', choices=EBD_PRESENCE_RECORD_LABEL_OPTIONS, max_length=30, null=True, blank=True)
+    creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Label de EBD'
+        verbose_name_plural = 'Labels de EBD'
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+class EBDPresenceRecordLabels(models.Model):
+    ebd_presence_record = models.ForeignKey(EBDPresenceRecord, related_name='ebd_presence_record', verbose_name='Registro de Presença', on_delete=models.CASCADE)
+    ebd_label_option = models.ForeignKey(EBDLabelOptions, related_name='ebd_label_option', verbose_name='Label', on_delete=models.CASCADE)
+    creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Label de aluno na EBD'
+        verbose_name_plural = 'Labels dos alunos na EBD'
+        ordering = ['-last_updated_date']
+
+    def __str__(self):
+        return 'Em {}, {} recebeu o label {}'.format(self.ebd_presence_record.lesson.date.strftime('%d/%m/%Y'), self.ebd_presence_record.student, self.ebd_label_option)
 
 # Below: dynamoDB - EBD lesson presence record
 

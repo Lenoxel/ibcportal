@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import EBDClass, EBDLesson, EBDPresenceRecord
+from .models import EBDClass, EBDLabelOptions, EBDLesson, EBDPresenceRecord, EBDPresenceRecordLabels
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from import_export import resources
 from import_export.admin import ExportActionMixin, ExportMixin
@@ -62,9 +62,15 @@ class EBDClassAdmin(ExportActionMixin, admin.ModelAdmin):
     list_filter = ('name', 'students', 'teachers', 'secretaries')
 
 class EBDPresenceRecordAdmin(ExportActionMixin, admin.ModelAdmin):
-    readonly_fields = ('lesson', 'student', 'ebd_class', 'ebd_church', 'created_by') 
+    readonly_fields = ('lesson', 'student', 'ebd_class', 'ebd_church', 'created_by', 'attended', 'register_on') 
     list_filter = ('lesson', 'student', 'ebd_class', 'attended', 'register_on')
+
+class EBDPresenceRecordLabelsAdmin(ExportActionMixin, admin.ModelAdmin):
+    readonly_fields = ('ebd_presence_record', 'ebd_label_option') 
+    list_filter = ('ebd_presence_record', 'ebd_label_option') 
 
 admin.site.register(EBDClass, EBDClassAdmin)
 admin.site.register(EBDLesson, EBDLessonAdmin)
 admin.site.register(EBDPresenceRecord, EBDPresenceRecordAdmin)
+admin.site.register(EBDPresenceRecordLabels, EBDPresenceRecordLabelsAdmin)
+admin.site.register(EBDLabelOptions)
