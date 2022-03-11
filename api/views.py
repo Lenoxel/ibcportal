@@ -281,7 +281,12 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='presences_by_class_and_lesson')
     def get_presences_by_class_and_lesson(self, request, pk=None, class_id=None):
-        presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'register_on', student_name=F('student__name'), student_nickname=F('student__nickname'), student_ebd_relation=F('student__ebd_relation'), lesson_title=F('lesson__title')).order_by('student__name').distinct('student__name')
+        presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'register_on', student_name=F('student__name'), student_nickname=F('student__nickname'), student_ebd_relation=F('student__ebd_relation'), lesson_title=F('lesson__title')).order_by('student__name')
+
+        for presence in presences:
+            labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
+            presence['labels'] = labels
+
         return Response(presences)
 
 class EBDPresenceViewSet(viewsets.ModelViewSet):
