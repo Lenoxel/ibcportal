@@ -302,7 +302,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
-        if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists() or len(list(EBDClass.objects.filter(teachers__in=[user.pk]).values('id', 'name'))) or len(list(EBDClass.objects.filter(secretaries__in=[user.pk]).values('id', 'name'))):
+        # if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists() or len(list(EBDClass.objects.filter(teachers__in=[user.pk]).values('id', 'name'))) or len(list(EBDClass.objects.filter(secretaries__in=[user.pk]).values('id', 'name'))):
+        if True:
             token = super().get_token(user)
 
             token['user_id'] = user.pk
@@ -321,7 +322,7 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
 
             return token
         else:
-          raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
+          raise ValidationError({'message': 'Você não tem permissão para acessar esse recurso.'}, code=403)
 
 # class EBDLessonPresenceRecordSerializer(serializers.Serializer):
 #     lesson_date = serializers.CharField()
