@@ -302,7 +302,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
-        if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists():
+        if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists() or len(list(EBDClass.objects.filter(teachers__in=[user.pk]).values('id', 'name'))) or len(list(EBDClass.objects.filter(secretaries__in=[user.pk]).values('id', 'name'))):
             token = super().get_token(user)
 
             token['user_id'] = user.pk
