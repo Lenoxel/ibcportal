@@ -313,10 +313,10 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
             token['is_superuser'] = user.is_superuser
 
             if not user.is_superuser and not user.groups.filter(name='Secretaria da Igreja').exists() and not user.groups.filter(name='Admin').exists():
-                classes_as_a_teacher = list(EBDClass.objects.filter(teachers__in=[user.pk]).values('id', 'name'))
+                classes_as_a_teacher = list(EBDClass.objects.filter(teachers__in=[user.member.pk]).values('id', 'name'))
                 token['classes_as_a_teacher'] = classes_as_a_teacher
                 print(classes_as_a_teacher)
-                classes_as_a_secretary = list(EBDClass.objects.filter(secretaries__in=[user.pk]).values('id', 'name'))
+                classes_as_a_secretary = list(EBDClass.objects.filter(secretaries__in=[user.member.pk]).values('id', 'name'))
                 token['classes_as_a_secretary'] = classes_as_a_secretary
                 print(classes_as_a_teacher)
 
