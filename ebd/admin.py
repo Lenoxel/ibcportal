@@ -1,11 +1,27 @@
 from django.contrib import admin
 
+from core.models import Member
+
 from .models import EBDClass, EBDLabelOptions, EBDLesson, EBDPresenceRecord, EBDPresenceRecordLabels
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from import_export import resources
-from import_export.admin import ExportActionMixin, ExportMixin
+from import_export import fields, resources
+from import_export.fields import Field
+from import_export.widgets import ManyToManyWidget  
+from import_export.admin import ExportActionMixin
+
+class EBDLessonResource(resources.ModelResource):
+    title = Field(attribute='name', column_name='Lição')
+    date = Field(attribute='date', column_name='Data da lição')
+    number = Field(attribute='number', column_name='Número da lição')
+    creation_date = Field(attribute='creation_date', column_name='Criada em')
+    last_updated_date = Field(attribute='last_updated_date', column_name='Última atualização')
+
+    class Meta:
+        model = EBDLesson
+        fields = ('title', 'date', 'number', 'creation_date', 'last_updated_date')
 
 class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
+    resource_class = EBDLessonResource
     list_filter = ('title', 'date')
 
     def save_model(self, request, obj, form, change):
@@ -52,16 +68,35 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
         else:
             return PermissionDenied
 
-# class EBDClassResource(resources.ModelResource):
-#     class Meta:
-#         model = EBDClass
-#         fields = ('name', 'church__name', 'students__name', 'teachers__name', 'secretaries__name')
+class EBDClassResource(resources.ModelResource):
+    name = Field(attribute='name', column_name='Classe')
+    church = Field(attribute='name', column_name='Igreja')
+    students = fields.Field(attribute='students', widget=ManyToManyWidget(Member, field='name'), column_name='Alunos')
+    teachers = fields.Field(attribute='teachers', widget=ManyToManyWidget(Member, field='name'), column_name='Professores')
+    secretaries = fields.Field(attribute='secretaries', widget=ManyToManyWidget(Member, field='name'), column_name='Secretários')
+
+    class Meta:
+        model = EBDClass
+        fields = ('name', 'church', 'students', 'teachers', 'secretaries')
 
 class EBDClassAdmin(ExportActionMixin, admin.ModelAdmin):
-    # resource_class = EBDClassResource
+    resource_class = EBDClassResource
     list_filter = ('name', 'students', 'teachers', 'secretaries')
 
+class EBDPresenceRecordResource(resources.ModelResource):
+    lesson = Field(attribute='lesson__title', column_name='Lição')
+    student = Field(attribute='student__name', column_name='Aluno')
+    ebd_class = Field(attribute='ebd_class__name', column_name='Classe')
+    attended = Field(attribute='attended', column_name='Presente')
+    justification = Field(attribute='justification', column_name='Justificativa de falta')
+    register_on = Field(attribute='register_on', column_name='Registro de presença em')
+
+    class Meta:
+        model = EBDPresenceRecord
+        fields = ('lesson', 'student', 'ebd_class', 'attended', 'justification', 'register_on')
+
 class EBDPresenceRecordAdmin(ExportActionMixin, admin.ModelAdmin):
+    resource_class = EBDPresenceRecordResource
     readonly_fields = ('lesson', 'student', 'ebd_class', 'ebd_church', 'created_by', 'attended', 'register_on') 
     list_filter = ('lesson', 'student', 'ebd_class', 'attended', 'register_on')
 
