@@ -10,7 +10,7 @@ from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPa
 from datetime import timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
-# from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 # from django.utils import timezone
 
 # from rest_framework.authtoken.models import Token
@@ -286,8 +286,33 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
         for presence in presences:
             labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
             presence['labels'] = labels
+            presence['labelIds'] = map(lambda label: label['id'], labels)
 
         return Response(presences)
+
+    @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences/(?P<presence_id>\d+)', url_name='update_presence_record', methods=['put'])
+    def update_presence_record(self, request, pk=None, class_id=None, presence_id=None):
+        try:
+            ebd_presence_record = EBDPresenceRecord.objects.get(pk=presence_id)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Não existe uma preseça registrada com esse id'}, status=status.HTTP_404_NOT_FOUND)
+
+        ebd_presence_record.save_presence_record(request.data)
+
+        for label in request.data.get('labels'):
+            ebd_label_option = EBDLabelOptions.objects.get(pk=label.get('id'))
+
+            try:
+                presence_record_label = EBDPresenceRecordLabels.objects.get(ebd_presence_record__id=presence_id, ebd_label_option__id=label.get('id'))
+            except ObjectDoesNotExist:
+                presence_record_label = EBDPresenceRecordLabels.objects.create(ebd_presence_record=ebd_presence_record, ebd_label_option=ebd_label_option)
+            
+            presence_record_label.save_presence_record_label({
+                'ebd_presence_record': ebd_presence_record,
+                'ebd_label_option': ebd_label_option,
+            })
+                
+        return Response({'message': 'Registro de presença atualizado com sucesso!'})
 
 class EBDPresenceViewSet(viewsets.ModelViewSet):
     serializer_class = EBDPresenceRecordSerializer

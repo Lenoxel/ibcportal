@@ -79,11 +79,19 @@ class EBDPresenceRecord(models.Model):
     def __str__(self):
         return '{} - {} ({})'.format(self.lesson.date.strftime('%d/%m/%Y'), self.student, self.ebd_class)
 
-    def initialize_object(self, ebdPresenceRecordObject):
-        self.lesson = ebdPresenceRecordObject.get('lesson')
-        self.student = ebdPresenceRecordObject.get('student')
-        self.ebd_class = ebdPresenceRecordObject.get('ebd_class')
-        self.created_by = ebdPresenceRecordObject.get('created_by')
+    def initialize_object(self, ebd_presence_record_object):
+        self.lesson = ebd_presence_record_object.get('lesson')
+        self.student = ebd_presence_record_object.get('student')
+        self.ebd_class = ebd_presence_record_object.get('ebd_class')
+        self.created_by = ebd_presence_record_object.get('created_by')
+
+    def save_presence_record(self, ebd_presence_record_object):
+        self.attended = ebd_presence_record_object.get('attended') or False
+        self.justification = ebd_presence_record_object.get('justification') or None
+        self.register_on = ebd_presence_record_object.get('register_on') or None
+
+        self.save()
+
 
 class EBDLabelOptions(models.Model):
     title = models.CharField('Label', max_length=100)
@@ -112,6 +120,18 @@ class EBDPresenceRecordLabels(models.Model):
 
     def __str__(self):
         return 'Em {}, {} recebeu o label {}'.format(self.ebd_presence_record.lesson.date.strftime('%d/%m/%Y'), self.ebd_presence_record.student, self.ebd_label_option)
+
+    def save_presence_record_label(self, ebd_presence_record_label_object):
+        self.ebd_presence_record = ebd_presence_record_label_object.get('ebd_presence_record')
+        self.ebd_label_option = ebd_presence_record_label_object.get('ebd_label_option')
+
+        self.save()
+
+        # if self.id:
+        #     self.save()
+        # else:
+        #     self.save(force_insert=True)
+
 
 # Below: dynamoDB - EBD lesson presence record
 
