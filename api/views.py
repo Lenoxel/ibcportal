@@ -284,9 +284,9 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
         presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'register_on', student_name=F('student__name'), student_nickname=F('student__nickname'), student_ebd_relation=F('student__ebd_relation'), lesson_title=F('lesson__title')).order_by('student__name')
 
         for presence in presences:
-            labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
+            labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_id=F('ebd_label_option__id'), label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
             presence['labels'] = labels
-            presence['labelIds'] = map(lambda label: label['id'], list(labels))
+            presence['labelIds'] = map(lambda label: label.get('label_id'), labels)
 
         return Response(presences)
 
