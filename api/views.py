@@ -286,7 +286,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
         for presence in presences:
             labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
             presence['labels'] = labels
-            presence['labelIds'] = map(lambda label: label['id'], labels)
+            # presence['labelIds'] = map(lambda label: label['id'], labels)
 
         return Response(presences)
 
