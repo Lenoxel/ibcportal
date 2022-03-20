@@ -287,6 +287,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
             labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_id=F('ebd_label_option__id'), label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
             presence['labels'] = labels
             presence['labelIds'] = map(lambda label: label.get('label_id'), labels)
+            presence['labels_to_remove'] = []
 
         return Response(presences)
 
@@ -311,7 +312,13 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
                 'ebd_presence_record': ebd_presence_record,
                 'ebd_label_option': ebd_label_option,
             })
-                
+
+        for label_to_remove in request.data.get('labels_to_remove'):
+            try:
+                presence_record_label = EBDPresenceRecordLabels.objects.delete(ebd_presence_record__id=presence_id, ebd_label_option__id=label_to_remove.get('id'))
+            except ObjectDoesNotExist:
+               pass
+
         return Response({'message': 'Registro de presença atualizado com sucesso!'})
 
 class EBDPresenceViewSet(viewsets.ModelViewSet):

@@ -127,12 +127,6 @@ class EBDPresenceRecordLabels(models.Model):
 
         self.save()
 
-        # if self.id:
-        #     self.save()
-        # else:
-        #     self.save(force_insert=True)
-
-
 # Below: dynamoDB - EBD lesson presence record
 
 # class UserIdIndex(GlobalSecondaryIndex):
