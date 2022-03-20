@@ -127,6 +127,9 @@ class EBDPresenceRecordLabels(models.Model):
 
         self.save()
 
+    def delete_presence_record_label(self):
+        self.delete()
+
 # Below: dynamoDB - EBD lesson presence record
 
 # class UserIdIndex(GlobalSecondaryIndex):

@@ -315,7 +315,8 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
 
         for label_to_remove in request.data.get('labels_to_remove'):
             try:
-                presence_record_label = EBDPresenceRecordLabels.objects.delete(ebd_presence_record__id=presence_id, ebd_label_option__id=label_to_remove.get('id'))
+                presence_record_label = EBDPresenceRecordLabels.objects.get(ebd_presence_record__id=presence_id, ebd_label_option__id=label_to_remove.get('id'))
+                presence_record_label.delete_presence_record_label()
             except ObjectDoesNotExist:
                pass
 
