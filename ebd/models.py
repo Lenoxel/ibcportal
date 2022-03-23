@@ -43,7 +43,7 @@ def ebd_class_background_image_delete(sender, instance, **kwargs):
         cloudinary.uploader.destroy(instance.background_image.public_id)
 
 class EBDLesson(models.Model):
-    magazine_title = models.CharField('Lição', max_length=100, null=True, blank=True)
+    magazine_title = models.CharField('Revista', max_length=100, null=True, blank=True)
     title = models.CharField('Lição', max_length=100)
     date = models.DateField('Data da aula')
     number = models.PositiveIntegerField('Número da aula', null=True, blank=True)
