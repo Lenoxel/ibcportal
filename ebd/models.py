@@ -65,11 +65,11 @@ class EBDPresenceRecord(models.Model):
     ebd_class = models.ForeignKey(EBDClass, verbose_name='Classe', on_delete=models.SET_NULL, blank=True, null=True)
     ebd_church = models.ForeignKey(Church, verbose_name='Igreja', on_delete=models.SET_NULL, blank=True, null=True, default=DEFAULT_CHURCH_ID)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
-    created_by = models.ForeignKey(User, verbose_name='Criado por', null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(User, verbose_name='Criado por', related_name='presence_record_created_by', null=True, on_delete=models.SET_NULL)
     attended = models.BooleanField('Presente', default=False)
     justification = models.CharField('Justificativa da Falta', max_length=500, null=True, blank=True)
     register_on = models.DateTimeField('Registro em', blank=True, null=True)
-    # register_by = models.ForeignKey(User, verbose_name='Última atualização por', null=True, on_delete=models.SET_NULL)
+    register_by = models.ForeignKey(User, verbose_name='Última atualização por', related_name='presence_record_register_by', null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = 'Registro de Presença'
@@ -85,10 +85,11 @@ class EBDPresenceRecord(models.Model):
         self.ebd_class = ebd_presence_record_object.get('ebd_class')
         self.created_by = ebd_presence_record_object.get('created_by')
 
-    def save_presence_record(self, ebd_presence_record_object):
+    def save_presence_record(self, ebd_presence_record_object, user):
         self.attended = ebd_presence_record_object.get('attended') or False
         self.justification = ebd_presence_record_object.get('justification') or None
         self.register_on = ebd_presence_record_object.get('register_on') or None
+        self.register_by = user
 
         self.save()
 

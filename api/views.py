@@ -298,7 +298,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
         except ObjectDoesNotExist:
             return Response({'message': 'Não existe uma preseça registrada com esse id'}, status=status.HTTP_404_NOT_FOUND)
 
-        ebd_presence_record.save_presence_record(request.data)
+        ebd_presence_record.save_presence_record(request.data, request.user)
 
         for label in request.data.get('labels'):
             ebd_label_option = EBDLabelOptions.objects.get(pk=label.get('id'))
