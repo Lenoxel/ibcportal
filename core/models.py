@@ -174,7 +174,8 @@ CHURCH_FUNCTION_OPTIONS, null=True, blank=True, max_length=50)
 
 @receiver(pre_delete, sender=Member)
 def member_picture_delete(sender, instance, **kwargs):
-    cloudinary.uploader.destroy(instance.picture.public_id)
+    if instance.picture and instance.picture.public_id:
+        cloudinary.uploader.destroy(instance.picture.public_id)
 
 class MembersUnion(models.Model):
     objects = models.Manager()
@@ -210,7 +211,8 @@ class PostFile(models.Model):
 
 @receiver(pre_delete, sender=PostFile)
 def post_file_delete(sender, instance, **kwargs):
-    cloudinary.uploader.destroy(instance.post_file.public_id)
+    if instance.post_file and instance.post_file.public_id:
+        cloudinary.uploader.destroy(instance.post_file.public_id)
 
 class Video(models.Model):
     objects = models.Manager()
@@ -321,7 +323,8 @@ class Event(models.Model):
 
 @receiver(pre_delete, sender=Event)
 def event_picture_delete(sender, instance, **kwargs):
-    cloudinary.uploader.destroy(instance.picture.public_id)
+    if instance.picture and instance.picture.public_id:
+        cloudinary.uploader.destroy(instance.picture.public_id)
 
 class Audit(models.Model):
     objects = models.Manager()

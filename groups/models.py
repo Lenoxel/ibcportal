@@ -59,7 +59,8 @@ class Group(models.Model):
 
 @receiver(pre_delete, sender=Group)
 def group_background_image_delete(sender, instance, **kwargs):
-    cloudinary.uploader.destroy(instance.background_image.public_id)
+    if instance.background_image and instance.background_image.public_id:
+        cloudinary.uploader.destroy(instance.background_image.public_id)
 
 class GroupMeetingDate(models.Model):
     group = models.ForeignKey('groups.Group', verbose_name='Grupo', on_delete=models.CASCADE, related_name='meeting_dates')

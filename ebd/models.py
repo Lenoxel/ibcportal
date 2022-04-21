@@ -39,7 +39,7 @@ class EBDClass(models.Model):
 
 @receiver(pre_delete, sender=EBDClass)
 def ebd_class_background_image_delete(sender, instance, **kwargs):
-    if instance.background_image:
+    if instance.background_image and instance.background_image.public_id:
         cloudinary.uploader.destroy(instance.background_image.public_id)
 
 class EBDLesson(models.Model):
