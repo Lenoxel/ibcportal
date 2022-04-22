@@ -76,7 +76,8 @@ CHURCH_FUNCTION_OPTIONS = [
     ('professor_de_ebd', 'Professor de EBD'),
     ('secretario_de_ebd', 'Secretário de sala de EBD'),
     ('superintendente', 'Superintendente'),
-    ('membro', 'Membro')
+    ('membro', 'Membro'),
+    ('corpo_diaconal', 'Corpo Diaconal'),
 ]
 
 MARITAL_STATUS_OPTIONS = [
