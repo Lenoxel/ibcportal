@@ -92,6 +92,7 @@ EDUCATIONAL_LEVEL_OPTIONS = [
     ('ensino_fundamental', 'Ensino fundamental'),
     ('ensino_medio', 'Ensino médio'),
     ('ensino_superior', 'Ensino superior'),
+    ('ensino_superior_incompleto', 'Ensino superior Incompleto'),
     ('pos_graduacao', 'Pós-graduação'),
     ('mestrado', 'Mestrado'),
     ('doutorado', 'Doutorado'),
