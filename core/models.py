@@ -69,6 +69,7 @@ ACTION_TYPES = [
 ]
 
 CHURCH_FUNCTION_OPTIONS = [
+    ('corpo_diaconal', 'Corpo Diaconal'),
     ('lider_de_departamento', 'Líder de Grupo ou Departamento'),
     ('lideranca_de_departamento', 'Liderança de Grupo ou Departamento'),
     ('pastor_principal', 'Pastor Principal'),
@@ -77,7 +78,6 @@ CHURCH_FUNCTION_OPTIONS = [
     ('secretario_de_ebd', 'Secretário de sala de EBD'),
     ('superintendente', 'Superintendente'),
     ('membro', 'Membro'),
-    ('corpo_diaconal', 'Corpo Diaconal'),
 ]
 
 MARITAL_STATUS_OPTIONS = [
