@@ -36,7 +36,7 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
                 for student in ebd_class.students.all():
                     if change:
                         try:
-                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, student__pk=student.pk)
+                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, ebd_class__pk=ebd_class.pk, student__pk=student.pk)
                         except ObjectDoesNotExist:
                             presence_record = EBDPresenceRecord()
                     else:
