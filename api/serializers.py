@@ -218,19 +218,19 @@ class EBDClassSerializer(serializers.ModelSerializer):
         depth = 1
 
 class EBDPresenceRecordSerializer(serializers.ModelSerializer):
-    student = serializers.SerializerMethodField()
+    person = serializers.SerializerMethodField()
     lesson = serializers.SerializerMethodField()
     ebd_class = serializers.SerializerMethodField()
     ebd_church = serializers.SerializerMethodField()
     created_by = serializers.SerializerMethodField()
     labels = serializers.SerializerMethodField()
 
-    def get_student(self, obj):
+    def get_person(self, obj):
         return {
-            'id': obj.student.id,
-            'name': obj.student.name,
-            'nickname': obj.student.nickname,
-            'picture': obj.student.picture.url
+            'id': obj.person.id,
+            'name': obj.person.name,
+            'nickname': obj.person.nickname,
+            'picture': obj.person.picture.url
         }
 
     def get_lesson(self, obj):

@@ -36,7 +36,7 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
                 for student in ebd_class.students.all():
                     if change:
                         try:
-                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, ebd_class__pk=ebd_class.pk, student__pk=student.pk)
+                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, ebd_class__pk=ebd_class.pk, person__pk=student.pk)
                         except ObjectDoesNotExist:
                             presence_record = EBDPresenceRecord()
                     else:
@@ -44,7 +44,7 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
 
                     ebdPresenceRecordObject = {
                         'lesson': EBDLesson.objects.get(pk=obj.pk) if change else EBDLesson.objects.earliest('-id'),
-                        'student': student,
+                        'person': student,
                         'ebd_class': ebd_class,
                         'created_by': request.user
                     }
@@ -59,6 +59,40 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
 
                     # ebd_lesson_presence_record_item = EBDLessonPresenceRecord(lesson_date, user_id, class_id=class_id, lesson_name=lesson_name, class_name=class_name, church='ibcc2', created_by=str(request.user), creation_date=timezone.now())
                     # ebd_lesson_presence_record_item.save()
+                for teacher in ebd_class.teachers.all():
+                    if change:
+                        try:
+                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, ebd_class__pk=ebd_class.pk, person__pk=teacher.pk)
+                        except ObjectDoesNotExist:
+                            presence_record = EBDPresenceRecord()
+                    else:
+                        presence_record = EBDPresenceRecord()
+
+                    ebdPresenceRecordObject = {
+                        'lesson': EBDLesson.objects.get(pk=obj.pk) if change else EBDLesson.objects.earliest('-id'),
+                        'person': teacher,
+                        'ebd_class': ebd_class,
+                        'created_by': request.user
+                    }
+                    presence_record.initialize_object(ebdPresenceRecordObject)
+                    presence_record.save()
+                for secretary in ebd_class.secretaries.all():
+                    if change:
+                        try:
+                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, ebd_class__pk=ebd_class.pk, person__pk=secretary.pk)
+                        except ObjectDoesNotExist:
+                            presence_record = EBDPresenceRecord()
+                    else:
+                        presence_record = EBDPresenceRecord()
+
+                    ebdPresenceRecordObject = {
+                        'lesson': EBDLesson.objects.get(pk=obj.pk) if change else EBDLesson.objects.earliest('-id'),
+                        'person': secretary,
+                        'ebd_class': ebd_class,
+                        'created_by': request.user
+                    }
+                    presence_record.initialize_object(ebdPresenceRecordObject)
+                    presence_record.save()
         else:
             return PermissionDenied
 
@@ -85,7 +119,7 @@ class EBDClassAdmin(ExportActionMixin, admin.ModelAdmin):
 
 class EBDPresenceRecordResource(resources.ModelResource):
     lesson = Field(attribute='lesson__title', column_name='Lição')
-    student = Field(attribute='student__name', column_name='Aluno')
+    person = Field(attribute='person__name', column_name='Aluno')
     ebd_class = Field(attribute='ebd_class__name', column_name='Classe')
     attended = Field(attribute='attended', column_name='Presente')
     justification = Field(attribute='justification', column_name='Justificativa de falta')
@@ -93,12 +127,12 @@ class EBDPresenceRecordResource(resources.ModelResource):
 
     class Meta:
         model = EBDPresenceRecord
-        fields = ('lesson', 'student', 'ebd_class', 'attended', 'justification', 'register_on')
+        fields = ('lesson', 'person', 'ebd_class', 'attended', 'justification', 'register_on')
 
 class EBDPresenceRecordAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = EBDPresenceRecordResource
-    readonly_fields = ('lesson', 'student', 'ebd_class', 'ebd_church', 'created_by', 'attended', 'register_on') 
-    list_filter = ('lesson', 'student', 'ebd_class', 'attended', 'register_on')
+    readonly_fields = ('lesson', 'person', 'ebd_class', 'ebd_church', 'created_by', 'attended', 'register_on', 'register_by', 'justification') 
+    list_filter = ('lesson', 'person', 'ebd_class', 'attended', 'register_on')
 
 class EBDPresenceRecordLabelsAdmin(ExportActionMixin, admin.ModelAdmin):
     readonly_fields = ('ebd_presence_record', 'ebd_label_option') 

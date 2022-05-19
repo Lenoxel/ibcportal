@@ -62,7 +62,7 @@ class EBDLesson(models.Model):
 
 class EBDPresenceRecord(models.Model):
     lesson = models.ForeignKey(EBDLesson, verbose_name='Lição', on_delete=models.CASCADE)
-    student = models.ForeignKey(Member, related_name='student_presence_record', verbose_name='Aluno', on_delete=models.CASCADE)
+    person = models.ForeignKey(Member, related_name='person_presence_record', verbose_name='Pessoa', on_delete=models.CASCADE)
     ebd_class = models.ForeignKey(EBDClass, verbose_name='Classe', on_delete=models.SET_NULL, blank=True, null=True)
     ebd_church = models.ForeignKey(Church, verbose_name='Igreja', on_delete=models.SET_NULL, blank=True, null=True, default=DEFAULT_CHURCH_ID)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
@@ -78,11 +78,11 @@ class EBDPresenceRecord(models.Model):
         ordering = ['-creation_date']
 
     def __str__(self):
-        return '{} - {} ({})'.format(self.lesson.date.strftime('%d/%m/%Y'), self.student, self.ebd_class)
+        return '{} - {} ({})'.format(self.lesson.date.strftime('%d/%m/%Y'), self.person, self.ebd_class)
 
     def initialize_object(self, ebd_presence_record_object):
         self.lesson = ebd_presence_record_object.get('lesson')
-        self.student = ebd_presence_record_object.get('student')
+        self.person = ebd_presence_record_object.get('person')
         self.ebd_class = ebd_presence_record_object.get('ebd_class')
         self.created_by = ebd_presence_record_object.get('created_by')
 
@@ -121,7 +121,7 @@ class EBDPresenceRecordLabels(models.Model):
         ordering = ['-last_updated_date']
 
     def __str__(self):
-        return 'Em {}, {} recebeu o label {}'.format(self.ebd_presence_record.lesson.date.strftime('%d/%m/%Y'), self.ebd_presence_record.student, self.ebd_label_option)
+        return 'Em {}, {} recebeu o label {}'.format(self.ebd_presence_record.lesson.date.strftime('%d/%m/%Y'), self.ebd_presence_record.person, self.ebd_label_option)
 
     def save_presence_record_label(self, ebd_presence_record_label_object):
         self.ebd_presence_record = ebd_presence_record_label_object.get('ebd_presence_record')

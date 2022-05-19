@@ -281,7 +281,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='presences_by_class_and_lesson')
     def get_presences_by_class_and_lesson(self, request, pk=None, class_id=None):
-        presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'register_on', student_name=F('student__name'), student_nickname=F('student__nickname'), student_ebd_relation=F('student__ebd_relation'), lesson_title=F('lesson__title')).order_by('student__name')
+        presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'register_on', person_name=F('person__name'), person_nickname=F('person__nickname'), person_ebd_relation=F('person__ebd_relation'), lesson_title=F('lesson__title')).order_by('person__name')
 
         for presence in presences:
             labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_id=F('ebd_label_option__id'), label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
@@ -343,7 +343,7 @@ class EBDLabelOptionsViewSet(viewsets.ModelViewSet):
     serializer_class = EBDLabelOptionsSerializer
 
 class EBDPresenceRecordLabelsViewSet(viewsets.ModelViewSet):
-    queryset = EBDPresenceRecordLabels.objects.all().order_by('-ebd_presence_record__lesson__date', 'ebd_presence_record__student__name')
+    queryset = EBDPresenceRecordLabels.objects.all().order_by('-ebd_presence_record__lesson__date', 'ebd_presence_record__person__name')
     serializer_class = EBDPresenceRecordLabelsSerializer
 
 class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
@@ -391,18 +391,18 @@ class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
         presence_users = EBDPresenceRecord.objects.raw('''
-            SELECT * FROM (SELECT MAX(id) id, student_id, true role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
+            SELECT * FROM (SELECT MAX(id) id, person_id, true role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
             FROM ebd_EBDPresenceRecord
             GROUP BY
-            student_id
+            person_id
             ORDER BY presences DESC
             LIMIT 5) AS T
             UNION
-            SELECT * FROM (SELECT MAX(id) id, student_id, false role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
+            SELECT * FROM (SELECT MAX(id) id, person_id, false role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
             FROM ebd_EBDPresenceRecord
             GROUP BY 
             id,
-            student_id
+            person_id
             ORDER BY absences DESC
             LIMIT 5) AS T2
         ''')
@@ -411,8 +411,8 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
 
         for data in presence_users:
             formatted_presence_users.append({
-                'student_name': data.student.name,
-                'student_picture_url': data.student.picture.url,
+                'person_name': data.person.name,
+                'person_picture_url': data.person.picture.url,
                 'presences': data.presences or 0,
                 'absences': data.absences or 0,
                 'role_model': data.role_model
