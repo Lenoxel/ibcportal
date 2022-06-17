@@ -21,7 +21,7 @@ idna==2.9
 Markdown==3.2.1
 natsort==7.0.1
 pagseguro==0.3.4
-Pillow==7.0.0
+# Pillow==7.0.0
 psycopg2-binary==2.8.6
 pyfcm==1.4.7
 python-dateutil==2.8.1

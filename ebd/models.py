@@ -7,7 +7,6 @@ from core.models import DEFAULT_CHURCH_ID, Church, Member
 # from ibcportal import settings
 # from django.conf import settings
 
-from pynamodb.models import Model
 # from pynamodb.indexes import GlobalSecondaryIndex, AllProjection
 # from pynamodb.attributes import BooleanAttribute, UnicodeAttribute, UTCDateTimeAttribute
 from django.contrib.auth.models import User
@@ -59,6 +58,22 @@ class EBDLesson(models.Model):
 
     def __str__(self):
         return self.title
+
+class EBDLessonClassDetails(models.Model):
+    lesson = models.ForeignKey(EBDLesson, verbose_name='Lição', on_delete=models.CASCADE)
+    ebd_class = models.ForeignKey(EBDClass, verbose_name='Classe', on_delete=models.CASCADE)
+    visitors_quantity = models.PositiveIntegerField('Número de visitantes', default=0)
+    money_raised = models.FloatField('Dinheiro arrecadado', null=True, blank=True)
+    creation_date = models.DateTimeField('Criado em', auto_now_add=True)
+    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+
+    class Meta:
+        verbose_name = 'Detalhes da classe na lição'
+        verbose_name_plural = 'Detalhes das classes nas lições'
+        ordering = ['-last_updated_date']
+
+    def __str__(self):
+        return '{} - {}'.format(self.lesson, self.ebd_class)
 
 class EBDPresenceRecord(models.Model):
     lesson = models.ForeignKey(EBDLesson, verbose_name='Lição', on_delete=models.CASCADE)
