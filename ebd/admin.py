@@ -24,6 +24,7 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = EBDLessonResource
     list_filter = ('title', 'date')
 
+    # Executa sempre que uma lição é criada ou atualizada
     def save_model(self, request, obj, form, change):
         # groups_values = request.user.groups.values_list('name', flat = True)
         # groups_values_as_list = list(groups_values)
@@ -45,12 +46,9 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
               
 
                 for student in ebd_class.students.all():
-                    if change:
-                        try:
-                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, ebd_class__pk=ebd_class.pk, person__pk=student.pk)
-                        except ObjectDoesNotExist:
-                            presence_record = EBDPresenceRecord()
-                    else:
+                    try:
+                        presence_record = EBDPresenceRecord.objects.get(lesson=lesson, ebd_class=ebd_class, person=student)
+                    except ObjectDoesNotExist:
                         presence_record = EBDPresenceRecord()
 
                     ebdPresenceRecordObject = {
@@ -72,12 +70,9 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
                     # ebd_lesson_presence_record_item.save()
 
                 for teacher in ebd_class.teachers.all():
-                    if change:
-                        try:
-                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, ebd_class__pk=ebd_class.pk, person__pk=teacher.pk)
-                        except ObjectDoesNotExist:
-                            presence_record = EBDPresenceRecord()
-                    else:
+                    try:
+                        presence_record = EBDPresenceRecord.objects.get(lesson=lesson, ebd_class=ebd_class, person=teacher)
+                    except ObjectDoesNotExist:
                         presence_record = EBDPresenceRecord()
 
                     ebdPresenceRecordObject = {
@@ -90,12 +85,9 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
                     presence_record.save()
 
                 for secretary in ebd_class.secretaries.all():
-                    if change:
-                        try:
-                            presence_record = EBDPresenceRecord.objects.get(lesson__pk=obj.pk, ebd_class__pk=ebd_class.pk, person__pk=secretary.pk)
-                        except ObjectDoesNotExist:
-                            presence_record = EBDPresenceRecord()
-                    else:
+                    try:
+                        presence_record = EBDPresenceRecord.objects.get(lesson=lesson, ebd_class=ebd_class, person=secretary)
+                    except ObjectDoesNotExist:
                         presence_record = EBDPresenceRecord()
 
                     ebdPresenceRecordObject = {

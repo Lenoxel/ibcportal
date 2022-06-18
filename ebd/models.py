@@ -96,6 +96,7 @@ class EBDPresenceRecord(models.Model):
         verbose_name = 'Registro de Presença'
         verbose_name_plural = 'Registro de Presenças'
         ordering = ['-creation_date']
+        # unique_together = ('lesson', 'ebd_class', 'person')
 
     def __str__(self):
         return '{} - {} ({})'.format(self.lesson.date.strftime('%d/%m/%Y'), self.person, self.ebd_class)
