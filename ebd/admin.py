@@ -37,9 +37,9 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
 
             for ebd_class in ebd_classes:
                 try:
-                    ebd_lesson_class_details = EBDLessonClassDetails.objects.get(ebd_class=ebd_class, lesson=lesson) if change else EBDLessonClassDetails({'lesson': lesson, 'ebd_class': ebd_class})
+                    ebd_lesson_class_details = EBDLessonClassDetails.objects.get(ebd_class=ebd_class, lesson=lesson) if change else EBDLessonClassDetails(lesson=lesson, ebd_class= ebd_class)
                 except ObjectDoesNotExist:
-                    ebd_lesson_class_details = EBDLessonClassDetails({'lesson': lesson, 'ebd_class': ebd_class})
+                    ebd_lesson_class_details = EBDLessonClassDetails(lesson=lesson, ebd_class= ebd_class)
                 finally:
                     ebd_lesson_class_details.save()
               
