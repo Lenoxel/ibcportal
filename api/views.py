@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDPresenceRecord, EBDPresenceRecordLabels
+from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDLessonClassDetails, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import viewsets, status, generics
 from django.db.models import Q, F
 # from rest_framework.authtoken.views import ObtainAuthToken
@@ -278,6 +278,16 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
         classes = EBDPresenceRecord.objects.filter(lesson__pk=pk).values(class_id=F('ebd_class__id'), class_name=F('ebd_class__name'), lesson_title=F('lesson__title'),).order_by('class_name').distinct('class_name')
         return Response(classes)
 
+    # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/details
+    @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/details', url_name='update_class_lesson_details', methods=['put'])
+    def update_class_lesson_details(self, request, pk=None, class_id=None, presence_id=None):
+        try:
+            class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
+            class_lesson_details.save_details(request.data)
+            return Response({'message': 'Detalhes da classe, na lição, atualizadas com sucesso!'})
+        except ObjectDoesNotExist:
+            return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
+        
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='presences_by_class_and_lesson')
     def get_presences_by_class_and_lesson(self, request, pk=None, class_id=None):
@@ -296,6 +306,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
 
         return Response(presences)
 
+    # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences/{presence_id}
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences/(?P<presence_id>\d+)', url_name='update_presence_record', methods=['put'])
     def update_presence_record(self, request, pk=None, class_id=None, presence_id=None):
         try:

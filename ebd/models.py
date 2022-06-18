@@ -75,6 +75,11 @@ class EBDLessonClassDetails(models.Model):
     def __str__(self):
         return '{} - {}'.format(self.lesson, self.ebd_class)
 
+    def save_details(self, ebd_class_lesson_details_object):
+        self.visitors_quantity = ebd_class_lesson_details_object.get('visitors_quantity') or 0
+        self.money_raised = ebd_class_lesson_details_object.get('money_raised') or None
+        self.save()
+
 class EBDPresenceRecord(models.Model):
     lesson = models.ForeignKey(EBDLesson, verbose_name='Lição', on_delete=models.CASCADE)
     person = models.ForeignKey(Member, related_name='person_presence_record', verbose_name='Pessoa', on_delete=models.CASCADE)
