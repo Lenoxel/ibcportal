@@ -275,8 +275,12 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     @action(detail=True, url_path='classes', url_name='classes_by_lesson')
     def get_classes_by_lesson(self, request, pk=None):
         # ebd_lesson = self.get_object()
-        classes = EBDPresenceRecord.objects.filter(lesson__pk=pk).values(class_id=F('ebd_class__id'), class_name=F('ebd_class__name'), lesson_title=F('lesson__title'),).order_by('class_name').distinct('class_name')
-        return Response(classes)
+        ebd_classes = EBDPresenceRecord.objects.filter(lesson__pk=pk).values(class_id=F('ebd_class__id'), class_name=F('ebd_class__name'), lesson_title=F('lesson__title'),).order_by('class_name').distinct('class_name')
+
+        for ebd_class in ebd_classes:
+            ebd_class['details'] = EBDLessonClassDetails.objects.get(lesson__pk=pk, ebd_class__pk=ebd_class['class_id']).values('visitors_quantity', 'money_raised')
+
+        return Response(ebd_classes)
 
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/details
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/details', url_name='update_class_lesson_details', methods=['put'])
