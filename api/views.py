@@ -278,7 +278,10 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
         ebd_classes = EBDPresenceRecord.objects.filter(lesson__pk=pk).values(class_id=F('ebd_class__id'), class_name=F('ebd_class__name'), lesson_title=F('lesson__title'),).order_by('class_name').distinct('class_name')
 
         for ebd_class in ebd_classes:
-            ebd_class['details'] = EBDLessonClassDetails.objects.filter(lesson__pk=pk, ebd_class__pk=ebd_class['class_id']).values('visitors_quantity', 'money_raised')
+            try:
+                ebd_class['details'] = EBDLessonClassDetails.objects.filter(lesson__pk=pk, ebd_class__pk=ebd_class['class_id']).values('visitors_quantity', 'money_raised')[0]
+            except Exception:
+                print('Erro em "for ebd_class in ebd_classes" de "get_classes_by_lesson"')
 
         return Response(ebd_classes)
 
