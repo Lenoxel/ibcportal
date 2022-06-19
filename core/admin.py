@@ -4,7 +4,7 @@ from .auxiliar_functions import create_audit, create_push_notification
 from .models import Post, Member, PostFile, Video, Schedule, Church, Donate, Event, MembersUnion, Audit, NotificationDevice, PushNotification
 from django.core.exceptions import PermissionDenied
 from import_export.admin import ExportActionMixin
-from import_export import fields, resources
+from import_export import resources
 from import_export.fields import Field
 
 class PostFileInline(admin.TabularInline):

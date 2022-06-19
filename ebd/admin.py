@@ -143,9 +143,20 @@ class EBDPresenceRecordAdmin(ExportActionMixin, admin.ModelAdmin):
     readonly_fields = ('lesson', 'person', 'ebd_class', 'ebd_church', 'created_by', 'attended', 'register_on', 'register_by', 'justification') 
     list_filter = ('lesson', 'person', 'ebd_class', 'attended', 'register_on')
 
+class EBDPresenceRecordLabelsResource(resources.ModelResource):
+    ebd_lesson = Field(attribute='ebd_presence_record__lesson__title', column_name='Lição')
+    ebd_class = Field(attribute='ebd_presence_record__ebd_class__name', column_name='Classe')
+    ebd_student = Field(attribute='ebd_presence_record__person__name', column_name='Aluno')
+    ebd_label_option = Field(attribute='ebd_label_option__title', column_name='Etiqueta')
+
+    class Meta:
+        model = EBDPresenceRecordLabels
+        fields = ('ebd_lesson', 'ebd_class', 'ebd_student', 'ebd_label_option')
+
 class EBDPresenceRecordLabelsAdmin(ExportActionMixin, admin.ModelAdmin):
+    resource_class = EBDPresenceRecordLabelsResource
     readonly_fields = ('ebd_presence_record', 'ebd_label_option') 
-    list_filter = ('ebd_presence_record', 'ebd_label_option') 
+    list_filter = ('ebd_presence_record__person__name', 'ebd_presence_record__lesson__title', 'ebd_label_option') 
 
 admin.site.register(EBDClass, EBDClassAdmin)
 admin.site.register(EBDLesson, EBDLessonAdmin)
