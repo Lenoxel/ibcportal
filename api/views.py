@@ -288,7 +288,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/details [GET, PUT]
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/details', url_name='class_lesson_details', methods=['get', 'put'])
     def class_lesson_details(self, request, pk=None, class_id=None):
-        if request.GET:
+        if self.request.GET:
             try:
                 class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
                 return Response(class_lesson_details)
