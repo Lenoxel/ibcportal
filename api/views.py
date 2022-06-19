@@ -295,7 +295,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
             except ObjectDoesNotExist:
                 return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
 
-        if request.PUT:
+        if request.UPDATE:
             try:
                 class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
                 class_lesson_details.save_details(request.data)
