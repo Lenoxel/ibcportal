@@ -290,7 +290,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     def class_lesson_details(self, request, pk=None, class_id=None):
         if request.method == 'GET':
             try:
-                class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
+                class_lesson_details = EBDLessonClassDetails.objects.filter(lesson=pk, ebd_class=class_id).values('visitors_quantity', 'money_raised')[0]
                 return Response(class_lesson_details)
             except ObjectDoesNotExist:
                 return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
