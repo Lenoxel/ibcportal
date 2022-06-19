@@ -308,7 +308,7 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='presences_by_class_and_lesson')
     def get_presences_by_class_and_lesson(self, request, pk=None, class_id=None):
-        presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'register_on', 'person_id', person_name=F('person__name'), person_nickname=F('person__nickname'), person_ebd_relation=F('person__ebd_relation'), lesson_title=F('lesson__title')).order_by('person__name')
+        presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'justification', 'register_on', 'person_id', person_name=F('person__name'), person_nickname=F('person__nickname'), person_ebd_relation=F('person__ebd_relation'), lesson_title=F('lesson__title')).order_by('person__name')
 
         for presence in presences:
             is_teacher = len(list(EBDClass.objects.filter(pk=class_id, teachers__id__in=[presence.get('person_id')]).values('id'))) > 0
