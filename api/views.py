@@ -285,25 +285,24 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
 
         return Response(ebd_classes)
 
-    # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/details [GET]
-    @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/details', url_name='get_class_lesson_details', methods=['get'])
-    def get_class_lesson_details(self, request, pk=None, class_id=None):
-        try:
-            class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
-            return Response(class_lesson_details)
-        except ObjectDoesNotExist:
-            return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
+    # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/details [GET, PUT]
+    @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/details', url_name='class_lesson_details', methods=['get', 'put'])
+    def class_lesson_details(self, request, pk=None, class_id=None):
+        if request.GET:
+            try:
+                class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
+                return Response(class_lesson_details)
+            except ObjectDoesNotExist:
+                return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
 
-    # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/details [PUT]
-    @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/details', url_name='update_class_lesson_details', methods=['put'])
-    def update_class_lesson_details(self, request, pk=None, class_id=None):
-        try:
-            class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
-            class_lesson_details.save_details(request.data)
-            return Response({'message': 'Detalhes da classe, na lição, atualizadas com sucesso!'})
-        except ObjectDoesNotExist:
-            return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
-        
+        if request.PUT:
+            try:
+                class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
+                class_lesson_details.save_details(request.data)
+                return Response({'message': 'Detalhes da classe, na lição, atualizadas com sucesso!'})
+            except ObjectDoesNotExist:
+                return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
+
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='presences_by_class_and_lesson')
     def get_presences_by_class_and_lesson(self, request, pk=None, class_id=None):
