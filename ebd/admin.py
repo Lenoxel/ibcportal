@@ -10,7 +10,8 @@ from import_export.widgets import ManyToManyWidget
 from import_export.admin import ExportActionMixin
 
 class EBDLessonResource(resources.ModelResource):
-    title = Field(attribute='name', column_name='Lição')
+    magazine_title = Field(attribute='magazine_title', column_name='Revista')
+    title = Field(attribute='title', column_name='Lição')
     date = Field(attribute='date', column_name='Data da lição')
     number = Field(attribute='number', column_name='Número da lição')
     creation_date = Field(attribute='creation_date', column_name='Criada em')
@@ -18,7 +19,7 @@ class EBDLessonResource(resources.ModelResource):
 
     class Meta:
         model = EBDLesson
-        fields = ('title', 'date', 'number', 'creation_date', 'last_updated_date')
+        fields = ('magazine_title', 'title', 'date', 'number', 'creation_date', 'last_updated_date')
 
 class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = EBDLessonResource
@@ -110,9 +111,9 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
 class EBDClassResource(resources.ModelResource):
     name = Field(attribute='name', column_name='Classe')
     church = Field(attribute='name', column_name='Igreja')
-    students = fields.Field(attribute='students', widget=ManyToManyWidget(Member, field='name'), column_name='Alunos')
-    teachers = fields.Field(attribute='teachers', widget=ManyToManyWidget(Member, field='name'), column_name='Professores')
-    secretaries = fields.Field(attribute='secretaries', widget=ManyToManyWidget(Member, field='name'), column_name='Secretários')
+    students = fields.Field(attribute='students', widget=ManyToManyWidget(Member, field='name', separator='\n'), column_name='Alunos')
+    teachers = fields.Field(attribute='teachers', widget=ManyToManyWidget(Member, field='name', separator='\n'), column_name='Professores')
+    secretaries = fields.Field(attribute='secretaries', widget=ManyToManyWidget(Member, field='name', separator='\n'), column_name='Secretários')
 
     class Meta:
         model = EBDClass

@@ -1,8 +1,11 @@
+from importlib import resources
 from django.contrib import admin
 from .auxiliar_functions import create_audit, create_push_notification
 from .models import Post, Member, PostFile, Video, Schedule, Church, Donate, Event, MembersUnion, Audit, NotificationDevice, PushNotification
 from django.core.exceptions import PermissionDenied
 from import_export.admin import ExportActionMixin
+from import_export import fields, resources
+from import_export.fields import Field
 
 class PostFileInline(admin.TabularInline):
     model = PostFile
@@ -140,7 +143,24 @@ class NotificationDeviceAdmin(admin.ModelAdmin):
 class PushNotificationAdmin(admin.ModelAdmin):
     readonly_fields = ('title', 'body', 'multicast_id', 'success_count', 'failure_count', 'push_date',)
 
+class MemberResource(resources.ModelResource):
+    name = Field(attribute='name', column_name='Nome')
+    nickname = Field(attribute='nickname', column_name='Conhecido como')
+    date_of_birth = Field(attribute='date_of_birth', column_name='Data de nascimento')
+    church_relation = Field(attribute='church_relation', column_name='Relação com a Igreja')
+    ebd_relation = Field(attribute='ebd_relation', column_name='Relação com a EBD')
+    last_updated_date = Field(attribute='last_updated_date', column_name='Última atualização')
+
+    class Meta:
+        model = Member
+        widgets = {
+            'last_updated_date': {'format': '%d-%m-%Y'},
+            'date_of_birth': {'format': '%d-%m-%Y'},
+        }
+        fields = ('name', 'nickname', 'date_of_birth', 'church_relation', 'ebd_relation', 'last_updated_date')
+
 class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
+    resource_class = MemberResource
     list_filter = ('name', 'marital_status', 'church_function', 'ebd_relation')
 
 admin.site.register(Post, PostAdmin)
