@@ -288,19 +288,22 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/details [GET, PUT]
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/details', url_name='class_lesson_details', methods=['get', 'put'])
     def class_lesson_details(self, request, pk=None, class_id=None):
-        if self.request.GET:
+        if request.method == 'GET':
             try:
                 class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
                 return Response(class_lesson_details)
             except ObjectDoesNotExist:
                 return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
-        else:
+
+        if request.method == 'PUT':
             try:
                 class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
                 class_lesson_details.save_details(request.data)
                 return Response({'message': 'Detalhes da classe, na lição, atualizadas com sucesso!'})
             except ObjectDoesNotExist:
                 return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'message': 'Método http não implementado'}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='presences_by_class_and_lesson')
