@@ -43,6 +43,16 @@ class MemberSerializer(serializers.ModelSerializer):
         model = Member
         fields = ('name', 'description', 'church_function', 'address', 'date_of_birth', 'picture')
 
+class StudentSerializer(serializers.ModelSerializer):
+    picture = serializers.SerializerMethodField()
+
+    def get_picture(self, obj):
+        return obj.picture.url
+
+    class Meta:
+        model = Member
+        fields = ('name', 'picture')
+
 class BirthdayComemorationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.SerializerMethodField()
 

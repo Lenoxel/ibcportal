@@ -6,7 +6,7 @@ from django.db.models import Q, F
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
-from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDClassSerializer, EBDLabelOptionsSerializer, EBDLessonSerializer, EBDPresenceRecordLabelsSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
+from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDLabelOptionsSerializer, EBDLessonSerializer, EBDPresenceRecordLabelsSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, StudentSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
@@ -110,6 +110,31 @@ class MemberViewSet(viewsets.ModelViewSet):
             group = Group.objects.get(pk=group_id)
             queryset = group.members
         return queryset
+
+class StudentViewSet(viewsets.ModelViewSet):
+    serializer_class = StudentSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        
+        if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists():
+            class_id = self.request.query_params.get('classId', None)
+            queryset = EBDClass.objects.filter(pk=class_id).students if class_id is not None else Member.objects.filter(ebd_relation='aluno').order_by('name')
+            return queryset
+
+        member_id = Member.objects.get(user__pk=user.pk).values('id')
+
+        ebd_class = EBDClass.objects.get(
+            Q(pk=class_id)
+            &
+            Q(
+                Q(teachers__id__in=[member_id])
+                |
+                Q(secretaries__id__in=[member_id])
+            )
+        )
+
+        return ebd_class.students if ebd_class is not None else []
 
 class BirthdayCelebrationViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.filter(

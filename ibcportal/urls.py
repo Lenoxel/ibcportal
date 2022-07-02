@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from api.views import CustomEBDTokenObtainPairView, CustomTokenObtainPairView, EBDAnalyticsPresenceCountsViewSet, EBDAnalyticsPresenceHistoryViewSet, EBDAnalyticsPresenceUsersViewSet, EBDLabelOptionsViewSet, EBDLessonViewSet, EBDPresenceRecordLabelsViewSet, EBDPresenceViewSet, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
+from api.views import CustomEBDTokenObtainPairView, CustomTokenObtainPairView, EBDAnalyticsPresenceCountsViewSet, EBDAnalyticsPresenceHistoryViewSet, EBDAnalyticsPresenceUsersViewSet, EBDLabelOptionsViewSet, EBDLessonViewSet, EBDPresenceRecordLabelsViewSet, EBDPresenceViewSet, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, StudentViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
 
 from rest_framework import routers
 
@@ -15,6 +15,7 @@ from rest_framework_simplejwt.views import (
 api_router = routers.DefaultRouter()
 api_router.register(r'posts', PostViewSet)
 api_router.register(r'members', MemberViewSet, basename='Member')
+api_router.register(r'students', StudentViewSet, basename='Student')
 api_router.register(r'birthdays', BirthdayCelebrationViewSet)
 api_router.register(r'unions', UnionCelebrationViewSet)
 api_router.register(r'videos', VideoViewSet)
