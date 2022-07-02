@@ -122,7 +122,7 @@ class StudentViewSet(viewsets.ModelViewSet):
             queryset = EBDClass.objects.filter(pk=class_id).students if class_id is not None else Member.objects.filter(ebd_relation='aluno').order_by('name')
             return queryset
 
-        member_id = Member.objects.get(user__pk=user.pk).values('id')
+        member_id = Member.objects.get(user__pk=user.pk).id
 
         ebd_class = EBDClass.objects.get(
             Q(pk=class_id)
