@@ -125,13 +125,9 @@ class StudentViewSet(viewsets.ModelViewSet):
         member_id = Member.objects.get(user__pk=user.pk).id
 
         ebd_class = EBDClass.objects.get(
-            Q(pk=class_id)
-            &
-            Q(
-                Q(teachers__id__in=[member_id])
-                |
-                Q(secretaries__id__in=[member_id])
-            )
+            Q(teachers__id__in=[member_id])
+            |
+            Q(secretaries__id__in=[member_id])
         )
 
         return ebd_class.students if ebd_class is not None else []
