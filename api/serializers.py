@@ -37,7 +37,7 @@ class MemberSerializer(serializers.ModelSerializer):
     picture = serializers.SerializerMethodField()
 
     def get_picture(self, obj):
-        return obj.picture.url
+        return obj.picture.url if obj.picture else None
 
     class Meta:
         model = Member
@@ -47,7 +47,7 @@ class StudentSerializer(serializers.ModelSerializer):
     picture = serializers.SerializerMethodField()
 
     def get_picture(self, obj):
-        return obj.picture.url
+        return obj.picture.url if obj.picture else None
 
     class Meta:
         model = Member
