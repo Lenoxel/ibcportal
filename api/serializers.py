@@ -48,11 +48,8 @@ class StudentSerializer(serializers.ModelSerializer):
     picture = serializers.SerializerMethodField()
 
     def get_ebd_class(self, obj):
-        try:
-            ebd_class = EBDClass.objects.filter(students__id__in=[obj.pk]).first()
-            return ebd_class.name
-        except EBDClass.DoesNotExist:
-            return None
+        ebd_class = EBDClass.objects.filter(students__id__in=[obj.pk]).first()
+        return ebd_class.name if ebd_class is not None else None
 
     def get_picture(self, obj):
         return obj.picture.url if obj.picture else None
