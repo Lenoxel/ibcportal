@@ -119,7 +119,7 @@ class StudentViewSet(viewsets.ModelViewSet):
         
         if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists():
             class_id = self.request.query_params.get('classId', None)
-            queryset = EBDClass.objects.filter(pk=class_id).students if class_id is not None else Member.objects.filter(ebd_relation='aluno').order_by('name')
+            queryset = EBDClass.objects.get(pk=class_id).students if class_id is not None else Member.objects.filter(ebd_relation='aluno').order_by('name')
             return queryset
 
         member_id = Member.objects.get(user__pk=user.pk).id

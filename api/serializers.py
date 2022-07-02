@@ -44,14 +44,22 @@ class MemberSerializer(serializers.ModelSerializer):
         fields = ('name', 'description', 'church_function', 'address', 'date_of_birth', 'picture')
 
 class StudentSerializer(serializers.ModelSerializer):
+    ebd_class = serializers.SerializerMethodField()
     picture = serializers.SerializerMethodField()
+
+    def get_ebd_class(self, obj):
+        try:
+            ebd_class = EBDClass.objects.get(students__id__in=[obj.pk])
+            return ebd_class.name
+        except EBDClass.DoesNotExist:
+            return None
 
     def get_picture(self, obj):
         return obj.picture.url if obj.picture else None
 
     class Meta:
         model = Member
-        fields = ('name', 'picture')
+        fields = ('name', 'picture', 'ebd_class')
 
 class BirthdayComemorationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.SerializerMethodField()
