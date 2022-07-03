@@ -1,4 +1,5 @@
 import os
+import environ
 # import dj_database_url
 
 import cloudinary  # cloudinary
@@ -6,6 +7,9 @@ import cloudinary.uploader  # cloudinary
 import cloudinary.api  # cloudinary
 import django_on_heroku
 from datetime import timedelta
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -92,12 +96,19 @@ WSGI_APPLICATION = 'ibcportal.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': env('DATABASE_NAME') or 'public',
+    #     'USER': env('DATABASE_USER') or 'postgres',
+    #     'PASSWORD': env('DATABASE_PASSWORD') or 'root',
+    #     'HOST': env('DATABASE_HOST') or 'localhost',
+    #     'PORT': '5432',
+    # }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

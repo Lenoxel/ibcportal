@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDLessonClassDetails, EBDPresenceRecord, EBDPresenceRecordLabels
-from rest_framework import viewsets, status, generics
+from rest_framework import viewsets, status, mixins
 from django.db.models import Q, F
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
@@ -17,7 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 
 from rest_framework.decorators import api_view, action
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import NotAuthenticated
 from rest_framework.response import Response
 
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -113,9 +113,13 @@ class MemberViewSet(viewsets.ModelViewSet):
 
 class StudentViewSet(viewsets.ModelViewSet):
     serializer_class = StudentSerializer
+    http_method_names = ['get']
 
     def get_queryset(self):
         user = self.request.user
+
+        if user.is_anonymous or user.pk == None:
+            raise NotAuthenticated({ 'message': 'Usuário não identificado.' })
         
         if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists():
             class_id = self.request.query_params.get('classId', None)
@@ -131,6 +135,25 @@ class StudentViewSet(viewsets.ModelViewSet):
         )
 
         return ebd_class.students if ebd_class is not None else []
+
+    # Cria a rota api/ebd/students/{pk}/classes
+    @action(detail=True, url_path='history', url_name='student_ebd_history')
+    def get_student_ebd_history(self, request, pk=None):
+        start_date = request.query_params.get('startDate', get_today_datetime_utc() - timedelta(days=90))
+        end_date = request.query_params.get('endDate', get_now_datetime_utc())
+        print(start_date)
+        print(end_date)
+
+        student_presences_history = EBDPresenceRecord.objects.filter(
+            Q(person__pk=pk)
+            &
+            Q(
+                Q(lesson__date__gte=start_date),
+                Q(lesson__date__lte=end_date)
+            )
+        ).values('attended', 'justification', 'register_on', 'register_by', student_name=F('person__name'), class_name=F('ebd_class__name'), lesson_title=F('lesson__title'), lesson_date=F('lesson__date')).order_by('-lesson__date').distinct('lesson__date')
+
+        return Response(student_presences_history)
 
 class BirthdayCelebrationViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.filter(

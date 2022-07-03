@@ -56,7 +56,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ('name', 'picture', 'ebd_class')
+        fields = ('id', 'name', 'picture', 'ebd_class')
 
 class BirthdayComemorationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.SerializerMethodField()
