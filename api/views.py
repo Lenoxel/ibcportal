@@ -6,7 +6,7 @@ from django.db.models import Q, F
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
-from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDLabelOptionsSerializer, EBDLessonSerializer, EBDPresenceRecordLabelsSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, StudentSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
+from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDClassSerializer, EBDLabelOptionsSerializer, EBDLessonSerializer, EBDPresenceRecordLabelsSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, StudentSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 # from django.utils import timezone
 
 # from rest_framework.authtoken.models import Token
-from django.http import JsonResponse
+# from django.http import JsonResponse
 
 from rest_framework.decorators import api_view, action
 from rest_framework.exceptions import NotAuthenticated
@@ -310,6 +310,11 @@ def device(request, format=None):
 #     def get_serializer_class(self):
 #         serializer = EBDLessonPresenceRecordSerializer
 #         return serializer
+
+class EBDClassViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get']
+    queryset = EBDClass.objects.all().order_by('name')
+    serializer_class = EBDClassSerializer
 
 class EBDLessonViewSet(viewsets.ModelViewSet):
     queryset = EBDLesson.objects.all().order_by('-date')

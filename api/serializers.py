@@ -229,8 +229,7 @@ class EBDLessonSerializer(serializers.ModelSerializer):
 class EBDClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = EBDClass
-        fields = '__all__'
-        depth = 1
+        fields = ('id', 'name')
 
 class EBDPresenceRecordSerializer(serializers.ModelSerializer):
     person = serializers.SerializerMethodField()

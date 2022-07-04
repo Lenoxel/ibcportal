@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from api.views import CustomEBDTokenObtainPairView, CustomTokenObtainPairView, EBDAnalyticsPresenceCountsViewSet, EBDAnalyticsPresenceHistoryViewSet, EBDAnalyticsPresenceUsersViewSet, EBDLabelOptionsViewSet, EBDLessonViewSet, EBDPresenceRecordLabelsViewSet, EBDPresenceViewSet, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, StudentViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
+from api.views import CustomEBDTokenObtainPairView, CustomTokenObtainPairView, EBDAnalyticsPresenceCountsViewSet, EBDAnalyticsPresenceHistoryViewSet, EBDAnalyticsPresenceUsersViewSet, EBDClassViewSet, EBDLabelOptionsViewSet, EBDLessonViewSet, EBDPresenceRecordLabelsViewSet, EBDPresenceViewSet, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, StudentViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
 
 from rest_framework import routers
 
@@ -22,8 +22,9 @@ api_router.register(r'meetings', ScheduleViewSet)
 api_router.register(r'groups', GroupViewSet)
 api_router.register(r'congregations', CongregationViewSet)
 api_router.register(r'events', EventViewSet)
-api_router.register(r'ebd/students', StudentViewSet, basename='Student')
+api_router.register(r'ebd/classes', EBDClassViewSet, basename='EBDClass')
 api_router.register(r'ebd/lessons', EBDLessonViewSet, basename='EBDLesson')
+api_router.register(r'ebd/students', StudentViewSet, basename='Student')
 api_router.register(r'ebd/presences', EBDPresenceViewSet, basename='EBDPresence')
 api_router.register(r'ebd/labels', EBDLabelOptionsViewSet, basename='EBDLabelOptions')
 api_router.register(r'ebd/presence-record-labels', EBDPresenceRecordLabelsViewSet, basename="EBDPresenceRecordLabels")
