@@ -22,7 +22,7 @@ from rest_framework.response import Response
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from core.auxiliar_functions import get_now_datetime_utc, get_sunday, get_today_datetime_utc
+from core.auxiliar_functions import get_end_of_day, get_end_of_ebd_date, get_now_datetime_utc, get_start_of_day, get_sunday, get_today_datetime_utc
 
 # Token validator and generator
 # def token_request(request):
@@ -139,10 +139,8 @@ class StudentViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/students/{pk}/classes
     @action(detail=True, url_path='history', url_name='student_ebd_history')
     def get_student_ebd_history(self, request, pk=None):
-        start_date = request.query_params.get('startDate', get_today_datetime_utc() - timedelta(days=90))
-        end_date = request.query_params.get('endDate', get_now_datetime_utc())
-        print(start_date)
-        print(end_date)
+        start_date = request.query_params.get('startDate', get_start_of_day(get_today_datetime_utc() - timedelta(days=90)))
+        end_date = request.query_params.get('endDate', get_end_of_ebd_date(get_now_datetime_utc()))
 
         student_presences_history = EBDPresenceRecord.objects.filter(
             Q(person__pk=pk)

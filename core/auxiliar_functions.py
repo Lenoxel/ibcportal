@@ -1,6 +1,6 @@
 import requests
 from django.conf import settings
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from django.utils import timezone
 from tzlocal import get_localzone
 from .models import Audit, NotificationDevice, PushNotification
@@ -187,3 +187,14 @@ def get_sunday(sundays_before_index: int):
     sunday_date = today.strftime('%d/%m/%Y') if today.weekday() == 6 and sundays_before_index == 0 else (today - (timedelta(today.weekday() + 1 + (sundays_before_index * 7)))).strftime('%d/%m/%Y')
     return sunday_date
     
+def get_start_of_day(date: date):
+    start_of_day = datetime(date.year, date.month, date.day, 0, 0, 0, 0)
+    return start_of_day
+
+def get_end_of_day(date: date):
+    end_of_day = datetime(date.year, date.month, date.day, 23, 59, 59)
+    return end_of_day
+
+def get_end_of_ebd_date(date: date):
+    end_of_day = datetime(date.year, date.month, date.day, 13, 0, 0)
+    return end_of_day
