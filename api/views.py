@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDLessonClassDetails, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import viewsets, status, mixins
-from django.db.models import Q, F
+from django.db.models import Q, F, Count
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
 from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDClassSerializer, EBDLabelOptionsSerializer, EBDLessonSerializer, EBDPresenceRecordLabelsSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, StudentSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
-from datetime import timedelta
+from datetime import date, timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
 from django.core.exceptions import ObjectDoesNotExist
@@ -22,7 +22,7 @@ from rest_framework.response import Response
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from core.auxiliar_functions import get_end_of_day, get_end_of_ebd_date, get_now_datetime_utc, get_start_of_day, get_sunday, get_today_datetime_utc
+from core.auxiliar_functions import get_end_of_day, get_end_of_ebd_date, get_now_datetime_utc, get_start_of_day, get_sunday, get_sunday_as_date, get_today_datetime_utc
 
 # Token validator and generator
 # def token_request(request):
@@ -426,47 +426,38 @@ class EBDPresenceRecordLabelsViewSet(viewsets.ModelViewSet):
     queryset = EBDPresenceRecordLabels.objects.all().order_by('-ebd_presence_record__lesson__date', 'ebd_presence_record__person__name')
     serializer_class = EBDPresenceRecordLabelsSerializer
 
+# Equivalente a todo o card de "Números Gerais" no app
 class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
     def list(self, request):
-        classes_count = EBDClass.objects.count()
-        lessons_count = EBDLesson.objects.count()
-        students_average_count = EBDPresenceRecord.objects.raw('''
-            SELECT MAX(id) id, AVG(count) average FROM (
-                SELECT MAX(id) id, lesson_id, COUNT(*) count
-                FROM ebd_EBDPresenceRecord
-                WHERE attended = TRUE
-                GROUP BY
-                lesson_id
-            ) AS T
-        ''')
+        current_year = date.today().year
+
+        lessons_count = EBDLesson.objects.filter(date__year=current_year).count()
+        students_count = EBDPresenceRecord.objects.filter(
+            register_on__year=current_year,
+            attended=True
+        ).count()
+        visitors_count = EBDLessonClassDetails.objects.filter(
+            lesson__date__year=current_year
+        ).count()
 
         return Response({
-            'classes_count': classes_count or 0,
             'lessons_count': lessons_count or 0,
-            'students_average_count': students_average_count[0].average or 0
+            'students_count': students_count or 0,
+            'visitors_count': visitors_count or 0
         })
 
 
+# Equivalente a todo o card de "Acompanhamento de Presença por Domingo" no app
 class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
     def list(self, request):
-        presence_history = EBDPresenceRecord.objects.raw('''
-            SELECT MAX(id) id, lesson_id, (CASE WHEN attended = TRUE THEN 1 END) presents, (CASE WHEN attended = FALSE THEN 1 END) absents, MAX(id) id
-            FROM ebd_EBDPresenceRecord
-            GROUP BY
-            lesson_id
-        ''')
+        date_to_compare = get_sunday_as_date(6)
 
-        formatted_presence_history = []
+        presences = Count('attended', filter=Q(attended=True))
+        absences = Count('attended', filter=Q(attended=False))
 
-        for data in presence_history:
-            formatted_presence_history.append({
-                'lesson_title': data.lesson.title,
-                'lesson_date': data.lesson.date,
-                'presents': data.presents or 0,
-                'absents': data.absents or 0
-            })
+        presence_history = EBDPresenceRecord.objects.values(lesson_date=F('lesson__date'), lesson_title=F('lesson__title')).annotate(presences=presences).annotate(absences=absences).filter(lesson__date__gte=date_to_compare).order_by('lesson_date')
 
-        return Response(formatted_presence_history)
+        return Response(presence_history)
 
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):

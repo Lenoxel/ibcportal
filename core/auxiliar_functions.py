@@ -186,6 +186,11 @@ def get_sunday(sundays_before_index: int):
     today = datetime.today()
     sunday_date = today.strftime('%d/%m/%Y') if today.weekday() == 6 and sundays_before_index == 0 else (today - (timedelta(today.weekday() + 1 + (sundays_before_index * 7)))).strftime('%d/%m/%Y')
     return sunday_date
+
+def get_sunday_as_date(sundays_before_index: int):
+    today = datetime.today()
+    sunday_date = today.date() if today.weekday() == 6 and sundays_before_index == 0 else (today - (timedelta(today.weekday() + 1 + (sundays_before_index * 7)))).date()
+    return sunday_date
     
 def get_start_of_day(date: date):
     start_of_day = datetime(date.year, date.month, date.day, 0, 0, 0, 0)
