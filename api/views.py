@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDLessonClassDetails, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import viewsets, status, mixins
-from django.db.models import Q, F, Count
+from django.db.models import Q, F, Count,  OuterRef, Subquery
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
-from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDClassSerializer, EBDLabelOptionsSerializer, EBDLessonSerializer, EBDPresenceRecordLabelsSerializer, EBDPresenceRecordSerializer, PostSerializer, MemberSerializer, StudentSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
+from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDClassSerializer, EBDLabelOptionsSerializer, EBDLessonSerializer, EBDPresenceRecordLabelsSerializer, EBDPresenceRecordSerializer, PersonSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
 from datetime import date, timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
@@ -111,8 +111,8 @@ class MemberViewSet(viewsets.ModelViewSet):
             queryset = group.members
         return queryset
 
-class StudentViewSet(viewsets.ModelViewSet):
-    serializer_class = StudentSerializer
+class PeopleViewSet(viewsets.ModelViewSet):
+    serializer_class = PersonSerializer
     http_method_names = ['get']
 
     def get_queryset(self):
@@ -123,8 +123,21 @@ class StudentViewSet(viewsets.ModelViewSet):
         
         if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists():
             class_id = self.request.query_params.get('classId', None)
-            queryset = EBDClass.objects.get(pk=class_id).students if class_id is not None else Member.objects.filter(ebd_relation='aluno').order_by('name')
-            return queryset
+
+            if class_id:
+                students_ids = EBDClass.objects.filter(pk=class_id).values_list('students', flat=True)
+                teachers_ids = EBDClass.objects.filter(pk=class_id).values_list('teachers', flat=True)
+                secreaties_ids = EBDClass.objects.filter(pk=class_id).values_list('secretaries', flat=True)
+
+                return Member.objects.filter(
+                    Q(id__in=students_ids)
+                    |
+                    Q(id__in=teachers_ids)
+                    |
+                    Q(id__in=secreaties_ids)
+                ).order_by('name')
+
+            return Member.objects.filter(church_relation='membro').order_by('name')
 
         member_id = Member.objects.get(user__pk=user.pk).id
 
@@ -459,6 +472,23 @@ class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
 
         return Response(presence_history)
 
+# Equivalente ao grupo de cards agrupados por classe, mostrando a quantidade de matriculados, presentes, ausentes e visitantes, em um determinado Domingo selecionado (ou a média de todos os domingos de um mês)
+class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
+    def list(self, request):
+        # month = self.request.query_params.get('month', datetime.today().month)
+        filtered_lesson_date = self.request.query_params.get('month', get_sunday_as_date(0))
+
+        presences = Count('attended', filter=Q(attended=True))
+        absences = Count('attended', filter=Q(attended=False))
+
+        presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), lesson_name=F('lesson__name')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(lesson__date=filtered_lesson_date).annotate(visitors=Subquery(
+            EBDLessonClassDetails.objects.filter(
+                ebd_class__name=OuterRef('class_name'),
+                lesson__name=OuterRef('lesson_name')
+            ).count()
+        )).order_by('class_name')
+        return Response(presence_classes)
+    
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
         presence_users = EBDPresenceRecord.objects.raw('''

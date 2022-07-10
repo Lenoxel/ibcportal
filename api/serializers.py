@@ -43,12 +43,18 @@ class MemberSerializer(serializers.ModelSerializer):
         model = Member
         fields = ('name', 'description', 'church_function', 'address', 'date_of_birth', 'picture')
 
-class StudentSerializer(serializers.ModelSerializer):
+class PersonSerializer(serializers.ModelSerializer):
     ebd_class = serializers.SerializerMethodField()
     picture = serializers.SerializerMethodField()
 
     def get_ebd_class(self, obj):
-        ebd_class = EBDClass.objects.filter(students__id__in=[obj.pk]).first()
+        ebd_class = EBDClass.objects.filter(
+            Q(students__id__in=[obj.pk])
+            |
+            Q(teachers__id__in=[obj.pk])
+            |
+            Q(secretaries__id__in=[obj.pk])
+        ).first()
         return ebd_class.name if ebd_class is not None else None
 
     def get_picture(self, obj):
