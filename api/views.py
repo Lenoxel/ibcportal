@@ -137,7 +137,11 @@ class PeopleViewSet(viewsets.ModelViewSet):
                     Q(id__in=secreaties_ids)
                 ).order_by('name')
 
-            return Member.objects.filter(church_relation='membro').order_by('name')
+            return Member.objects.filter(
+                Q(church_relation='membro')
+                |
+                Q(ebd_relation='aluno')
+            ).order_by('name')
 
         member_id = Member.objects.get(user__pk=user.pk).id
 
@@ -147,9 +151,22 @@ class PeopleViewSet(viewsets.ModelViewSet):
             Q(secretaries__id__in=[member_id])
         ).first()
 
-        return ebd_class.students if ebd_class is not None else []
+        if not ebd_class:
+            return []
 
-    # Cria a rota api/ebd/students/{pk}/classes
+        students_ids = EBDClass.objects.filter(pk=ebd_class.pk).values_list('students', flat=True)
+        teachers_ids = EBDClass.objects.filter(pk=ebd_class.pk).values_list('teachers', flat=True)
+        secreaties_ids = EBDClass.objects.filter(pk=ebd_class.pk).values_list('secretaries', flat=True)
+
+        return Member.objects.filter(
+            Q(id__in=students_ids)
+            |
+            Q(id__in=teachers_ids)
+            |
+            Q(id__in=secreaties_ids)
+        ).order_by('name')
+
+    # Cria a rota api/ebd/students/{pk}/history
     @action(detail=True, url_path='history', url_name='student_ebd_history')
     def get_student_ebd_history(self, request, pk=None):
         start_date = request.query_params.get('startDate', get_start_of_day(get_today_datetime_utc() - timedelta(days=90)))
