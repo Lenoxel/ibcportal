@@ -166,7 +166,7 @@ class PeopleViewSet(viewsets.ModelViewSet):
             Q(id__in=secreaties_ids)
         ).order_by('name')
 
-    # Cria a rota api/ebd/students/{pk}/history
+    # Cria a rota api/ebd/people/{pk}/history
     @action(detail=True, url_path='history', url_name='student_ebd_history')
     def get_student_ebd_history(self, request, pk=None):
         start_date = request.query_params.get('startDate', get_start_of_day(get_today_datetime_utc() - timedelta(days=90)))
