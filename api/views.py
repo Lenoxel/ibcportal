@@ -511,17 +511,29 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
             ).values('visitors_quantity')
         )
 
-        presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), lesson_name=F('lesson__title'), lesson_date=F('lesson__date')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(
+        presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), class_id=F('ebd_class__id'), lesson_name=F('lesson__title'), lesson_date=F('lesson__date')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(
             Q(
                 Q(lesson__date=filtered_lesson_date),
                 ~Q(ebd_class__name='Departamento Infantil')
             )
         ).annotate(visitors=visitors).order_by('class_name')
 
+        best_frequency, best_frequency_class, worst_frequency, worst_frequency_class = 0, None, 100, None
+
         for presence_class in presence_classes:
             presence_class['frequency'] = round((presence_class['presences'] * 100) / (presence_class['presences'] + presence_class['absences']), 2)
+            if presence_class['frequency'] > best_frequency:
+                best_frequency = presence_class['frequency']
+                best_frequency_class = presence_class['class_id']
+            if presence_class['frequency'] < worst_frequency:
+                worst_frequency = presence_class['frequency']
+                worst_frequency_class = presence_class['class_id']
 
-        return Response(presence_classes)
+        return Response({
+            'best_frequency_class': best_frequency_class,
+            'worst_frequency_class': worst_frequency_class,
+            'classes': presence_classes,
+        })
 
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
