@@ -493,19 +493,36 @@ class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
 class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
     def list(self, request):
         # month = self.request.query_params.get('month', datetime.today().month)
-        filtered_lesson_date = self.request.query_params.get('month', get_sunday_as_date(0))
+        month = self.request.query_params.get('month', None)
+        day = self.request.query_params.get('day', None)
+
+        if day and month:
+            now = get_now_datetime_utc().date()
+            filtered_lesson_date = now.replace(month=int(month), day=int(day))
+        else:
+            filtered_lesson_date = get_sunday_as_date(0)
 
         presences = Count('attended', filter=Q(attended=True))
         absences = Count('attended', filter=Q(attended=False))
-
-        presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), lesson_name=F('lesson__name')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(lesson__date=filtered_lesson_date).annotate(visitors=Subquery(
+        visitors = Subquery(
             EBDLessonClassDetails.objects.filter(
                 ebd_class__name=OuterRef('class_name'),
-                lesson__name=OuterRef('lesson_name')
-            ).count()
-        )).order_by('class_name')
+                lesson__title=OuterRef('lesson_name')
+            ).values('visitors_quantity')
+        )
+
+        presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), lesson_name=F('lesson__title'), lesson_date=F('lesson__date')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(
+            Q(
+                Q(lesson__date=filtered_lesson_date),
+                ~Q(ebd_class__name='Departamento Infantil')
+            )
+        ).annotate(visitors=visitors).order_by('class_name')
+
+        for presence_class in presence_classes:
+            presence_class['frequency'] = round((presence_class['presences'] * 100) / (presence_class['presences'] + presence_class['absences']), 2)
+
         return Response(presence_classes)
-    
+
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
         presence_users = EBDPresenceRecord.objects.raw('''
