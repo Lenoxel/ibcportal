@@ -510,6 +510,13 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
                 lesson__title=OuterRef('lesson_name')
             ).values('visitors_quantity')
         )
+        # magazines = Subquery(
+        #     EBDPresenceRecordLabels.objects.filter(
+        #         ebd_presence_record__ebd_class__name=OuterRef('class_name'),
+        #         ebd_presence_record__lesson__title=OuterRef('lesson_name'),
+        #         ebd_label_option__title__icontains='trouxe revista'
+        #     ).values()
+        # )
 
         presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), class_id=F('ebd_class__id'), lesson_name=F('lesson__title'), lesson_date=F('lesson__date')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(
             Q(
@@ -528,6 +535,12 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
             if presence_class['frequency'] < worst_frequency:
                 worst_frequency = presence_class['frequency']
                 worst_frequency_class = presence_class['class_id']
+
+            presence_class['magazines'] = EBDPresenceRecordLabels.objects.filter(
+                ebd_presence_record__ebd_class__name=presence_class['class_name'],
+                ebd_presence_record__lesson__title=presence_class['lesson_name'],
+                ebd_label_option__title__icontains='trouxe revista'
+            ).count()
 
         return Response({
             'best_frequency_class': best_frequency_class,
