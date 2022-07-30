@@ -47,7 +47,7 @@ class MemberSerializer(serializers.ModelSerializer):
 class PersonSerializer(serializers.ModelSerializer):
     ebd_class = serializers.SerializerMethodField()
     picture = serializers.SerializerMethodField()
-    absences_in_sequence = serializers.SerializerMethodField()
+    frequency = serializers.SerializerMethodField()
 
     def get_ebd_class(self, obj):
         ebd_class = EBDClass.objects.filter(
@@ -62,7 +62,7 @@ class PersonSerializer(serializers.ModelSerializer):
     def get_picture(self, obj):
         return obj.picture.url if obj.picture else None
 
-    def get_absences_in_sequence(self, obj):
+    def get_frequency(self, obj):
         start_date = get_start_of_day(get_start_of_day(get_today_datetime_utc() - timedelta(days=90)))
         end_date = get_end_of_ebd_date(get_now_datetime_utc())
 
@@ -75,12 +75,18 @@ class PersonSerializer(serializers.ModelSerializer):
             )
         ).values('attended', 'lesson__date').order_by('-lesson__date').distinct('lesson__date')
 
-        count = 0
+        frequency = {
+            'absences_in_sequence': 0,
+            'presences_in_sequence': 0
+        }
+
         for presence in person_presence_history_list:
-            if presence['attended']:
-                return count
-            count += 1
-        return count
+            if presence['attended'] and frequency['absences_in_sequence'] == 0:
+                frequency['presences_in_sequence'] += 1
+            if not presence['attended'] and frequency['presences_in_sequence'] == 0:
+                frequency['absences_in_sequence'] += 1
+
+        return frequency
 
     class Meta:
         model = Member
