@@ -90,7 +90,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ('id', 'name', 'picture', 'ebd_class', 'whatsapp', 'work_on_sundays', 'absences_in_sequence')
+        fields = ('id', 'name', 'picture', 'ebd_class', 'whatsapp', 'work_on_sundays', 'frequency')
 
 class BirthdayComemorationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.SerializerMethodField()
