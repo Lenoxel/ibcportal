@@ -489,7 +489,7 @@ class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
             lesson_date=F('lesson__date'), lesson_title=F('lesson__title')
         ).annotate(presences=presences).annotate(absences=absences).filter(
             lesson__date__gte=date_to_compare,
-            lesson__date__lte=datetime.today().date,
+            lesson__date__lte=datetime.today().date(),
         ).order_by('lesson_date')
 
         return Response(presence_history)
