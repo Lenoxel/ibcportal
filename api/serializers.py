@@ -1,6 +1,7 @@
-from datetime import date
+from datetime import date, timedelta
 # from django.http import JsonResponse
 from django.db.models import Count, F, Q
+from core.auxiliar_functions import get_end_of_ebd_date, get_now_datetime_utc, get_start_of_day, get_today_datetime_utc
 from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -46,6 +47,7 @@ class MemberSerializer(serializers.ModelSerializer):
 class PersonSerializer(serializers.ModelSerializer):
     ebd_class = serializers.SerializerMethodField()
     picture = serializers.SerializerMethodField()
+    absences_in_sequence = serializers.SerializerMethodField()
 
     def get_ebd_class(self, obj):
         ebd_class = EBDClass.objects.filter(
@@ -60,9 +62,29 @@ class PersonSerializer(serializers.ModelSerializer):
     def get_picture(self, obj):
         return obj.picture.url if obj.picture else None
 
+    def get_absences_in_sequence(self, obj):
+        start_date = get_start_of_day(get_start_of_day(get_today_datetime_utc() - timedelta(days=90)))
+        end_date = get_end_of_ebd_date(get_now_datetime_utc())
+
+        person_presence_history_list = EBDPresenceRecord.objects.filter(
+            Q(person__pk=obj.pk)
+            &
+            Q(
+                Q(lesson__date__gte=start_date),
+                Q(lesson__date__lte=end_date)
+            )
+        ).values('attended', 'lesson__date').order_by('-lesson__date').distinct('lesson__date')
+
+        count = 0
+        for presence in person_presence_history_list:
+            if presence['attended']:
+                return count
+            count += 1
+        return count
+
     class Meta:
         model = Member
-        fields = ('id', 'name', 'picture', 'ebd_class')
+        fields = ('id', 'name', 'picture', 'ebd_class', 'whatsapp', 'work_on_sundays', 'absences_in_sequence')
 
 class BirthdayComemorationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.SerializerMethodField()
