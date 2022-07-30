@@ -7,7 +7,7 @@ from core.models import Post, Video, Schedule, Member, Event, MembersUnion, Noti
 # from ebd.models import EBDLessonPresenceRecord
 from groups.models import Group
 from .serializers import CustomEBDTokenObtainPairSerializer, CustomTokenObtainPairSerializer, EBDClassSerializer, EBDLabelOptionsSerializer, EBDLessonSerializer, EBDPresenceRecordLabelsSerializer, EBDPresenceRecordSerializer, PersonSerializer, PostSerializer, MemberSerializer, VideoSerializer, ScheduleSerializer, GroupSerializer, BirthdayComemorationSerializer, UnionComemorationSerializer, EventSerializer, NotificationDeviceSerializer, CongregationSerializer
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 # from django.contrib.auth.models import User
 # from calendar import monthrange
 from django.core.exceptions import ObjectDoesNotExist
@@ -485,7 +485,12 @@ class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
         presences = Count('attended', filter=Q(attended=True))
         absences = Count('attended', filter=Q(attended=False))
 
-        presence_history = EBDPresenceRecord.objects.values(lesson_date=F('lesson__date'), lesson_title=F('lesson__title')).annotate(presences=presences).annotate(absences=absences).filter(lesson__date__gte=date_to_compare).order_by('lesson_date')
+        presence_history = EBDPresenceRecord.objects.values(
+            lesson_date=F('lesson__date'), lesson_title=F('lesson__title')
+        ).annotate(presences=presences).annotate(absences=absences).filter(
+            lesson__date__gte=date_to_compare,
+            lesson__date__lte=datetime.today().date,
+        ).order_by('lesson_date')
 
         return Response(presence_history)
 
