@@ -81,9 +81,13 @@ class PersonSerializer(serializers.ModelSerializer):
         }
 
         for presence in person_presence_history_list:
-            if presence['attended'] and frequency['absences_in_sequence'] == 0:
+            if presence['attended']:
+                if frequency['absences_in_sequence'] > 0:
+                    break
                 frequency['presences_in_sequence'] += 1
-            if not presence['attended'] and frequency['presences_in_sequence'] == 0:
+            if not presence['attended']:
+                if frequency['presences_in_sequence'] > 0:
+                    break
                 frequency['absences_in_sequence'] += 1
 
         return frequency
