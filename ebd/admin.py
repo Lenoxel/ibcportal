@@ -4,6 +4,7 @@ from core.models import Member
 
 from .models import EBDClass, EBDLabelOptions, EBDLesson, EBDLessonClassDetails, EBDPresenceRecord, EBDPresenceRecordLabels
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.db.models import Q
 from import_export import fields, resources
 from import_export.fields import Field
 from import_export.widgets import ManyToManyWidget  
@@ -33,9 +34,16 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
         if request.user.is_superuser or request.user.groups.filter(name='Secretaria da Igreja').exists() or request.user.groups.filter(name='Admin').exists():
             super().save_model(request, obj, form, change)
 
+            if form.cleaned_data['single_class']:
+                return
+
             lesson = EBDLesson.objects.get(pk=obj.pk) if change else EBDLesson.objects.earliest('-id')
 
-            ebd_classes = [form.cleaned_data['ebd_class']] if form.cleaned_data['ebd_class'] is not None else EBDClass.objects.all()
+            ebd_classes = [form.cleaned_data['ebd_class']] if not form.cleaned_data['apply_to_all'] and form.cleaned_data['ebd_class'] else EBDClass.objects.filter(
+                ~Q(
+                    name__icontains='departamento infantil'
+                )
+            )
 
             for ebd_class in ebd_classes:
                 try:

@@ -20,7 +20,7 @@ EBD_PRESENCE_RECORD_LABEL_OPTIONS = [
 class EBDClass(models.Model):
     name = models.CharField('Nome', max_length=50)
     description = models.CharField('Descrição', max_length=200, null=True, blank=True)
-    background_image = CloudinaryField('Imagem da turma', null=True, blank=True)
+    background_image = CloudinaryField('Imagem da classe', null=True, blank=True)
     church = models.ForeignKey(Church, verbose_name='Igreja', null=True, blank=True, on_delete=models.SET_NULL)
     students = models.ManyToManyField(Member, related_name='student', verbose_name='Alunos', blank=True)
     teachers = models.ManyToManyField(Member, related_name='teacher', verbose_name='Professores', blank=True)
@@ -29,8 +29,8 @@ class EBDClass(models.Model):
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
     class Meta:
-        verbose_name = 'Turma'
-        verbose_name_plural = 'Turmas'
+        verbose_name = 'Classe'
+        verbose_name_plural = 'Classes'
         ordering = ['name']
 
     def __str__(self):
@@ -44,16 +44,17 @@ def ebd_class_background_image_delete(sender, instance, **kwargs):
 class EBDLesson(models.Model):
     magazine_title = models.CharField('Revista', max_length=100, null=True, blank=True)
     title = models.CharField('Lição', max_length=100)
-    date = models.DateField('Data da aula')
-    number = models.PositiveIntegerField('Número da aula', null=True, blank=True)
+    date = models.DateField('Data da lição')
+    number = models.PositiveIntegerField('Número da lição', null=True, blank=True)
+    single_class = models.BooleanField('Classe Única', default=False)
     apply_to_all = models.BooleanField('Aplicar lição a todas as classes', default=True)
-    ebd_class = models.ForeignKey(EBDClass, verbose_name='Turma', on_delete=models.CASCADE, null=True, blank=True)
+    ebd_class = models.ForeignKey(EBDClass, verbose_name='Classe', on_delete=models.CASCADE, null=True, blank=True)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
 
     class Meta:
-        verbose_name = 'Aula'
-        verbose_name_plural = 'Aulas'
+        verbose_name = 'Lição'
+        verbose_name_plural = 'Lições'
         ordering = ['-date']
 
     def __str__(self):
@@ -203,8 +204,8 @@ class EBDPresenceRecordLabels(models.Model):
 #         aws_secret_access_key = settings.AWS_SECRET_ACCESS_KEY
 #         table_name = 'IBCProject-EBDLessonPresenceRecord'
 #         region = 'us-west-2'
-#         verbose_name = 'Registro de Presença na aula'
-#         verbose_name_plural = 'Registros de Presença nas aulas'
+#         verbose_name = 'Registro de Presença na lição'
+#         verbose_name_plural = 'Registros de Presença nas lições'
 
 #     def __str__(self):
 #         return '{} - {} - {}'.format(self.lesson_date, self.class_id, self.user_id)
