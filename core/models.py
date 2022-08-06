@@ -183,7 +183,6 @@ def member_picture_delete(sender, instance, **kwargs):
 
 class MembersUnion(models.Model):
     objects = models.Manager()
-
     man = models.OneToOneField('core.Member', verbose_name='Homem', related_name='man', on_delete=models.CASCADE)
     woman = models.OneToOneField('core.Member', verbose_name='Mulher', related_name='woman', on_delete=models.CASCADE)
     union_type = models.CharField('Tipo da união', choices=MEMBERS_UNION_OPTIONS, max_length=20)

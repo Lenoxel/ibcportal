@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDLessonClassDetails, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import viewsets, status, mixins
-from django.db.models import Q, F, Count,  OuterRef, Subquery
+from django.db.models import Q, F, Count, Sum, OuterRef, Subquery
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
@@ -468,7 +468,9 @@ class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
         ).count()
         visitors_count = EBDLessonClassDetails.objects.filter(
             lesson__date__year=current_year
-        ).count()
+        ).aggregate(
+            total_visitors=Sum('visitors_quantity')
+        )['total_visitors']
 
         return Response({
             'lessons_count': lessons_count or 0,
