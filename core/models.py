@@ -89,10 +89,12 @@ MARITAL_STATUS_OPTIONS = [
 
 EDUCATIONAL_LEVEL_OPTIONS = [
     ('educacao_infantil', 'Educação infantil'),
+    ('ensino_fundamental_incompleto', 'Ensino fundamental incompleto'),
     ('ensino_fundamental', 'Ensino fundamental'),
+    ('ensino_medio_incompleto', 'Ensino médio incompleto'),
     ('ensino_medio', 'Ensino médio'),
+    ('ensino_superior_incompleto', 'Ensino superior incompleto'),
     ('ensino_superior', 'Ensino superior'),
-    ('ensino_superior_incompleto', 'Ensino superior Incompleto'),
     ('pos_graduacao', 'Pós-graduação'),
     ('mestrado', 'Mestrado'),
     ('doutorado', 'Doutorado'),
