@@ -121,7 +121,7 @@ class PeopleViewSet(viewsets.ModelViewSet):
         if user.is_anonymous or user.pk == None:
             raise NotAuthenticated({ 'message': 'Usuário não identificado.' })
         
-        if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists():
+        if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Superintendência').exists() or user.groups.filter(name='Admin').exists():
             class_id = self.request.query_params.get('classId', None)
 
             if class_id:
@@ -270,12 +270,12 @@ def device(request, format=None):
 #         if not class_id:
 #             raise ValidationError('id da classe não informado.', code=400)
 #         elif lesson_date:
-#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Secretários de classes de EBD').exists():
+#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Superintendência').exists() or user.groups.filter(name='Superintendência').exists() or self.request.user.groups.filter(name='Secretários de classes de EBD').exists():
 #                 data = EBDLessonPresenceRecord.class_id_index.query(class_id, EBDLessonPresenceRecord.lesson_date == lesson_date)
 #             else:
 #                 raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
 #         else:
-#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Superintendência').exists():
 #                 data = EBDLessonPresenceRecord.class_id_index.query(class_id)
 #             else:
 #                 raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
@@ -294,12 +294,12 @@ def device(request, format=None):
 #         if not user_id:
 #             raise ValidationError('id do usuário não informado.', code=400)
 #         elif lesson_date:
-#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Secretários de classes de EBD').exists():
+#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Superintendência').exists() or user.groups.filter(name='Superintendência').exists() or self.request.user.groups.filter(name='Secretários de classes de EBD').exists():
 #                 data = EBDLessonPresenceRecord.query(lesson_date, EBDLessonPresenceRecord.user_id == user_id, scan_index_forward = True)
 #             else:
 #                 raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
 #         else:
-#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Superintendência').exists():
 #                 data = EBDLessonPresenceRecord.user_id_index.query(user_id, scan_index_forward = True)
 #             else:
 #                 raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
@@ -316,12 +316,12 @@ def device(request, format=None):
 #         lesson_date = self.request.query_params.get('lessonDate', None)
 
 #         if lesson_date:
-#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Superintendência').exists():
 #                 data = EBDLessonPresenceRecord.query(lesson_date, scan_index_forward = True)
 #             else:
 #                 raise ValidationError({'message': 'você não tem permissão para acessar esse recurso.'}, code=403)
 #         elif sundays_before_quantity:
-#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists():
+#             if self.request.user.is_superuser or self.request.user.groups.filter(name='Secretaria da Igreja').exists() or self.request.user.groups.filter(name='Superintendência').exists():
 #                 data = []
 #                 for sundays_before in range(int(sundays_before_quantity)):
 #                     sunday_before_date =  get_sunday(sundays_before)
