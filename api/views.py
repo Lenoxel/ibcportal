@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDLessonClassDetails, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import viewsets, status, mixins
-from django.db.models import Q, F, Count, Sum, OuterRef, Subquery
+from django.db.models import Q, F, Count, Sum, OuterRef, Subquery, Case, When
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
@@ -66,9 +66,11 @@ from core.auxiliar_functions import get_end_of_day, get_end_of_ebd_date, get_now
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-    
+
+
 class CustomEBDTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomEBDTokenObtainPairSerializer
+
 
 class PostViewSet(viewsets.ModelViewSet):
     # one_month_before_period = datetime.today() - timedelta(days=30)
@@ -78,7 +80,7 @@ class PostViewSet(viewsets.ModelViewSet):
     datetime_now = get_now_datetime_utc() + timedelta(minutes=10)
 
     queryset = Post.objects.filter(
-        Q (
+        Q(
             # Q(published_date__gte=two_weeks_before_period),
             Q(published_date__lte=datetime_now)
         )
@@ -100,6 +102,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     serializer_class = PostSerializer
 
+
 class MemberViewSet(viewsets.ModelViewSet):
     serializer_class = MemberSerializer
 
@@ -111,6 +114,7 @@ class MemberViewSet(viewsets.ModelViewSet):
             queryset = group.members
         return queryset
 
+
 class PeopleViewSet(viewsets.ModelViewSet):
     serializer_class = PersonSerializer
     http_method_names = ['get']
@@ -119,15 +123,18 @@ class PeopleViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         if user.is_anonymous or user.pk == None:
-            raise NotAuthenticated({ 'message': 'Usuário não identificado.' })
-        
+            raise NotAuthenticated({'message': 'Usuário não identificado.'})
+
         if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Superintendência').exists() or user.groups.filter(name='Admin').exists():
             class_id = self.request.query_params.get('classId', None)
 
             if class_id:
-                students_ids = EBDClass.objects.filter(pk=class_id).values_list('students', flat=True)
-                teachers_ids = EBDClass.objects.filter(pk=class_id).values_list('teachers', flat=True)
-                secreaties_ids = EBDClass.objects.filter(pk=class_id).values_list('secretaries', flat=True)
+                students_ids = EBDClass.objects.filter(
+                    pk=class_id).values_list('students', flat=True)
+                teachers_ids = EBDClass.objects.filter(
+                    pk=class_id).values_list('teachers', flat=True)
+                secreaties_ids = EBDClass.objects.filter(
+                    pk=class_id).values_list('secretaries', flat=True)
 
                 return Member.objects.filter(
                     Q(id__in=students_ids)
@@ -154,9 +161,12 @@ class PeopleViewSet(viewsets.ModelViewSet):
         if not ebd_class:
             return []
 
-        students_ids = EBDClass.objects.filter(pk=ebd_class.pk).values_list('students', flat=True)
-        teachers_ids = EBDClass.objects.filter(pk=ebd_class.pk).values_list('teachers', flat=True)
-        secreaties_ids = EBDClass.objects.filter(pk=ebd_class.pk).values_list('secretaries', flat=True)
+        students_ids = EBDClass.objects.filter(
+            pk=ebd_class.pk).values_list('students', flat=True)
+        teachers_ids = EBDClass.objects.filter(
+            pk=ebd_class.pk).values_list('teachers', flat=True)
+        secreaties_ids = EBDClass.objects.filter(
+            pk=ebd_class.pk).values_list('secretaries', flat=True)
 
         return Member.objects.filter(
             Q(id__in=students_ids)
@@ -169,8 +179,10 @@ class PeopleViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/people/{pk}/history
     @action(detail=True, url_path='history', url_name='student_ebd_history')
     def get_student_ebd_history(self, request, pk=None):
-        start_date = request.query_params.get('startDate', get_start_of_day(get_today_datetime_utc() - timedelta(days=90)))
-        end_date = request.query_params.get('endDate', get_end_of_ebd_date(get_now_datetime_utc()))
+        start_date = request.query_params.get('startDate', get_start_of_day(
+            get_today_datetime_utc() - timedelta(days=90)))
+        end_date = request.query_params.get(
+            'endDate', get_end_of_ebd_date(get_now_datetime_utc()))
 
         student_presences_history = EBDPresenceRecord.objects.filter(
             Q(person__pk=pk)
@@ -183,12 +195,14 @@ class PeopleViewSet(viewsets.ModelViewSet):
 
         return Response(student_presences_history)
 
+
 class BirthdayCelebrationViewSet(viewsets.ModelViewSet):
     queryset = Member.objects.filter(
         Q(date_of_birth__month=get_now_datetime_utc().month)
     )
 
     serializer_class = BirthdayComemorationSerializer
+
 
 class UnionCelebrationViewSet(viewsets.ModelViewSet):
     queryset = MembersUnion.objects.filter(
@@ -197,9 +211,11 @@ class UnionCelebrationViewSet(viewsets.ModelViewSet):
 
     serializer_class = UnionComemorationSerializer
 
+
 class VideoViewSet(viewsets.ModelViewSet):
     queryset = Video.objects.order_by('-registering_date')[0:10]
     serializer_class = VideoSerializer
+
 
 class ScheduleViewSet(viewsets.ModelViewSet):
     one_week_after_period = get_today_datetime_utc() + timedelta(days=7)
@@ -215,9 +231,11 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all().order_by('general_category', 'name')
     serializer_class = GroupSerializer
 
+
 class CongregationViewSet(viewsets.ModelViewSet):
     queryset = Church.objects.filter(is_congregation=True).order_by('name')
     serializer_class = CongregationSerializer
+
 
 class EventViewSet(viewsets.ModelViewSet):
     three_months_period = get_today_datetime_utc() + timedelta(days=90)
@@ -241,6 +259,7 @@ class EventViewSet(viewsets.ModelViewSet):
     ).order_by('start_date')
     serializer_class = EventSerializer
 
+
 @api_view(['GET', 'POST'])
 def device(request, format=None):
     if request.method == 'GET':
@@ -250,7 +269,8 @@ def device(request, format=None):
 
     if request.method == 'POST':
         new_device_id = request.data.get('device_id')
-        possible_registered_device = NotificationDevice.objects.filter(device_id=new_device_id).values_list('device_id', flat=True).distinct()
+        possible_registered_device = NotificationDevice.objects.filter(
+            device_id=new_device_id).values_list('device_id', flat=True).distinct()
         possible_registered_device = list(possible_registered_device)
 
         if len(possible_registered_device) == 0:
@@ -339,10 +359,12 @@ def device(request, format=None):
 #         serializer = EBDLessonPresenceRecordSerializer
 #         return serializer
 
+
 class EBDClassViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     queryset = EBDClass.objects.all().order_by('name')
     serializer_class = EBDClassSerializer
+
 
 class EBDLessonViewSet(viewsets.ModelViewSet):
     queryset = EBDLesson.objects.all().order_by('-date')
@@ -352,13 +374,16 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     @action(detail=True, url_path='classes', url_name='classes_by_lesson')
     def get_classes_by_lesson(self, request, pk=None):
         # ebd_lesson = self.get_object()
-        ebd_classes = EBDPresenceRecord.objects.filter(lesson__pk=pk).values(class_id=F('ebd_class__id'), class_name=F('ebd_class__name'), lesson_title=F('lesson__title'),).order_by('class_name').distinct('class_name')
+        ebd_classes = EBDPresenceRecord.objects.filter(lesson__pk=pk).values(class_id=F('ebd_class__id'), class_name=F(
+            'ebd_class__name'), lesson_title=F('lesson__title'),).order_by('class_name').distinct('class_name')
 
         for ebd_class in ebd_classes:
             try:
-                ebd_class['details'] = EBDLessonClassDetails.objects.filter(lesson__pk=pk, ebd_class__pk=ebd_class['class_id']).values('visitors_quantity', 'money_raised')[0]
+                ebd_class['details'] = EBDLessonClassDetails.objects.filter(
+                    lesson__pk=pk, ebd_class__pk=ebd_class['class_id']).values('visitors_quantity', 'money_raised')[0]
             except Exception:
-                print('Erro em "for ebd_class in ebd_classes" de "get_classes_by_lesson"')
+                print(
+                    'Erro em "for ebd_class in ebd_classes" de "get_classes_by_lesson"')
 
         return Response(ebd_classes)
 
@@ -367,14 +392,16 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     def class_lesson_details(self, request, pk=None, class_id=None):
         if request.method == 'GET':
             try:
-                class_lesson_details = EBDLessonClassDetails.objects.filter(lesson=pk, ebd_class=class_id).values('visitors_quantity', 'money_raised')[0]
+                class_lesson_details = EBDLessonClassDetails.objects.filter(
+                    lesson=pk, ebd_class=class_id).values('visitors_quantity', 'money_raised')[0]
                 return Response(class_lesson_details)
             except ObjectDoesNotExist:
                 return Response({'message': 'Não existe detalhes dessa lição nessa classe'}, status=status.HTTP_404_NOT_FOUND)
 
         if request.method == 'PUT':
             try:
-                class_lesson_details = EBDLessonClassDetails.objects.get(lesson=pk, ebd_class=class_id)
+                class_lesson_details = EBDLessonClassDetails.objects.get(
+                    lesson=pk, ebd_class=class_id)
                 class_lesson_details.save_details(request.data)
                 return Response({'message': 'Detalhes da classe, na lição, atualizadas com sucesso!'})
             except ObjectDoesNotExist:
@@ -385,17 +412,22 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='presences_by_class_and_lesson')
     def get_presences_by_class_and_lesson(self, request, pk=None, class_id=None):
-        presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'justification', 'register_on', 'person_id', person_name=F('person__name'), person_nickname=F('person__nickname'), person_ebd_relation=F('person__ebd_relation'), lesson_title=F('lesson__title')).order_by('person__name')
+        presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'justification', 'register_on', 'person_id', person_name=F(
+            'person__name'), person_nickname=F('person__nickname'), person_ebd_relation=F('person__ebd_relation'), lesson_title=F('lesson__title')).order_by('person__name')
 
         for presence in presences:
-            is_teacher = len(list(EBDClass.objects.filter(pk=class_id, teachers__id__in=[presence.get('person_id')]).values('id'))) > 0
-            is_secretary = len(list(EBDClass.objects.filter(pk=class_id, secretaries__id__in=[presence.get('person_id')]).values('id'))) > 0
+            is_teacher = len(list(EBDClass.objects.filter(pk=class_id, teachers__id__in=[
+                             presence.get('person_id')]).values('id'))) > 0
+            is_secretary = len(list(EBDClass.objects.filter(
+                pk=class_id, secretaries__id__in=[presence.get('person_id')]).values('id'))) > 0
             presence['is_teacher'] = is_teacher
             presence['is_secretary'] = is_secretary
 
-            labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_id=F('ebd_label_option__id'), label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
+            labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_id=F(
+                'ebd_label_option__id'), label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
             presence['labels'] = labels
-            presence['labelIds'] = map(lambda label: label.get('label_id'), labels)
+            presence['labelIds'] = map(
+                lambda label: label.get('label_id'), labels)
             presence['labels_to_remove'] = []
 
         return Response(presences)
@@ -414,10 +446,12 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
             ebd_label_option = EBDLabelOptions.objects.get(pk=label.get('id'))
 
             try:
-                presence_record_label = EBDPresenceRecordLabels.objects.get(ebd_presence_record__id=presence_id, ebd_label_option__id=label.get('id'))
+                presence_record_label = EBDPresenceRecordLabels.objects.get(
+                    ebd_presence_record__id=presence_id, ebd_label_option__id=label.get('id'))
             except ObjectDoesNotExist:
-                presence_record_label = EBDPresenceRecordLabels.objects.create(ebd_presence_record=ebd_presence_record, ebd_label_option=ebd_label_option)
-            
+                presence_record_label = EBDPresenceRecordLabels.objects.create(
+                    ebd_presence_record=ebd_presence_record, ebd_label_option=ebd_label_option)
+
             presence_record_label.save_presence_record_label({
                 'ebd_presence_record': ebd_presence_record,
                 'ebd_label_option': ebd_label_option,
@@ -425,15 +459,18 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
 
         for label_to_remove in request.data.get('labels_to_remove'):
             try:
-                presence_record_label = EBDPresenceRecordLabels.objects.get(ebd_presence_record__id=presence_id, ebd_label_option__id=label_to_remove.get('id'))
+                presence_record_label = EBDPresenceRecordLabels.objects.get(
+                    ebd_presence_record__id=presence_id, ebd_label_option__id=label_to_remove.get('id'))
                 presence_record_label.delete_presence_record_label()
             except ObjectDoesNotExist:
-               pass
+                pass
 
         return Response({'message': 'Registro de presença atualizado com sucesso!'})
 
+
 class EBDPresenceViewSet(viewsets.ModelViewSet):
     serializer_class = EBDPresenceRecordSerializer
+
     def get_queryset(self):
         # return EBDPresenceRecord.objects.all()
 
@@ -452,16 +489,21 @@ class EBDLabelOptionsViewSet(viewsets.ModelViewSet):
     queryset = EBDLabelOptions.objects.all().order_by('-type')
     serializer_class = EBDLabelOptionsSerializer
 
+
 class EBDPresenceRecordLabelsViewSet(viewsets.ModelViewSet):
-    queryset = EBDPresenceRecordLabels.objects.all().order_by('-ebd_presence_record__lesson__date', 'ebd_presence_record__person__name')
+    queryset = EBDPresenceRecordLabels.objects.all().order_by(
+        '-ebd_presence_record__lesson__date', 'ebd_presence_record__person__name')
     serializer_class = EBDPresenceRecordLabelsSerializer
 
 # Equivalente a todo o card de "Números Gerais" no app
+
+
 class EBDAnalyticsPresenceCountsViewSet(viewsets.ViewSet):
     def list(self, request):
         current_year = date.today().year
 
-        lessons_count = EBDLesson.objects.filter(date__year=current_year).count()
+        lessons_count = EBDLesson.objects.filter(
+            date__year=current_year).count()
         students_count = EBDPresenceRecord.objects.filter(
             register_on__year=current_year,
             attended=True
@@ -496,27 +538,36 @@ class EBDAnalyticsPresenceHistoryViewSet(viewsets.ViewSet):
 
         return Response(presence_history)
 
-# Equivalente ao grupo de cards agrupados por classe, mostrando a quantidade de matriculados, presentes, ausentes e visitantes, em um determinado Domingo selecionado (ou a média de todos os domingos de um mês)
+# Equivalente ao grupo de cards agrupados por classe, mostrando a quantidade de matriculados, presentes, ausentes e visitantes, em um determinado Domingo selecionado ou a média considerando todos os domingos dentro de um período de datas
+
+
 class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
     def list(self, request):
-        # month = self.request.query_params.get('month', datetime.today().month)
-        month = self.request.query_params.get('month', None)
-        day = self.request.query_params.get('day', None)
+        start_date: str = self.request.query_params.get('startDate', None)
+        end_date: str = self.request.query_params.get('endDate', None)
+        month: str = self.request.query_params.get('month', None)
+        day: str = self.request.query_params.get('day', None)
 
-        if day and month:
+        filter_by_period = False
+
+        if start_date and end_date:
+            filter_by_period = True
+
+            now = get_now_datetime_utc().date()
+
+            start_year, start_month, start_day = start_date.split('-')
+            filtered_start_date = now.replace(
+                year=int(start_year), month=int(start_month), day=int(start_day))
+
+            end_year, end_month, end_day = end_date.split('-')
+            filtered_end_date = now.replace(
+                year=int(end_year), month=int(end_month), day=int(end_day))
+        elif day and month:
             now = get_now_datetime_utc().date()
             filtered_lesson_date = now.replace(month=int(month), day=int(day))
         else:
             filtered_lesson_date = get_sunday_as_date(0)
 
-        presences = Count('attended', filter=Q(attended=True))
-        absences = Count('attended', filter=Q(attended=False))
-        visitors = Subquery(
-            EBDLessonClassDetails.objects.filter(
-                ebd_class__name=OuterRef('class_name'),
-                lesson__title=OuterRef('lesson_name')
-            ).values('visitors_quantity')
-        )
         # magazines = Subquery(
         #     EBDPresenceRecordLabels.objects.filter(
         #         ebd_presence_record__ebd_class__name=OuterRef('class_name'),
@@ -525,35 +576,84 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
         #     ).values()
         # )
 
-        presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), class_id=F('ebd_class__id'), lesson_name=F('lesson__title'), lesson_date=F('lesson__date')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(
-            Q(
-                Q(lesson__date=filtered_lesson_date),
-                ~Q(ebd_class__name='Departamento Infantil')
+        if filter_by_period:
+            lessons_quantity = 0
+            date_to_increment = filtered_start_date
+            while date_to_increment <= filtered_end_date:
+                lessons_quantity = lessons_quantity + \
+                    1 if date_to_increment.weekday() == 6 else lessons_quantity
+                date_to_increment = date_to_increment + timedelta(days=1)
+
+            presences = Count(Case(When(attended=True, then=1)))
+            absences = Count(Case(When(attended=False, then=1)))
+
+            presence_classes = EBDPresenceRecord.objects.values(class_id=F('ebd_class__id'), class_name=F('ebd_class__name')).annotate(
+                presences=presences, absences=absences, registered=absences + presences).filter(
+                Q(
+                    Q(lesson__date__range=(filtered_start_date, filtered_end_date)),
+                    ~Q(ebd_class__name='Departamento Infantil')
+                )
+            ).order_by('class_name')
+
+            best_frequency, best_frequency_class, worst_frequency, worst_frequency_class = 0, None, 100, None
+
+            for presence_class in presence_classes:
+                presence_class['presences'] = round(
+                    presence_class['presences'] / lessons_quantity, 2)
+                presence_class['absences'] = round(
+                    presence_class['absences'] / lessons_quantity, 2)
+                presence_class['registered'] = round(
+                    presence_class['registered'] / lessons_quantity, 2)
+
+                presence_class['frequency'] = round((presence_class['presences'] * 100) / (
+                    presence_class['presences'] + presence_class['absences']), 2)
+                if presence_class['frequency'] > best_frequency:
+                    best_frequency = presence_class['frequency']
+                    best_frequency_class = presence_class['class_id']
+                if presence_class['frequency'] < worst_frequency:
+                    worst_frequency = presence_class['frequency']
+                    worst_frequency_class = presence_class['class_id']
+        else:
+            presences = Count('attended', filter=Q(attended=True))
+            absences = Count('attended', filter=Q(attended=False))
+            visitors = Subquery(
+                EBDLessonClassDetails.objects.filter(
+                    ebd_class__name=OuterRef('class_name'),
+                    lesson__title=OuterRef('lesson_name')
+                ).values('visitors_quantity')
             )
-        ).annotate(visitors=visitors).order_by('class_name')
 
-        best_frequency, best_frequency_class, worst_frequency, worst_frequency_class = 0, None, 100, None
+            presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), class_id=F('ebd_class__id'), lesson_name=F('lesson__title'), lesson_date=F('lesson__date')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(
+                Q(
+                    Q(lesson__date=filtered_lesson_date),
+                    ~Q(ebd_class__name='Departamento Infantil')
+                )
+            ).annotate(visitors=visitors).order_by('class_name')
 
-        for presence_class in presence_classes:
-            presence_class['frequency'] = round((presence_class['presences'] * 100) / (presence_class['presences'] + presence_class['absences']), 2)
-            if presence_class['frequency'] > best_frequency:
-                best_frequency = presence_class['frequency']
-                best_frequency_class = presence_class['class_id']
-            if presence_class['frequency'] < worst_frequency:
-                worst_frequency = presence_class['frequency']
-                worst_frequency_class = presence_class['class_id']
+            best_frequency, best_frequency_class, worst_frequency, worst_frequency_class = 0, None, 100, None
 
-            presence_class['magazines'] = EBDPresenceRecordLabels.objects.filter(
-                ebd_presence_record__ebd_class__name=presence_class['class_name'],
-                ebd_presence_record__lesson__title=presence_class['lesson_name'],
-                ebd_label_option__title__icontains='trouxe revista'
-            ).count()
+            for presence_class in presence_classes:
+                presence_class['frequency'] = round((presence_class['presences'] * 100) / (
+                    presence_class['presences'] + presence_class['absences']), 2)
+                if presence_class['frequency'] > best_frequency:
+                    best_frequency = presence_class['frequency']
+                    best_frequency_class = presence_class['class_id']
+                if presence_class['frequency'] < worst_frequency:
+                    worst_frequency = presence_class['frequency']
+                    worst_frequency_class = presence_class['class_id']
+
+                    presence_class['magazines'] = EBDPresenceRecordLabels.objects.filter(
+                        ebd_presence_record__ebd_class__name=presence_class['class_name'],
+                        ebd_presence_record__lesson__title=presence_class['lesson_name'],
+                        ebd_label_option__title__icontains='trouxe revista'
+                    ).count()
 
         return Response({
             'best_frequency_class': best_frequency_class,
             'worst_frequency_class': worst_frequency_class,
             'classes': presence_classes,
         })
+
 
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
