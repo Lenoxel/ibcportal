@@ -17,16 +17,24 @@ EBD_PRESENCE_RECORD_LABEL_OPTIONS = [
     ('neutral', 'Neutro'),
 ]
 
+
 class EBDClass(models.Model):
     name = models.CharField('Nome', max_length=50)
-    description = models.CharField('Descrição', max_length=200, null=True, blank=True)
-    background_image = CloudinaryField('Imagem da classe', null=True, blank=True)
-    church = models.ForeignKey(Church, verbose_name='Igreja', null=True, blank=True, on_delete=models.SET_NULL)
-    students = models.ManyToManyField(Member, related_name='student', verbose_name='Alunos', blank=True)
-    teachers = models.ManyToManyField(Member, related_name='teacher', verbose_name='Professores', blank=True)
-    secretaries = models.ManyToManyField(Member, related_name='secretary', verbose_name='Secretários', blank=True)
+    description = models.CharField(
+        'Descrição', max_length=200, null=True, blank=True)
+    background_image = CloudinaryField(
+        'Imagem da classe', null=True, blank=True)
+    church = models.ForeignKey(
+        Church, verbose_name='Igreja', null=True, blank=True, on_delete=models.SET_NULL)
+    students = models.ManyToManyField(
+        Member, related_name='student', verbose_name='Alunos', blank=True)
+    teachers = models.ManyToManyField(
+        Member, related_name='teacher', verbose_name='Professores', blank=True)
+    secretaries = models.ManyToManyField(
+        Member, related_name='secretary', verbose_name='Secretários', blank=True)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
-    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+    last_updated_date = models.DateTimeField(
+        'Última modificação', auto_now=True)
 
     class Meta:
         verbose_name = 'Classe'
@@ -36,21 +44,28 @@ class EBDClass(models.Model):
     def __str__(self):
         return self.name
 
+
 @receiver(pre_delete, sender=EBDClass)
 def ebd_class_background_image_delete(sender, instance, **kwargs):
     if instance.background_image and instance.background_image.public_id:
         cloudinary.uploader.destroy(instance.background_image.public_id)
 
+
 class EBDLesson(models.Model):
-    magazine_title = models.CharField('Revista', max_length=100, null=True, blank=True)
+    magazine_title = models.CharField(
+        'Revista', max_length=100, null=True, blank=True)
     title = models.CharField('Lição', max_length=100)
     date = models.DateField('Data da lição')
-    number = models.PositiveIntegerField('Número da lição', null=True, blank=True)
+    number = models.PositiveIntegerField(
+        'Número da lição', null=True, blank=True)
     single_class = models.BooleanField('Classe Única', default=False)
-    apply_to_all = models.BooleanField('Aplicar lição a todas as classes', default=True)
-    ebd_class = models.ForeignKey(EBDClass, verbose_name='Classe', on_delete=models.CASCADE, null=True, blank=True)
+    apply_to_all = models.BooleanField(
+        'Aplicar lição a todas as classes', default=True)
+    ebd_class = models.ForeignKey(
+        EBDClass, verbose_name='Classe', on_delete=models.CASCADE, null=True, blank=True)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
-    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+    last_updated_date = models.DateTimeField(
+        'Última modificação', auto_now=True)
 
     class Meta:
         verbose_name = 'Lição'
@@ -60,13 +75,19 @@ class EBDLesson(models.Model):
     def __str__(self):
         return self.title
 
+
 class EBDLessonClassDetails(models.Model):
-    lesson = models.ForeignKey(EBDLesson, verbose_name='Lição', on_delete=models.CASCADE)
-    ebd_class = models.ForeignKey(EBDClass, verbose_name='Classe', on_delete=models.CASCADE)
-    visitors_quantity = models.PositiveIntegerField('Número de visitantes', default=0)
-    money_raised = models.FloatField('Dinheiro arrecadado', null=True, blank=True)
+    lesson = models.ForeignKey(
+        EBDLesson, verbose_name='Lição', on_delete=models.CASCADE)
+    ebd_class = models.ForeignKey(
+        EBDClass, verbose_name='Classe', on_delete=models.CASCADE)
+    visitors_quantity = models.PositiveIntegerField(
+        'Número de visitantes', default=0)
+    money_raised = models.FloatField(
+        'Dinheiro arrecadado', null=True, blank=True)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
-    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+    last_updated_date = models.DateTimeField(
+        'Última modificação', auto_now=True)
 
     class Meta:
         verbose_name = 'Detalhes da classe na lição'
@@ -77,21 +98,31 @@ class EBDLessonClassDetails(models.Model):
         return '{} - {}'.format(self.lesson, self.ebd_class)
 
     def save_details(self, ebd_class_lesson_details_object):
-        self.visitors_quantity = ebd_class_lesson_details_object.get('visitors_quantity') or 0
-        self.money_raised = ebd_class_lesson_details_object.get('money_raised') or None
+        self.visitors_quantity = ebd_class_lesson_details_object.get(
+            'visitors_quantity') or 0
+        self.money_raised = ebd_class_lesson_details_object.get(
+            'money_raised') or None
         self.save()
 
+
 class EBDPresenceRecord(models.Model):
-    lesson = models.ForeignKey(EBDLesson, verbose_name='Lição', on_delete=models.CASCADE)
-    person = models.ForeignKey(Member, related_name='person_presence_record', verbose_name='Pessoa', on_delete=models.CASCADE)
-    ebd_class = models.ForeignKey(EBDClass, verbose_name='Classe', on_delete=models.SET_NULL, blank=True, null=True)
-    ebd_church = models.ForeignKey(Church, verbose_name='Igreja', on_delete=models.SET_NULL, blank=True, null=True, default=DEFAULT_CHURCH_ID)
+    lesson = models.ForeignKey(
+        EBDLesson, verbose_name='Lição', on_delete=models.CASCADE)
+    person = models.ForeignKey(Member, related_name='person_presence_record',
+                               verbose_name='Pessoa', on_delete=models.CASCADE)
+    ebd_class = models.ForeignKey(
+        EBDClass, verbose_name='Classe', on_delete=models.SET_NULL, blank=True, null=True)
+    ebd_church = models.ForeignKey(
+        Church, verbose_name='Igreja', on_delete=models.SET_NULL, blank=True, null=True, default=DEFAULT_CHURCH_ID)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
-    created_by = models.ForeignKey(User, verbose_name='Criado por', related_name='presence_record_created_by', null=True, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(User, verbose_name='Criado por',
+                                   related_name='presence_record_created_by', null=True, on_delete=models.SET_NULL)
     attended = models.BooleanField('Presente', default=False)
-    justification = models.CharField('Justificativa da Falta', max_length=500, null=True, blank=True)
+    justification = models.CharField(
+        'Justificativa da Falta', max_length=500, null=True, blank=True)
     register_on = models.DateTimeField('Registro em', blank=True, null=True)
-    register_by = models.ForeignKey(User, verbose_name='Última atualização por', related_name='presence_record_register_by', null=True, on_delete=models.SET_NULL)
+    register_by = models.ForeignKey(User, verbose_name='Última atualização por',
+                                    related_name='presence_record_register_by', null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = 'Registro de Presença'
@@ -110,8 +141,10 @@ class EBDPresenceRecord(models.Model):
 
     def save_presence_record(self, ebd_presence_record_object, user):
         self.attended = ebd_presence_record_object.get('attended') or False
-        self.justification = ebd_presence_record_object.get('justification') or None
-        self.register_on = ebd_presence_record_object.get('register_on') or None
+        self.justification = ebd_presence_record_object.get(
+            'justification') or None
+        self.register_on = ebd_presence_record_object.get(
+            'register_on') or None
         self.register_by = user
 
         self.save()
@@ -119,9 +152,11 @@ class EBDPresenceRecord(models.Model):
 
 class EBDLabelOptions(models.Model):
     title = models.CharField('Label', max_length=100)
-    type = models.CharField('Tipo', choices=EBD_PRESENCE_RECORD_LABEL_OPTIONS, max_length=30, null=True, blank=True)
+    type = models.CharField(
+        'Tipo', choices=EBD_PRESENCE_RECORD_LABEL_OPTIONS, max_length=30, null=True, blank=True)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
-    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+    last_updated_date = models.DateTimeField(
+        'Última modificação', auto_now=True)
 
     class Meta:
         verbose_name = 'Label de EBD'
@@ -131,11 +166,15 @@ class EBDLabelOptions(models.Model):
     def __str__(self):
         return self.title
 
+
 class EBDPresenceRecordLabels(models.Model):
-    ebd_presence_record = models.ForeignKey(EBDPresenceRecord, related_name='ebd_presence_record', verbose_name='Registro de Presença', on_delete=models.CASCADE)
-    ebd_label_option = models.ForeignKey(EBDLabelOptions, related_name='ebd_label_option', verbose_name='Label', on_delete=models.CASCADE)
+    ebd_presence_record = models.ForeignKey(
+        EBDPresenceRecord, related_name='ebd_presence_record', verbose_name='Registro de Presença', on_delete=models.CASCADE)
+    ebd_label_option = models.ForeignKey(
+        EBDLabelOptions, related_name='ebd_label_option', verbose_name='Label', on_delete=models.CASCADE)
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
-    last_updated_date = models.DateTimeField('Última modificação', auto_now=True)
+    last_updated_date = models.DateTimeField(
+        'Última modificação', auto_now=True)
 
     class Meta:
         verbose_name = 'Label de aluno na EBD'
@@ -146,8 +185,10 @@ class EBDPresenceRecordLabels(models.Model):
         return 'Em {}, {} recebeu o label {}'.format(self.ebd_presence_record.lesson.date.strftime('%d/%m/%Y'), self.ebd_presence_record.person, self.ebd_label_option)
 
     def save_presence_record_label(self, ebd_presence_record_label_object):
-        self.ebd_presence_record = ebd_presence_record_label_object.get('ebd_presence_record')
-        self.ebd_label_option = ebd_presence_record_label_object.get('ebd_label_option')
+        self.ebd_presence_record = ebd_presence_record_label_object.get(
+            'ebd_presence_record')
+        self.ebd_label_option = ebd_presence_record_label_object.get(
+            'ebd_label_option')
 
         self.save()
 

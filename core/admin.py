@@ -1,22 +1,26 @@
+from datetime import date, datetime
 from importlib import resources
 from django.contrib import admin
 from .auxiliar_functions import create_audit, create_push_notification
 from .models import Post, Member, PostFile, Video, Schedule, Church, Donate, Event, MembersUnion, Audit, NotificationDevice, PushNotification
 from django.core.exceptions import PermissionDenied
 from import_export.admin import ExportActionMixin
-from import_export import resources
+from import_export import resources, widgets
 from import_export.fields import Field
+
 
 class PostFileInline(admin.TabularInline):
     model = PostFile
     extra = 1
+
 
 class PostAdmin(admin.ModelAdmin):
     inlines = [
         PostFileInline
     ]
 
-    readonly_fields = ('manager', 'views_count', 'claps_count', 'dislike_count')
+    readonly_fields = ('manager', 'views_count',
+                       'claps_count', 'dislike_count')
 
     def save_model(self, request, obj, form, change):
         if request.user.is_superuser:
@@ -43,6 +47,7 @@ class PostAdmin(admin.ModelAdmin):
             super().delete_model(request, obj)
         else:
             return PermissionDenied
+
 
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = ('interested_people_count',)
@@ -71,6 +76,7 @@ class EventAdmin(admin.ModelAdmin):
         else:
             return PermissionDenied
 
+
 class VideoAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if request.user.is_superuser:
@@ -97,6 +103,7 @@ class VideoAdmin(admin.ModelAdmin):
         else:
             return PermissionDenied
 
+
 class ScheduleAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if request.user.is_superuser:
@@ -122,8 +129,10 @@ class ScheduleAdmin(admin.ModelAdmin):
         else:
             return PermissionDenied
 
+
 class AuditAdmin(admin.ModelAdmin):
-    readonly_fields = ('responsible', 'changed_model', 'action_type', 'description', 'obj_name',)
+    readonly_fields = ('responsible', 'changed_model',
+                       'action_type', 'description', 'obj_name',)
 
     # def has_delete_permission(self, request, obj=None):
     #     return False
@@ -134,34 +143,73 @@ class AuditAdmin(admin.ModelAdmin):
     # def has_change_permission(self, request, obj=None):
     #     return False
 
+
 class DonateAdmin(admin.ModelAdmin):
-    readonly_fields = ('donor_name', 'donor_email', 'donate_type', 'payment_option', 'payment_status', 'amount')
+    readonly_fields = ('donor_name', 'donor_email', 'donate_type',
+                       'payment_option', 'payment_status', 'amount')
+
 
 class NotificationDeviceAdmin(admin.ModelAdmin):
     readonly_fields = ('device_id', 'registration_type',)
 
+
 class PushNotificationAdmin(admin.ModelAdmin):
-    readonly_fields = ('title', 'body', 'multicast_id', 'success_count', 'failure_count', 'push_date',)
+    readonly_fields = ('title', 'body', 'multicast_id',
+                       'success_count', 'failure_count', 'push_date',)
+
+
+class CustomDateWidget(widgets.DateWidget):
+    def render(self, value: date, obj=None):
+        if not value:
+            return ''
+        return value.strftime('%d/%m/%Y')
+
+
+class CustomDateTimeWidget(widgets.DateTimeWidget):
+    def render(self, value: datetime, obj=None):
+        if not value:
+            return ''
+        return value.strftime('%d/%m/%Y %H:%M')
+
+
+class CustomBooleanWidget(widgets.BooleanWidget):
+    def render(self, value: bool, obj=None):
+        return 'Sim' if value else 'Não'
+
 
 class MemberResource(resources.ModelResource):
     name = Field(attribute='name', column_name='Nome')
     nickname = Field(attribute='nickname', column_name='Conhecido como')
-    date_of_birth = Field(attribute='date_of_birth', column_name='Data de nascimento')
-    church_relation = Field(attribute='church_relation', column_name='Relação com a Igreja')
-    ebd_relation = Field(attribute='ebd_relation', column_name='Relação com a EBD')
-    last_updated_date = Field(attribute='last_updated_date', column_name='Última atualização')
+    date_of_birth = Field(attribute='date_of_birth',
+                          column_name='Data de nascimento', widget=CustomDateWidget())
+    church_relation = Field(attribute='church_relation',
+                            column_name='Relação com a Igreja')
+    ebd_relation = Field(attribute='ebd_relation',
+                         column_name='Relação com a EBD')
+    educational_level = Field(attribute='educational_level',
+                              column_name='Grau de escolaridade')
+    have_a_job = Field(attribute='have_a_job',
+                       column_name='Trabalha atualmente', widget=CustomBooleanWidget())
+    is_retired = Field(attribute='have_a_job',
+                       column_name='É aposentado', widget=CustomBooleanWidget())
+    work_on_sundays = Field(attribute='have_a_job',
+                            column_name='Trabalha aos domingos', widget=CustomBooleanWidget())
+    last_updated_date = Field(attribute='last_updated_date',
+                              column_name='Última atualização', widget=CustomDateTimeWidget())
 
     class Meta:
         model = Member
-        widgets = {
-            'last_updated_date': {'format': '%d-%m-%Y'},
-            'date_of_birth': {'format': '%d-%m-%Y'},
-        }
-        fields = ('name', 'nickname', 'date_of_birth', 'church_relation', 'ebd_relation', 'last_updated_date')
+        skip_unchanged = True
+        report_skipped = False
+        fields = ('name', 'nickname', 'date_of_birth',
+                  'church_relation', 'ebd_relation', 'educational_level', 'have_a_job', 'is_retired', 'work_on_sundays', 'last_updated_date')
+
 
 class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = MemberResource
-    list_filter = ('name', 'marital_status', 'church_function', 'ebd_relation')
+    list_filter = ('name', 'church_relation',
+                   'ebd_relation', 'marital_status', 'educational_level', 'have_a_job', 'is_retired', 'work_on_sundays')
+
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Member, MemberAdmin)
