@@ -174,6 +174,7 @@ class CustomDateTimeWidget(widgets.DateTimeWidget):
 
 class CustomBooleanWidget(widgets.BooleanWidget):
     def render(self, value: bool, obj=None):
+        print(value)
         return 'Sim' if value else 'Não'
 
 
@@ -190,9 +191,9 @@ class MemberResource(resources.ModelResource):
                               column_name='Grau de escolaridade')
     have_a_job = Field(attribute='have_a_job',
                        column_name='Trabalha atualmente', widget=CustomBooleanWidget())
-    is_retired = Field(attribute='have_a_job',
+    is_retired = Field(attribute='is_retired',
                        column_name='É aposentado', widget=CustomBooleanWidget())
-    work_on_sundays = Field(attribute='have_a_job',
+    work_on_sundays = Field(attribute='work_on_sundays',
                             column_name='Trabalha aos domingos', widget=CustomBooleanWidget())
     last_updated_date = Field(attribute='last_updated_date',
                               column_name='Última atualização', widget=CustomDateTimeWidget())
