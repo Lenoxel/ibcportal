@@ -174,7 +174,7 @@ class CustomDateTimeWidget(widgets.DateTimeWidget):
 
 class CustomBooleanWidget(widgets.BooleanWidget):
     def render(self, value: bool, obj=None):
-        print(value)
+        # print(value)
         return 'Sim' if value else 'Não'
 
 

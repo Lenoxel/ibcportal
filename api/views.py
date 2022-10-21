@@ -619,11 +619,11 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
             visitors = Subquery(
                 EBDLessonClassDetails.objects.filter(
                     ebd_class__name=OuterRef('class_name'),
-                    lesson__title=OuterRef('lesson_name')
+                    lesson__pk=OuterRef('lesson_identifier')
                 ).values('visitors_quantity')
             )
 
-            presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), class_id=F('ebd_class__id'), lesson_name=F('lesson__title'), lesson_date=F('lesson__date')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(
+            presence_classes = EBDPresenceRecord.objects.values(class_name=F('ebd_class__name'), class_id=F('ebd_class__id'), lesson_name=F('lesson__title'), lesson_identifier=F('lesson__pk'), lesson_date=F('lesson__date')).annotate(registered=absences+presences).annotate(presences=presences).annotate(absences=absences).filter(
                 Q(
                     Q(lesson__date=filtered_lesson_date),
                     ~Q(ebd_class__name='Departamento Infantil')
