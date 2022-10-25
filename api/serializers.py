@@ -11,6 +11,8 @@ from core.models import Post, PostFile, Member, Video, Schedule, Event, MembersU
 from groups.models import Group, GroupMeetingDate
 
 # Serializers define the API representation.
+
+
 class FileSerializer(serializers.ModelSerializer):
     post_file = serializers.SerializerMethodField()
 
@@ -20,6 +22,7 @@ class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostFile
         fields = ('post_file', 'post')
+
 
 class PostSerializer(serializers.ModelSerializer):
     files = FileSerializer(many=True, required=False)
@@ -31,8 +34,10 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'publisher', 'publisher_picture', 'title', 'text', 'published_date', 'last_updated_date', 'files', 'views_count', 'claps_count', 'dislike_count')
+        fields = ('id', 'publisher', 'publisher_picture', 'title', 'text', 'published_date',
+                  'last_updated_date', 'files', 'views_count', 'claps_count', 'dislike_count')
         depth = 1
+
 
 class MemberSerializer(serializers.ModelSerializer):
     picture = serializers.SerializerMethodField()
@@ -42,7 +47,9 @@ class MemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ('name', 'description', 'church_function', 'address', 'date_of_birth', 'picture')
+        fields = ('name', 'description', 'church_function',
+                  'address', 'date_of_birth', 'picture')
+
 
 class PersonSerializer(serializers.ModelSerializer):
     ebd_class = serializers.SerializerMethodField()
@@ -63,7 +70,8 @@ class PersonSerializer(serializers.ModelSerializer):
         return obj.picture.url if obj.picture else None
 
     def get_frequency(self, obj):
-        start_date = get_start_of_day(get_start_of_day(get_today_datetime_utc() - timedelta(days=90)))
+        start_date = get_start_of_day(get_start_of_day(
+            get_today_datetime_utc() - timedelta(days=360)))
         end_date = get_end_of_ebd_date(get_now_datetime_utc())
 
         person_presence_history_list = EBDPresenceRecord.objects.filter(
@@ -94,7 +102,9 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ('id', 'name', 'picture', 'ebd_class', 'whatsapp', 'work_on_sundays', 'frequency')
+        fields = ('id', 'name', 'picture', 'ebd_class',
+                  'whatsapp', 'work_on_sundays', 'frequency')
+
 
 class BirthdayComemorationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.SerializerMethodField()
@@ -102,8 +112,10 @@ class BirthdayComemorationSerializer(serializers.ModelSerializer):
     def get_date_of_birth(self, obj):
         day_number = obj.date_of_birth.day
         month_number = obj.date_of_birth.month
-        birthday_day = '0' + str(day_number) if day_number < 10 else str(day_number)
-        birthday_month = '0' + str(month_number) if month_number < 10 else str(month_number)
+        birthday_day = '0' + \
+            str(day_number) if day_number < 10 else str(day_number)
+        birthday_month = '0' + \
+            str(month_number) if month_number < 10 else str(month_number)
         birthday = birthday_day + '/' + birthday_month
         return birthday
 
@@ -116,14 +128,17 @@ class BirthdayComemorationSerializer(serializers.ModelSerializer):
         model = Member
         fields = '__all__'
 
+
 class UnionComemorationSerializer(serializers.ModelSerializer):
     union_date = serializers.SerializerMethodField()
 
     def get_union_date(self, obj):
         day_number = obj.union_date.day
         month_number = obj.union_date.month
-        union_day = '0' + str(day_number) if day_number < 10 else str(day_number)
-        union_month = '0' + str(month_number) if month_number < 10 else str(month_number)
+        union_day = '0' + \
+            str(day_number) if day_number < 10 else str(day_number)
+        union_month = '0' + \
+            str(month_number) if month_number < 10 else str(month_number)
         union_date = union_day + '/' + union_month
         return union_date
 
@@ -141,21 +156,27 @@ class UnionComemorationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
+
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ('id', 'src', 'category', 'title', 'description', 'youtube_video_code', 'registering_date')
+        fields = ('id', 'src', 'category', 'title', 'description',
+                  'youtube_video_code', 'registering_date')
+
 
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
-        fields = ('id', 'title', 'start_date', 'end_date', 'location', 'description', 'preacher', 'leader', 'organizing_group', 'category', 'video')
+        fields = ('id', 'title', 'start_date', 'end_date', 'location', 'description',
+                  'preacher', 'leader', 'organizing_group', 'category', 'video')
         depth = 1
+
 
 class GroupMeetingDateSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupMeetingDate
         fields = ('group', 'day', 'start_date', 'end_date')
+
 
 class GroupSerializer(serializers.ModelSerializer):
     meeting_dates = GroupMeetingDateSerializer(many=True, required=False)
@@ -194,8 +215,10 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ('id', 'general_category', 'name', 'description', 'info', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture', 'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates', 'general_category_icon')
+        fields = ('id', 'general_category', 'name', 'description', 'info', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture',
+                  'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates', 'general_category_icon')
         depth = 1
+
 
 class CongregationSerializer(serializers.ModelSerializer):
     background_image = serializers.SerializerMethodField()
@@ -230,8 +253,10 @@ class CongregationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Church
-        fields = ('id', 'name', 'description', 'info', 'background_image', 'responsible', 'responsible_picture', 'is_congregation', 'general_category', 'general_category_icon')
+        fields = ('id', 'name', 'description', 'info', 'background_image', 'responsible',
+                  'responsible_picture', 'is_congregation', 'general_category', 'general_category_icon')
         depth = 1
+
 
 class EventSerializer(serializers.ModelSerializer):
     picture = serializers.SerializerMethodField()
@@ -244,6 +269,7 @@ class EventSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
+
 class EBDLessonSerializer(serializers.ModelSerializer):
     is_next_lesson = serializers.SerializerMethodField()
     presence_records = serializers.SerializerMethodField()
@@ -253,8 +279,8 @@ class EBDLessonSerializer(serializers.ModelSerializer):
 
     def get_presence_records(self, obj):
         return {
-            'presents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended = True).count(),
-            'absents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended = False).count(),
+            'presents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended=True).count(),
+            'absents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended=False).count(),
             'pending':  EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=True).count(),
             'pending_calls': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=True).values(class_name=F('ebd_class__name')).annotate(count=Count('ebd_class__name', distinct=True))
         }
@@ -264,10 +290,12 @@ class EBDLessonSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
+
 class EBDClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = EBDClass
         fields = ('id', 'name')
+
 
 class EBDPresenceRecordSerializer(serializers.ModelSerializer):
     person = serializers.SerializerMethodField()
@@ -318,17 +346,21 @@ class EBDPresenceRecordSerializer(serializers.ModelSerializer):
         fields = '__all__'
         depth = 1
 
+
 class EBDLabelOptionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EBDLabelOptions
         fields = ('id', 'title', 'type')
 
+
 class EBDPresenceRecordLabelsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EBDPresenceRecordLabels
-        fields = ('id', 'ebd_presence_record', 'ebd_label_option', 'creation_date', 'last_updated_date')
+        fields = ('id', 'ebd_presence_record', 'ebd_label_option',
+                  'creation_date', 'last_updated_date')
         depth = 1
-    
+
+
 class NotificationDeviceSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     device_id = serializers.CharField()
@@ -340,6 +372,7 @@ class NotificationDeviceSerializer(serializers.Serializer):
         """
         return NotificationDevice.objects.create(**validated_data)
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -347,9 +380,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         token['user_id'] = user.pk
         token['email'] = user.email
-        token['name'] = (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
+        token['name'] = (user.first_name if user.first_name else '') + (
+            ' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
 
         return token
+
 
 class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -359,21 +394,25 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
 
             token['user_id'] = user.pk
             token['email'] = user.email
-            token['name'] = (user.first_name if user.first_name else '') + (' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
+            token['name'] = (user.first_name if user.first_name else '') + (
+                ' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
             token['groups'] = list(user.groups.all().values())
             token['is_superuser'] = user.is_superuser
 
             if not user.is_superuser and not user.groups.filter(name='Secretaria da Igreja').exists() and not user.groups.filter(name='Admin').exists():
-                classes_as_a_teacher = list(EBDClass.objects.filter(teachers__user__id__in=[user.pk]).values('id', 'name'))
+                classes_as_a_teacher = list(EBDClass.objects.filter(
+                    teachers__user__id__in=[user.pk]).values('id', 'name'))
                 token['classes_as_a_teacher'] = classes_as_a_teacher
                 print(classes_as_a_teacher)
-                classes_as_a_secretary = list(EBDClass.objects.filter(secretaries__user__id__in=[user.pk]).values('id', 'name'))
+                classes_as_a_secretary = list(EBDClass.objects.filter(
+                    secretaries__user__id__in=[user.pk]).values('id', 'name'))
                 token['classes_as_a_secretary'] = classes_as_a_secretary
                 print(classes_as_a_teacher)
 
             return token
         else:
-          raise ValidationError({'message': 'Você não tem permissão para acessar esse recurso.'}, code=403)
+            raise ValidationError(
+                {'message': 'Você não tem permissão para acessar esse recurso.'}, code=403)
 
 # class EBDLessonPresenceRecordSerializer(serializers.Serializer):
 #     lesson_date = serializers.CharField()

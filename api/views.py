@@ -180,7 +180,7 @@ class PeopleViewSet(viewsets.ModelViewSet):
     @action(detail=True, url_path='history', url_name='student_ebd_history')
     def get_student_ebd_history(self, request, pk=None):
         start_date = request.query_params.get('startDate', get_start_of_day(
-            get_today_datetime_utc() - timedelta(days=90)))
+            get_today_datetime_utc() - timedelta(days=360)))
         end_date = request.query_params.get(
             'endDate', get_end_of_ebd_date(get_now_datetime_utc()))
 
