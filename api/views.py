@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDLessonClassDetails, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import viewsets, status, mixins
-from django.db.models import Q, F, Count, Sum, OuterRef, Subquery, Case, When
+from django.db.models import Q, F, Count, Sum, OuterRef, Subquery, Case, When, ExpressionWrapper, IntegerField
 # from rest_framework.authtoken.views import ObtainAuthToken
 from core.models import Post, Video, Schedule, Member, Event, MembersUnion, NotificationDevice, Church
 # from ebd.models import EBDLessonPresenceRecord
@@ -12,9 +12,10 @@ from datetime import date, datetime, timedelta
 # from calendar import monthrange
 from django.core.exceptions import ObjectDoesNotExist
 # from django.utils import timezone
+from django.core.serializers import serialize
 
 # from rest_framework.authtoken.models import Token
-# from django.http import JsonResponse
+from django.http import JsonResponse
 
 from rest_framework.decorators import api_view, action
 from rest_framework.exceptions import NotAuthenticated
@@ -657,32 +658,49 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
 
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
-        presence_users = EBDPresenceRecord.objects.raw('''
-            SELECT * FROM (SELECT MAX(id) id, person_id, true role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
-            FROM ebd_EBDPresenceRecord
-            GROUP BY
-            person_id
-            ORDER BY presences DESC
-            LIMIT 5) AS T
-            UNION
-            SELECT * FROM (SELECT MAX(id) id, person_id, false role_model, (CASE WHEN attended = TRUE THEN 1 END) presences, (CASE WHEN attended = FALSE THEN 1 END) absences
-            FROM ebd_EBDPresenceRecord
-            GROUP BY 
-            id,
-            person_id
-            ORDER BY absences DESC
-            LIMIT 5) AS T2
-        ''')
+        start_date = request.query_params.get('startDate', get_start_of_day(
+            get_today_datetime_utc() - timedelta(days=360)))
+        end_date = request.query_params.get(
+            'endDate', get_end_of_ebd_date(get_now_datetime_utc()))
 
-        formatted_presence_users = []
-
-        for data in presence_users:
-            formatted_presence_users.append({
-                'person_name': data.person.name,
-                'person_picture_url': data.person.picture.url,
-                'presences': data.presences or 0,
-                'absences': data.absences or 0,
-                'role_model': data.role_model
+        exemplary_students = []
+        worrying_students = []
+        
+        for exemplary_student in Member.objects.raw('''SELECT members.id id, members.id person_id, members.name person_name, ebd_class.name class_name, members.picture person_picture, COUNT(CASE WHEN attended = True THEN 1 END) presences_count
+            FROM ebd_ebdpresencerecord ebd_presence_record
+            INNER JOIN core_member members
+            ON members.id = ebd_presence_record.Person_id
+            INNER JOIN ebd_ebdclass ebd_class
+            ON ebd_class.id = ebd_presence_record.ebd_class_id
+            WHERE ebd_presence_record.register_on BETWEEN %s AND %s
+            GROUP BY ebd_class.name, members.id
+            ORDER BY presences_count DESC LIMIT 10''', params=[start_date, end_date]):
+            exemplary_students.append({
+                'person_id': exemplary_student.person_id,
+                'person_name': exemplary_student.person_name,
+                'person_picture': 'http://res.cloudinary.com/ibc-curado-2/{}'.format(exemplary_student.person_picture) if exemplary_student.person_picture else None,
+                'class_name': exemplary_student.class_name,
+                'presences_count': exemplary_student.presences_count
             })
 
-        return Response(formatted_presence_users)
+        for worrying_student in Member.objects.raw('''SELECT members.id id, members.id person_id, members.name person_name, ebd_class.name class_name, members.picture person_picture, COUNT(CASE WHEN attended = False THEN 1 END) absences_count
+            FROM ebd_ebdpresencerecord ebd_presence_record
+            INNER JOIN core_member members
+            ON members.id = ebd_presence_record.Person_id
+            INNER JOIN ebd_ebdclass ebd_class
+            ON ebd_class.id = ebd_presence_record.ebd_class_id
+            WHERE ebd_presence_record.register_on BETWEEN %s AND %s
+            GROUP BY ebd_class.name, members.id
+            ORDER BY absences_count DESC LIMIT 10''', params=[start_date, end_date]):
+            worrying_students.append({
+                'person_id': worrying_student.person_id,
+                'person_name': worrying_student.person_name,
+                 'person_picture': 'http://res.cloudinary.com/ibc-curado-2/{}'.format(worrying_student.person_picture) if worrying_student.person_picture else None,
+                'class_name': worrying_student.class_name,
+                'absences_count': worrying_student.absences_count
+            })
+
+        return JsonResponse({
+            'exemplary_students': exemplary_students,
+            'worrying_students': worrying_students
+        })
