@@ -664,41 +664,98 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             'endDate', get_end_of_ebd_date(get_now_datetime_utc()))
 
         exemplary_students = []
-        worrying_students = []
         
-        for exemplary_student in Member.objects.raw('''SELECT members.id id, members.id person_id, members.name person_name, ebd_class.name class_name, members.picture person_picture, COUNT(CASE WHEN attended = True THEN 1 END) presences_count
+        for exemplary_student_by_frequence in Member.objects.raw('''SELECT members.id id, members.id person_id, members.name person_name, ebd_class.name class_name, members.picture person_picture, COUNT(CASE WHEN attended = True THEN 1 END) count
             FROM ebd_ebdpresencerecord ebd_presence_record
             INNER JOIN core_member members
             ON members.id = ebd_presence_record.Person_id
             INNER JOIN ebd_ebdclass ebd_class
             ON ebd_class.id = ebd_presence_record.ebd_class_id
             WHERE ebd_presence_record.register_on BETWEEN %s AND %s
-            GROUP BY ebd_class.name, members.id
-            ORDER BY presences_count DESC LIMIT 10''', params=[start_date, end_date]):
+            group by ebd_class.name, members.id
+            order BY count desc limit 15''', params=[start_date, end_date]):
             exemplary_students.append({
-                'person_id': exemplary_student.person_id,
-                'person_name': exemplary_student.person_name,
-                'person_picture': 'http://res.cloudinary.com/ibc-curado-2/{}'.format(exemplary_student.person_picture) if exemplary_student.person_picture else None,
-                'class_name': exemplary_student.class_name,
-                'presences_count': exemplary_student.presences_count
+                'person_id': exemplary_student_by_frequence.person_id,
+                'person_name': exemplary_student_by_frequence.person_name,
+                'person_picture': 'http://res.cloudinary.com/ibc-curado-2/{}'.format(exemplary_student_by_frequence.person_picture) if exemplary_student_by_frequence.person_picture else None,
+                'class_name': exemplary_student_by_frequence.class_name,
+                'infos': [
+                    {
+                        'title': 'Presenças',
+                        'type': 'positive',
+                        'count': exemplary_student_by_frequence.count
+                    }
+                ]
             })
 
-        for worrying_student in Member.objects.raw('''SELECT members.id id, members.id person_id, members.name person_name, ebd_class.name class_name, members.picture person_picture, COUNT(CASE WHEN attended = False THEN 1 END) absences_count
+        exemplary_student_ids = [student['person_id'] for student in exemplary_students]
+
+        for exemplary_student_label in Member.objects.raw('''select person.id id, person.id person_id, person.name person_name, label_option.title label, label_option.type label_type, COUNT(label_option) count
+            from ebd_ebdpresencerecordlabels presence_record_label
+            inner join ebd_ebdlabeloptions label_option
+            on label_option.id = presence_record_label.ebd_label_option_id
+            inner join ebd_ebdpresencerecord presence_record
+            on presence_record.id = presence_record_label.ebd_presence_record_id
+            inner join core_member person
+            on person.id = presence_record.person_id
+            WHERE presence_record_label.creation_date BETWEEN %s AND %s
+            AND person.id = ANY(%s)
+            group by person.id, label_option.id
+            order by person_name ASC, label_type DESC''', params=[start_date, end_date, exemplary_student_ids]):
+                temp_exemplary_student = next((student for student in exemplary_students if student['person_id'] == exemplary_student_label.person_id), None)
+                if temp_exemplary_student:
+                    temp_exemplary_student['infos'].append({
+                        'title': exemplary_student_label.label,
+                        'type': exemplary_student_label.label_type,
+                        'count': exemplary_student_label.count
+                    })
+
+        worrying_students = []
+
+        for worrying_student_by_frequence in Member.objects.raw('''SELECT members.id id, members.id person_id, members.name person_name, ebd_class.name class_name, members.picture person_picture, COUNT(CASE WHEN attended = False THEN 1 END) count
             FROM ebd_ebdpresencerecord ebd_presence_record
             INNER JOIN core_member members
             ON members.id = ebd_presence_record.Person_id
             INNER JOIN ebd_ebdclass ebd_class
             ON ebd_class.id = ebd_presence_record.ebd_class_id
             WHERE ebd_presence_record.register_on BETWEEN %s AND %s
-            GROUP BY ebd_class.name, members.id
-            ORDER BY absences_count DESC LIMIT 10''', params=[start_date, end_date]):
+            group by ebd_class.name, members.id
+            order BY count desc limit 15''', params=[start_date, end_date]):
             worrying_students.append({
-                'person_id': worrying_student.person_id,
-                'person_name': worrying_student.person_name,
-                 'person_picture': 'http://res.cloudinary.com/ibc-curado-2/{}'.format(worrying_student.person_picture) if worrying_student.person_picture else None,
-                'class_name': worrying_student.class_name,
-                'absences_count': worrying_student.absences_count
+                'person_id': worrying_student_by_frequence.person_id,
+                'person_name': worrying_student_by_frequence.person_name,
+                'person_picture': 'http://res.cloudinary.com/ibc-curado-2/{}'.format(worrying_student_by_frequence.person_picture) if worrying_student_by_frequence.person_picture else None,
+                'class_name': worrying_student_by_frequence.class_name,
+                'infos': [
+                    {
+                        'title': 'Faltas',
+                        'type': 'negative',
+                        'count': worrying_student_by_frequence.count
+                    }
+                ]
             })
+
+        worrying_student_ids = [student['person_id'] for student in worrying_students]
+
+        for worrying_student_label in Member.objects.raw('''select person.id id, person.id person_id, person.name person_name, label_option.title label, label_option.type label_type, COUNT(label_option) count
+            from ebd_ebdpresencerecordlabels presence_record_label
+            inner join ebd_ebdlabeloptions label_option
+            on label_option.id = presence_record_label.ebd_label_option_id
+            inner join ebd_ebdpresencerecord presence_record
+            on presence_record.id = presence_record_label.ebd_presence_record_id
+            inner join core_member person
+            on person.id = presence_record.person_id
+            WHERE presence_record_label.creation_date BETWEEN %s AND %s
+            AND person.id = ANY(%s)
+            group by person.id, label_option.id
+            order by person_name ASC, label_type DESC''', params=[start_date, end_date, worrying_student_ids]):
+                temp_worrying_student = next((student for student in worrying_students if student['person_id'] == worrying_student_label.person_id), None)
+                if temp_worrying_student:
+                    temp_worrying_student['infos'].append({
+                        'title': worrying_student_label.label,
+                        'type': worrying_student_label.label_type,
+                        'count': worrying_student_label.count
+                    })
 
         return JsonResponse({
             'exemplary_students': exemplary_students,
