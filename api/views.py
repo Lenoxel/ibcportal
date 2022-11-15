@@ -664,7 +664,7 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             'endDate', get_end_of_ebd_date(get_now_datetime_utc()))
 
         exemplary_students = []
-        
+
         for exemplary_student_by_frequence in Member.objects.raw('''SELECT members.id id, members.id person_id, members.name person_name, ebd_class.name class_name, members.picture person_picture, COUNT(CASE WHEN attended = True THEN 1 END) count
             FROM ebd_ebdpresencerecord ebd_presence_record
             INNER JOIN core_member members
@@ -688,7 +688,8 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
                 ]
             })
 
-        exemplary_student_ids = [student['person_id'] for student in exemplary_students]
+        exemplary_student_ids = [student['person_id']
+                                 for student in exemplary_students]
 
         for exemplary_student_label in Member.objects.raw('''select person.id id, person.id person_id, person.name person_name, label_option.title label, label_option.type label_type, COUNT(label_option) count
             from ebd_ebdpresencerecordlabels presence_record_label
@@ -702,13 +703,14 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             AND person.id = ANY(%s)
             group by person.id, label_option.id
             order by person_name ASC, label_type DESC''', params=[start_date, end_date, exemplary_student_ids]):
-                temp_exemplary_student = next((student for student in exemplary_students if student['person_id'] == exemplary_student_label.person_id), None)
-                if temp_exemplary_student:
-                    temp_exemplary_student['infos'].append({
-                        'title': exemplary_student_label.label,
-                        'type': exemplary_student_label.label_type,
-                        'count': exemplary_student_label.count
-                    })
+            temp_exemplary_student = next(
+                (student for student in exemplary_students if student['person_id'] == exemplary_student_label.person_id), None)
+            if temp_exemplary_student:
+                temp_exemplary_student['infos'].append({
+                    'title': exemplary_student_label.label,
+                    'type': exemplary_student_label.label_type,
+                    'count': exemplary_student_label.count
+                })
 
         worrying_students = []
 
@@ -719,6 +721,7 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             INNER JOIN ebd_ebdclass ebd_class
             ON ebd_class.id = ebd_presence_record.ebd_class_id
             WHERE ebd_presence_record.register_on BETWEEN %s AND %s
+            OR ebd_presence_record.register_on IS NULL
             group by ebd_class.name, members.id
             order BY count desc limit 15''', params=[start_date, end_date]):
             worrying_students.append({
@@ -735,7 +738,8 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
                 ]
             })
 
-        worrying_student_ids = [student['person_id'] for student in worrying_students]
+        worrying_student_ids = [student['person_id']
+                                for student in worrying_students]
 
         for worrying_student_label in Member.objects.raw('''select person.id id, person.id person_id, person.name person_name, label_option.title label, label_option.type label_type, COUNT(label_option) count
             from ebd_ebdpresencerecordlabels presence_record_label
@@ -749,13 +753,14 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             AND person.id = ANY(%s)
             group by person.id, label_option.id
             order by person_name ASC, label_type DESC''', params=[start_date, end_date, worrying_student_ids]):
-                temp_worrying_student = next((student for student in worrying_students if student['person_id'] == worrying_student_label.person_id), None)
-                if temp_worrying_student:
-                    temp_worrying_student['infos'].append({
-                        'title': worrying_student_label.label,
-                        'type': worrying_student_label.label_type,
-                        'count': worrying_student_label.count
-                    })
+            temp_worrying_student = next(
+                (student for student in worrying_students if student['person_id'] == worrying_student_label.person_id), None)
+            if temp_worrying_student:
+                temp_worrying_student['infos'].append({
+                    'title': worrying_student_label.label,
+                    'type': worrying_student_label.label_type,
+                    'count': worrying_student_label.count
+                })
 
         return JsonResponse({
             'exemplary_students': exemplary_students,
