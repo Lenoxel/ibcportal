@@ -25,6 +25,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from core.auxiliar_functions import get_end_of_day, get_end_of_ebd_date, get_now_datetime_utc, get_start_of_day, get_sunday, get_sunday_as_date, get_today_datetime_utc
 
+import os
+
 # Token validator and generator
 # def token_request(request):
 #     try:
@@ -413,28 +415,30 @@ class EBDLessonViewSet(viewsets.ModelViewSet):
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences
     @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences', url_name='presences_by_class_and_lesson')
     def get_presences_by_class_and_lesson(self, request, pk=None, class_id=None):
-        presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'justification', 'register_on', 'person_id', person_name=F(
-            'person__name'), person_nickname=F('person__nickname'), person_ebd_relation=F('person__ebd_relation'), lesson_title=F('lesson__title')).order_by('person__name')
+        student_presences = EBDPresenceRecord.objects.filter(lesson__pk=pk, ebd_class__pk=class_id).values('id', 'attended', 'justification', 'register_on', 'person_id', person_name=F(
+            'person__name'), person_nickname=F('person__nickname'), person_ebd_relation=F('person__ebd_relation'), person_picture=F('person__picture'), lesson_title=F('lesson__title')).order_by('person__name')
 
-        for presence in presences:
+        for student_presence in student_presences:
             is_teacher = len(list(EBDClass.objects.filter(pk=class_id, teachers__id__in=[
-                             presence.get('person_id')]).values('id'))) > 0
+                student_presence.get('person_id')]).values('id'))) > 0
             is_secretary = len(list(EBDClass.objects.filter(
-                pk=class_id, secretaries__id__in=[presence.get('person_id')]).values('id'))) > 0
-            presence['is_teacher'] = is_teacher
-            presence['is_secretary'] = is_secretary
+                pk=class_id, secretaries__id__in=[student_presence.get('person_id')]).values('id'))) > 0
+            student_presence['is_teacher'] = is_teacher
+            student_presence['is_secretary'] = is_secretary
+            student_presence['person_picture'] = '{}/{}'.format(os.getenv(
+                'CLOUDINARY_BASE_URL'), student_presence['person_picture']) if student_presence['person_picture'] else None
 
-            labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=presence.get('id')).values(label_id=F(
+            labels = EBDPresenceRecordLabels.objects.filter(ebd_presence_record__id=student_presence.get('id')).values(label_id=F(
                 'ebd_label_option__id'), label_title=F('ebd_label_option__title'), label_type=F('ebd_label_option__type'))
-            presence['labels'] = labels
-            presence['labelIds'] = map(
+            student_presence['labels'] = labels
+            student_presence['labelIds'] = map(
                 lambda label: label.get('label_id'), labels)
-            presence['labels_to_remove'] = []
+            student_presence['labels_to_remove'] = []
 
-        return Response(presences)
+        return Response(student_presences)
 
     # Cria a rota api/ebd/lessons/{pk}/classes/{class_id}/presences/{presence_id}
-    @action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences/(?P<presence_id>\d+)', url_name='update_presence_record', methods=['put'])
+    @ action(detail=True, url_path=r'classes/(?P<class_id>\d+)/presences/(?P<presence_id>\d+)', url_name='update_presence_record', methods=['put'])
     def update_presence_record(self, request, pk=None, class_id=None, presence_id=None):
         try:
             ebd_presence_record = EBDPresenceRecord.objects.get(pk=presence_id)
@@ -677,7 +681,8 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             exemplary_students.append({
                 'person_id': exemplary_student_by_frequence.person_id,
                 'person_name': exemplary_student_by_frequence.person_name,
-                'person_picture': 'http://res.cloudinary.com/ibc-curado-2/{}'.format(exemplary_student_by_frequence.person_picture) if exemplary_student_by_frequence.person_picture else None,
+                'person_picture': '{}/{}'.format(os.getenv(
+                    'CLOUDINARY_BASE_URL'), exemplary_student_by_frequence.person_picture) if exemplary_student_by_frequence.person_picture else None,
                 'class_name': exemplary_student_by_frequence.class_name,
                 'infos': [
                     {
@@ -718,6 +723,7 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             FROM ebd_ebdpresencerecord ebd_presence_record
             INNER JOIN core_member members
             ON members.id = ebd_presence_record.Person_id
+            AND person.ebd_relation = 'aluno'
             INNER JOIN ebd_ebdclass ebd_class
             ON ebd_class.id = ebd_presence_record.ebd_class_id
             WHERE ebd_presence_record.register_on BETWEEN %s AND %s
@@ -727,7 +733,8 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             worrying_students.append({
                 'person_id': worrying_student_by_frequence.person_id,
                 'person_name': worrying_student_by_frequence.person_name,
-                'person_picture': 'http://res.cloudinary.com/ibc-curado-2/{}'.format(worrying_student_by_frequence.person_picture) if worrying_student_by_frequence.person_picture else None,
+                'person_picture': '{}/{}'.format(os.getenv(
+                    'CLOUDINARY_BASE_URL'), worrying_student_by_frequence.person_picture) if worrying_student_by_frequence.person_picture else None,
                 'class_name': worrying_student_by_frequence.class_name,
                 'infos': [
                     {
