@@ -723,7 +723,7 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             FROM ebd_ebdpresencerecord ebd_presence_record
             INNER JOIN core_member members
             ON members.id = ebd_presence_record.Person_id
-            AND person.ebd_relation = 'aluno'
+            AND members.ebd_relation = 'aluno'
             INNER JOIN ebd_ebdclass ebd_class
             ON ebd_class.id = ebd_presence_record.ebd_class_id
             WHERE ebd_presence_record.register_on BETWEEN %s AND %s
