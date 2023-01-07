@@ -73,7 +73,8 @@ class EBDLesson(models.Model):
         ordering = ['-date']
 
     def __str__(self):
-        return self.title
+        lesson_date = self.date.strftime('%d/%m/%Y')
+        return '{} - {}'.format(lesson_date, self.title) if self.apply_to_all else '{} - {} ({})'.format(lesson_date, self.title, self.ebd_class)
 
 
 class EBDLessonClassDetails(models.Model):
@@ -159,8 +160,8 @@ class EBDLabelOptions(models.Model):
         'Última modificação', auto_now=True)
 
     class Meta:
-        verbose_name = 'Label de EBD'
-        verbose_name_plural = 'Labels de EBD'
+        verbose_name = 'Etiqueta de EBD'
+        verbose_name_plural = 'Etiquetas de EBD'
         ordering = ['title']
 
     def __str__(self):
@@ -177,8 +178,8 @@ class EBDPresenceRecordLabels(models.Model):
         'Última modificação', auto_now=True)
 
     class Meta:
-        verbose_name = 'Label de aluno na EBD'
-        verbose_name_plural = 'Labels dos alunos na EBD'
+        verbose_name = 'Etiqueta de aluno na EBD'
+        verbose_name_plural = 'Etiquetas dos alunos na EBD'
         ordering = ['-last_updated_date']
 
     def __str__(self):
