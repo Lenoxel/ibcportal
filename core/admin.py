@@ -210,6 +210,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = MemberResource
     list_filter = ('name', 'church_relation',
                    'ebd_relation', 'marital_status', 'educational_level', 'have_a_job', 'is_retired', 'work_on_sundays')
+    readonly_fields = ['preview_da_foto']
 
 
 admin.site.register(Post, PostAdmin)
