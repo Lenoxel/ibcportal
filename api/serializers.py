@@ -55,6 +55,7 @@ class PersonSerializer(serializers.ModelSerializer):
     ebd_class = serializers.SerializerMethodField()
     picture = serializers.SerializerMethodField()
     date_of_birth = serializers.SerializerMethodField()
+    is_birthday_person = serializers.SerializerMethodField()
     frequency = serializers.SerializerMethodField()
 
     def get_ebd_class(self, obj):
@@ -72,6 +73,17 @@ class PersonSerializer(serializers.ModelSerializer):
 
     def get_date_of_birth(self, obj):
         return obj.date_of_birth.strftime('%d/%m/%Y') if obj.date_of_birth else None
+
+    def get_is_birthday_person(self, obj: Member):
+        if not obj.date_of_birth:
+            return False
+
+        day_number = obj.date_of_birth.day
+        month_number = obj.date_of_birth.month
+
+        today = get_today_datetime_utc()
+
+        return True if day_number == today.day and month_number == today.month else False
 
     def get_frequency(self, obj):
         start_date = get_start_of_day(get_start_of_day(
@@ -106,7 +118,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ('id', 'name', 'picture', 'date_of_birth', 'ebd_class',
+        fields = ('id', 'name', 'picture', 'date_of_birth', 'is_birthday_person', 'ebd_class',
                   'whatsapp', 'work_on_sundays', 'frequency')
 
 
