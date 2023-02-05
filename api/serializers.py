@@ -54,6 +54,7 @@ class MemberSerializer(serializers.ModelSerializer):
 class PersonSerializer(serializers.ModelSerializer):
     ebd_class = serializers.SerializerMethodField()
     picture = serializers.SerializerMethodField()
+    date_of_birth = serializers.SerializerMethodField()
     frequency = serializers.SerializerMethodField()
 
     def get_ebd_class(self, obj):
