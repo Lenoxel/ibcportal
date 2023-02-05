@@ -72,7 +72,7 @@ class PersonSerializer(serializers.ModelSerializer):
         return obj.picture.url if obj.picture else None
 
     def get_date_of_birth(self, obj):
-        return obj.date_of_birth.strftime('%d/%m/%Y') if obj.date_of_birth else None
+        return obj.date_of_birth.strftime('%d/%m') if obj.date_of_birth else None
 
     def get_is_birthday_person(self, obj: Member):
         if not obj.date_of_birth:
