@@ -102,7 +102,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ('id', 'name', 'picture', 'ebd_class',
+        fields = ('id', 'name', 'picture', 'date_of_birth', 'ebd_class',
                   'whatsapp', 'work_on_sundays', 'frequency')
 
 
