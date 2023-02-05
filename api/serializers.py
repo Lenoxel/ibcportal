@@ -69,6 +69,9 @@ class PersonSerializer(serializers.ModelSerializer):
     def get_picture(self, obj):
         return obj.picture.url if obj.picture else None
 
+    def get_date_of_birth(self, obj):
+        return obj.date_of_birth.strftime('%d/%m/%Y') if obj.date_of_birth else None
+
     def get_frequency(self, obj):
         start_date = get_start_of_day(get_start_of_day(
             get_today_datetime_utc() - timedelta(days=360)))
