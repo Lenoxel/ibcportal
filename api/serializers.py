@@ -138,11 +138,12 @@ class BirthdayComemorationSerializer(serializers.ModelSerializer):
     picture = serializers.SerializerMethodField()
 
     def get_picture(self, obj):
-        return obj.picture.url
+        return obj.picture.url if obj.picture else None
 
     class Meta:
         model = Member
-        fields = '__all__'
+        fields = ['id', 'name', 'nickname',
+                  'date_of_birth', 'picture', 'whatsapp']
 
 
 class UnionComemorationSerializer(serializers.ModelSerializer):
@@ -162,10 +163,10 @@ class UnionComemorationSerializer(serializers.ModelSerializer):
     woman_picture = serializers.SerializerMethodField()
 
     def get_man_picture(self, obj):
-        return obj.man.picture.url
+        return obj.man.picture.url if obj.man and obj.man.picture else None
 
     def get_woman_picture(self, obj):
-        return obj.woman.picture.url
+        return obj.woman.picture.url if obj.woman and obj.woman.picture else None
 
     class Meta:
         model = MembersUnion

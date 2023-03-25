@@ -200,11 +200,14 @@ class PeopleViewSet(viewsets.ModelViewSet):
 
 
 class BirthdayCelebrationViewSet(viewsets.ModelViewSet):
-    queryset = Member.objects.filter(
-        Q(date_of_birth__month=get_now_datetime_utc().month)
-    )
-
     serializer_class = BirthdayComemorationSerializer
+
+    def get_queryset(self):
+        month_birthdays = Member.objects.filter(
+            Q(date_of_birth__month=get_now_datetime_utc().month)
+        )
+
+        return month_birthdays
 
 
 class UnionCelebrationViewSet(viewsets.ModelViewSet):
