@@ -669,6 +669,8 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             get_today_datetime_utc() - timedelta(days=360)))
         end_date = request.query_params.get(
             'endDate', get_end_of_ebd_date(get_now_datetime_utc()))
+        exemplary_count = request.query_params.get('exemplaryCount', 15)
+        worrying_count = request.query_params.get('worryingCount', 15)
 
         exemplary_students = []
 
@@ -680,7 +682,7 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             ON ebd_class.id = ebd_presence_record.ebd_class_id
             WHERE ebd_presence_record.register_on BETWEEN %s AND %s
             group by ebd_class.name, members.id
-            order BY count desc limit 15''', params=[start_date, end_date]):
+            order BY count desc limit %s''', params=[start_date, end_date, exemplary_count]):
             exemplary_students.append({
                 'person_id': exemplary_student_by_frequence.person_id,
                 'person_name': exemplary_student_by_frequence.person_name,
@@ -732,7 +734,7 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             WHERE ebd_presence_record.register_on BETWEEN %s AND %s
             OR ebd_presence_record.register_on IS NULL
             group by ebd_class.name, members.id
-            order BY count desc limit 15''', params=[start_date, end_date]):
+            order BY count desc limit %s''', params=[start_date, end_date, worrying_count]):
             worrying_students.append({
                 'person_id': worrying_student_by_frequence.person_id,
                 'person_name': worrying_student_by_frequence.person_name,
