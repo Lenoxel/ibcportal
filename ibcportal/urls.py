@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from api.views import CustomEBDTokenObtainPairView, CustomTokenObtainPairView, EBDAnalyticsPresenceClassesViewSet, EBDAnalyticsPresenceCountsViewSet, EBDAnalyticsPresenceHistoryViewSet, EBDAnalyticsPresenceUsersViewSet, EBDClassViewSet, EBDLabelOptionsViewSet, EBDLessonViewSet, EBDPresenceRecordLabelsViewSet, EBDPresenceViewSet, PeopleViewSet, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
+from api.views import CustomEBDTokenObtainPairView, CustomTokenObtainPairView, EBDAnalyticsPresenceClassesViewSet, EBDAnalyticsPresenceCountsViewSet, EBDAnalyticsPresenceHistoryViewSet, EBDAnalyticsPresenceUsersViewSet, EBDAnalyticsUsersPunctualityViewSet, EBDClassViewSet, EBDLabelOptionsViewSet, EBDLessonViewSet, EBDPresenceRecordLabelsViewSet, EBDPresenceViewSet, PeopleViewSet, PostViewSet, MemberViewSet, BirthdayCelebrationViewSet, UnionCelebrationViewSet, VideoViewSet, ScheduleViewSet, GroupViewSet, EventViewSet, device, CongregationViewSet
 
 from rest_framework import routers
 
@@ -40,6 +40,8 @@ api_router.register(r'ebd/analytics/presences/classes',
                     EBDAnalyticsPresenceClassesViewSet, basename='EBDAnalyticsPresenceClasses')
 api_router.register(r'ebd/analytics/presences/users',
                     EBDAnalyticsPresenceUsersViewSet, basename='EBDAnalyticsPresenceUsers')
+api_router.register(r'ebd/analytics/presences/users/punctuality',
+                    EBDAnalyticsUsersPunctualityViewSet, basename='EBDAnalyticsPresenceUsersPunctuality')
 
 # url abaixa está depreciada, apenas mantendo-a por enquanto para não quebrar a chamada da última versão de teste do app
 api_router.register(r'celebrations', BirthdayCelebrationViewSet,

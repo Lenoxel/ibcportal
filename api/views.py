@@ -778,3 +778,36 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             'exemplary_students': exemplary_students,
             'worrying_students': worrying_students
         })
+
+class EBDAnalyticsUsersPunctualityViewSet(viewsets.ViewSet):
+    def list(self, request):
+        start_date = request.query_params.get('startDate', get_start_of_day(
+            get_today_datetime_utc() - timedelta(days=360)))
+        end_date = request.query_params.get(
+            'endDate', get_end_of_ebd_date(get_now_datetime_utc()))
+        punctual_count = request.query_params.get('punctualCount', 10)
+
+        punctual_students = []
+
+        for punctual_student in Member.objects.raw('''SELECT person.id id, person.name name, person.picture picture, percentile_disc(0.5) within group (order by presence_record.register_on at time zone 'America/Recife') time_frequency, COUNT(label.title) punctual_count
+            FROM ebd_ebdpresencerecordlabels presence_labels
+            INNER JOIN ebd_ebdpresencerecord presence_record
+            ON presence_record.ID = presence_labels.ebd_presence_record_id
+            INNER JOIN ebd_ebdlabeloptions label
+            ON label.id = presence_labels.ebd_label_option_id AND (label.title = 'Pontual')
+            INNER JOIN core_member person
+            ON person.id = presence_record.person_id
+            WHERE presence_record.register_on BETWEEN %s AND %s
+            GROUP BY person.id, person.name, person.picture, label.title
+            ORDER BY punctual_count DESC LIMIT %s''', params=[start_date, end_date, punctual_count]):
+            punctual_students.append({
+                'person_id': punctual_student.id,
+                'person_name': punctual_student.name,
+                'person_picture': '{}/{}'.format(os.getenv('CLOUDINARY_BASE_URL'), punctual_student.picture) if punctual_student.picture else None,
+                'time_frequency': punctual_student.time_frequency,
+                'punctual_count': punctual_student.punctual_count,
+            })
+
+        return JsonResponse({
+            'punctual_students': punctual_students,
+        })
