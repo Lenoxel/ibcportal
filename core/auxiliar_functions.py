@@ -1,9 +1,12 @@
 import requests
 from django.conf import settings
 from datetime import date, datetime, timedelta
+from django.db.models import Q
 from django.utils import timezone
 from tzlocal import get_localzone
 from .models import Audit, NotificationDevice, PushNotification
+from ebd.models import EBDClass
+from core.models import Member
 from pyfcm import FCMNotification
 
 meeting_types = {
@@ -203,3 +206,19 @@ def get_end_of_day(date: date):
 def get_end_of_ebd_date(date: date):
     end_of_day = datetime(date.year, date.month, date.day, 13, 0, 0)
     return end_of_day
+
+def remove_person_from_old_ebd_classes(person: Member, current_ebd_class_id: int):
+    ebd_classes = EBDClass.objects.filter(
+                    Q(students__id__in=[person.pk])
+                    |
+                    Q(teachers__id__in=[person.pk])
+                    |
+                    Q(secretaries__id__in=[person.pk])
+                )
+
+    ebd_classes_to_remove_person = (ebd_class for ebd_class in ebd_classes if ebd_class.pk != current_ebd_class_id)
+
+    for ebd_class in ebd_classes_to_remove_person:
+        ebd_class.students.set(ebd_class.students.exclude(id=person.pk))
+        ebd_class.teachers.set(ebd_class.teachers.exclude(id=person.pk))
+        ebd_class.secretaries.set(ebd_class.secretaries.exclude(id=person.pk))

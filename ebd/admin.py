@@ -9,6 +9,7 @@ from import_export import fields, resources
 from import_export.fields import Field
 from import_export.widgets import ManyToManyWidget  
 from import_export.admin import ExportActionMixin
+from core.auxiliar_functions import remove_person_from_old_ebd_classes
 
 class EBDLessonResource(resources.ModelResource):
     magazine_title = Field(attribute='magazine_title', column_name='Revista')
@@ -130,6 +131,22 @@ class EBDClassResource(resources.ModelResource):
 class EBDClassAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = EBDClassResource
     list_filter = ('name', 'students', 'teachers', 'secretaries')
+
+    # Executa sempre que uma classe de EBD é criada ou atualizada
+    def save_model(self, request, obj, form, change):
+        if request.user.is_superuser or request.user.groups.filter(name='Secretaria da Igreja').exists() or request.user.groups.filter(name='Admin').exists() or request.user.groups.filter(name='Superintendência').exists():
+            super().save_model(request, obj, form, change)
+
+            for student in form.cleaned_data['students']:
+                remove_person_from_old_ebd_classes(student, obj.pk)
+
+            for teacher in form.cleaned_data['teachers']:
+                remove_person_from_old_ebd_classes(teacher, obj.pk)
+
+            for secretary in form.cleaned_data['secretaries']:
+                remove_person_from_old_ebd_classes(secretary, obj.pk)
+        else:
+            return PermissionDenied
 
 class EBDLessonClassDetailsAdmin(admin.ModelAdmin):
     readonly_fields = ('lesson', 'ebd_class', 'visitors_quantity', 'money_raised', 'creation_date', 'last_updated_date',)
