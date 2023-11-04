@@ -811,3 +811,37 @@ class EBDAnalyticsUsersPunctualityViewSet(viewsets.ViewSet):
         return JsonResponse({
             'punctual_students': punctual_students,
         })
+    
+class EBDAnalyticsUsersInteractivityViewSet(viewsets.ViewSet):
+    def list(self, request):
+        start_date = request.query_params.get('startDate', get_start_of_day(
+            get_today_datetime_utc() - timedelta(days=360)))
+        end_date = request.query_params.get(
+            'endDate', get_end_of_ebd_date(get_now_datetime_utc()))
+        interactive_count = request.query_params.get('interactiveCount', 10)
+
+        interactive_students = []
+
+        for interactive_student in Member.objects.raw('''SELECT person.id id, person.name name, person.picture picture, SUM(CASE WHEN label.title = 'Participativo' OR label.title = 'Colaborativo' THEN 1 ELSE 0 END) AS interactive_count, SUM(CASE WHEN label.title = 'Participativo' THEN 1 ELSE 0 END) AS participative_count, SUM(CASE WHEN label.title = 'Colaborativo' THEN 1 ELSE 0 END) AS collaborative_count
+            FROM ebd_ebdpresencerecordlabels presence_labels
+            INNER JOIN ebd_ebdpresencerecord presence_record
+            ON presence_record.ID = presence_labels.ebd_presence_record_id
+            INNER JOIN ebd_ebdlabeloptions label
+            ON label.id = presence_labels.ebd_label_option_id AND (label.title = 'Participativo' OR label.title = 'Colaborativo')
+            INNER JOIN core_member person
+            ON person.id = presence_record.person_id
+            WHERE presence_record.register_on BETWEEN %s AND %s
+            GROUP BY person.id, person.name, person.picture
+            ORDER BY interactive_count DESC LIMIT %s''', params=[start_date, end_date, interactive_count]):
+            interactive_students.append({
+                'person_id': interactive_student.id,
+                'person_name': interactive_student.name,
+                'person_picture': '{}/{}'.format(os.getenv('CLOUDINARY_BASE_URL'), interactive_student.picture) if interactive_student.picture else None,
+                'interactive_count': interactive_student.interactive_count,
+                'participative_count': interactive_student.participative_count,
+                'collaborative_count': interactive_student.collaborative_count,
+            })
+
+        return JsonResponse({
+            'interactive_students': interactive_students,
+        })
