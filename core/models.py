@@ -215,12 +215,12 @@ def member_picture_delete(sender, instance, **kwargs):
 
 class MembersUnion(models.Model):
     objects = models.Manager()
-    man = models.OneToOneField(
-        'core.Member', verbose_name='Homem', related_name='man', on_delete=models.CASCADE)
-    woman = models.OneToOneField(
-        'core.Member', verbose_name='Mulher', related_name='woman', on_delete=models.CASCADE)
+    person_one = models.OneToOneField(
+        'core.Member', verbose_name='Cônjuge', related_name='person_one', on_delete=models.CASCADE)
+    person_two = models.OneToOneField(
+        'core.Member', verbose_name='Cônjuge', related_name='person_two', on_delete=models.CASCADE)
     union_type = models.CharField(
-        'Tipo da união', choices=MEMBERS_UNION_OPTIONS, max_length=20)
+        'Tipo da união', choices=MEMBERS_UNION_OPTIONS, max_length=20, default='casamento')
     union_date = models.DateField('Data da união')
     creation_date = models.DateTimeField('Criado em', auto_now_add=True)
     last_updated_date = models.DateTimeField(
@@ -232,7 +232,7 @@ class MembersUnion(models.Model):
         ordering = ['-union_date']
 
     def __str__(self):
-        return '{} e {}'.format(self.man, self.woman)
+        return '{} e {}'.format(self.person_one, self.person_two)
 
 
 class PostFile(models.Model):

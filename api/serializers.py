@@ -159,14 +159,14 @@ class UnionComemorationSerializer(serializers.ModelSerializer):
         union_date = union_day + '/' + union_month
         return union_date
 
-    man_picture = serializers.SerializerMethodField()
-    woman_picture = serializers.SerializerMethodField()
+    person_one_picture = serializers.SerializerMethodField()
+    person_two_picture = serializers.SerializerMethodField()
 
-    def get_man_picture(self, obj):
-        return obj.man.picture.url if obj.man and obj.man.picture else None
+    def get_person_one_picture(self, obj):
+        return obj.person_one.picture.url if obj.person_one and obj.person_one.picture else None
 
-    def get_woman_picture(self, obj):
-        return obj.woman.picture.url if obj.woman and obj.woman.picture else None
+    def get_person_two_picture(self, obj):
+        return obj.person_two.picture.url if obj.person_two and obj.person_two.picture else None
 
     class Meta:
         model = MembersUnion

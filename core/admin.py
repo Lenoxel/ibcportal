@@ -4,6 +4,7 @@ from django.contrib import admin
 from .auxiliar_functions import create_audit, create_push_notification
 from .models import Post, Member, PostFile, Video, Schedule, Church, Donate, Event, MembersUnion, Audit, NotificationDevice, PushNotification
 from django.core.exceptions import PermissionDenied
+from django.forms import ModelForm
 from import_export.admin import ExportActionMixin
 from import_export import resources, widgets
 from import_export.fields import Field
@@ -206,7 +207,31 @@ class MemberResource(resources.ModelResource):
                   'church_relation', 'ebd_relation', 'educational_level', 'have_a_job', 'is_retired', 'work_on_sundays', 'last_updated_date')
 
 
+class MembersUnionInlineForPersonOne(admin.StackedInline):
+    model = MembersUnion
+    extra = 1
+    verbose_name_plural = 'Relacionamento'
+    fk_name = 'person_one'
+
+class MembersUnionInlineForPersonTwo(admin.StackedInline):
+    model = MembersUnion
+    extra = 1
+    verbose_name_plural = 'Relacionamento'
+    fk_name = 'person_two'
+
 class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
+    def get_inlines(self, request, obj=None):
+        if obj is None:
+            return [MembersUnionInlineForPersonOne]
+
+        is_person_two = MembersUnion.objects.filter(person_two=obj).exists()
+
+        if is_person_two:
+            return [MembersUnionInlineForPersonTwo]
+
+        return [MembersUnionInlineForPersonOne]
+
+    inlines = []
     resource_class = MemberResource
     list_filter = ('name', 'church_relation',
                    'ebd_relation', 'marital_status', 'educational_level', 'have_a_job', 'is_retired', 'work_on_sundays')
