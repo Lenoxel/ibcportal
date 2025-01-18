@@ -6,13 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0047_auto_20220519_0208'),
+        ("core", "0047_auto_20220519_0208"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='member',
-            name='educational_level',
-            field=models.CharField(blank=True, choices=[('educacao_infantil', 'Educação infantil'), ('ensino_fundamental_incompleto', 'Ensino fundamental incompleto'), ('ensino_fundamental', 'Ensino fundamental'), ('ensino_medio_incompleto', 'Ensino médio incompleto'), ('ensino_medio', 'Ensino médio'), ('ensino_superior_incompleto', 'Ensino superior incompleto'), ('ensino_superior', 'Ensino superior'), ('pos_graduacao', 'Pós-graduação'), ('mestrado', 'Mestrado'), ('doutorado', 'Doutorado')], max_length=50, null=True, verbose_name='Grau de escolaridade'),
+            model_name="member",
+            name="educational_level",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("educacao_infantil", "Educação infantil"),
+                    ("ensino_fundamental_incompleto", "Ensino fundamental incompleto"),
+                    ("ensino_fundamental", "Ensino fundamental"),
+                    ("ensino_medio_incompleto", "Ensino médio incompleto"),
+                    ("ensino_medio", "Ensino médio"),
+                    ("ensino_superior_incompleto", "Ensino superior incompleto"),
+                    ("ensino_superior", "Ensino superior"),
+                    ("pos_graduacao", "Pós-graduação"),
+                    ("mestrado", "Mestrado"),
+                    ("doutorado", "Doutorado"),
+                ],
+                max_length=50,
+                null=True,
+                verbose_name="Grau de escolaridade",
+            ),
         ),
     ]

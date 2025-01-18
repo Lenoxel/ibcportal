@@ -1,13 +1,35 @@
 from datetime import date, timedelta
+
 # from django.http import JsonResponse
 from django.db.models import Count, F, Q
-from core.auxiliar_functions import get_end_of_ebd_date, get_now_datetime_utc, get_start_of_day, get_today_datetime_utc
-from ebd.models import EBDClass, EBDLabelOptions, EBDLesson, EBDPresenceRecord, EBDPresenceRecordLabels
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from core.models import Post, PostFile, Member, Video, Schedule, Event, MembersUnion, NotificationDevice, Church
+from core.auxiliar_functions import (
+    get_end_of_ebd_date,
+    get_now_datetime_utc,
+    get_start_of_day,
+    get_today_datetime_utc,
+)
+from core.models import (
+    Church,
+    Event,
+    Member,
+    MembersUnion,
+    NotificationDevice,
+    Post,
+    PostFile,
+    Schedule,
+    Video,
+)
+from ebd.models import (
+    EBDClass,
+    EBDLabelOptions,
+    EBDLesson,
+    EBDPresenceRecord,
+    EBDPresenceRecordLabels,
+)
 from groups.models import Group, GroupMeetingDate
 
 # Serializers define the API representation.
@@ -21,7 +43,7 @@ class FileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostFile
-        fields = ('post_file', 'post')
+        fields = ("post_file", "post")
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -34,8 +56,19 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'publisher', 'publisher_picture', 'title', 'text', 'published_date',
-                  'last_updated_date', 'files', 'views_count', 'claps_count', 'dislike_count')
+        fields = (
+            "id",
+            "publisher",
+            "publisher_picture",
+            "title",
+            "text",
+            "published_date",
+            "last_updated_date",
+            "files",
+            "views_count",
+            "claps_count",
+            "dislike_count",
+        )
         depth = 1
 
 
@@ -47,8 +80,14 @@ class MemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ('name', 'description', 'church_function',
-                  'address', 'date_of_birth', 'picture')
+        fields = (
+            "name",
+            "description",
+            "church_function",
+            "address",
+            "date_of_birth",
+            "picture",
+        )
 
 
 class PersonSerializer(serializers.ModelSerializer):
@@ -61,10 +100,8 @@ class PersonSerializer(serializers.ModelSerializer):
     def get_ebd_class(self, obj):
         ebd_class = EBDClass.objects.filter(
             Q(students__id__in=[obj.pk])
-            |
-            Q(teachers__id__in=[obj.pk])
-            |
-            Q(secretaries__id__in=[obj.pk])
+            | Q(teachers__id__in=[obj.pk])
+            | Q(secretaries__id__in=[obj.pk])
         ).first()
         return ebd_class.name if ebd_class is not None else None
 
@@ -72,7 +109,7 @@ class PersonSerializer(serializers.ModelSerializer):
         return obj.picture.url if obj.picture else None
 
     def get_date_of_birth(self, obj):
-        return obj.date_of_birth.strftime('%d/%m') if obj.date_of_birth else None
+        return obj.date_of_birth.strftime("%d/%m") if obj.date_of_birth else None
 
     def get_is_birthday_person(self, obj: Member):
         if not obj.date_of_birth:
@@ -83,43 +120,53 @@ class PersonSerializer(serializers.ModelSerializer):
 
         today = get_today_datetime_utc()
 
-        return True if day_number == today.day and month_number == today.month else False
+        return (
+            True if day_number == today.day and month_number == today.month else False
+        )
 
     def get_frequency(self, obj):
-        start_date = get_start_of_day(get_start_of_day(
-            get_today_datetime_utc() - timedelta(days=360)))
+        start_date = get_start_of_day(
+            get_start_of_day(get_today_datetime_utc() - timedelta(days=360))
+        )
         end_date = get_end_of_ebd_date(get_now_datetime_utc())
 
-        person_presence_history_list = EBDPresenceRecord.objects.filter(
-            Q(person__pk=obj.pk)
-            &
-            Q(
-                Q(lesson__date__gte=start_date),
-                Q(lesson__date__lte=end_date)
+        person_presence_history_list = (
+            EBDPresenceRecord.objects.filter(
+                Q(person__pk=obj.pk)
+                & Q(Q(lesson__date__gte=start_date), Q(lesson__date__lte=end_date))
             )
-        ).values('attended', 'lesson__date').order_by('-lesson__date').distinct('lesson__date')
+            .values("attended", "lesson__date")
+            .order_by("-lesson__date")
+            .distinct("lesson__date")
+        )
 
-        frequency = {
-            'absences_in_sequence': 0,
-            'presences_in_sequence': 0
-        }
+        frequency = {"absences_in_sequence": 0, "presences_in_sequence": 0}
 
         for presence in person_presence_history_list:
-            if presence['attended']:
-                if frequency['absences_in_sequence'] > 0:
+            if presence["attended"]:
+                if frequency["absences_in_sequence"] > 0:
                     break
-                frequency['presences_in_sequence'] += 1
-            if not presence['attended']:
-                if frequency['presences_in_sequence'] > 0:
+                frequency["presences_in_sequence"] += 1
+            if not presence["attended"]:
+                if frequency["presences_in_sequence"] > 0:
                     break
-                frequency['absences_in_sequence'] += 1
+                frequency["absences_in_sequence"] += 1
 
         return frequency
 
     class Meta:
         model = Member
-        fields = ('id', 'name', 'picture', 'date_of_birth', 'is_birthday_person', 'ebd_class',
-                  'whatsapp', 'work_on_sundays', 'frequency')
+        fields = (
+            "id",
+            "name",
+            "picture",
+            "date_of_birth",
+            "is_birthday_person",
+            "ebd_class",
+            "whatsapp",
+            "work_on_sundays",
+            "frequency",
+        )
 
 
 class BirthdayComemorationSerializer(serializers.ModelSerializer):
@@ -128,11 +175,11 @@ class BirthdayComemorationSerializer(serializers.ModelSerializer):
     def get_date_of_birth(self, obj):
         day_number = obj.date_of_birth.day
         month_number = obj.date_of_birth.month
-        birthday_day = '0' + \
-            str(day_number) if day_number < 10 else str(day_number)
-        birthday_month = '0' + \
-            str(month_number) if month_number < 10 else str(month_number)
-        birthday = birthday_day + '/' + birthday_month
+        birthday_day = "0" + str(day_number) if day_number < 10 else str(day_number)
+        birthday_month = (
+            "0" + str(month_number) if month_number < 10 else str(month_number)
+        )
+        birthday = birthday_day + "/" + birthday_month
         return birthday
 
     picture = serializers.SerializerMethodField()
@@ -142,8 +189,7 @@ class BirthdayComemorationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Member
-        fields = ['id', 'name', 'nickname',
-                  'date_of_birth', 'picture', 'whatsapp']
+        fields = ["id", "name", "nickname", "date_of_birth", "picture", "whatsapp"]
 
 
 class UnionComemorationSerializer(serializers.ModelSerializer):
@@ -152,47 +198,73 @@ class UnionComemorationSerializer(serializers.ModelSerializer):
     def get_union_date(self, obj):
         day_number = obj.union_date.day
         month_number = obj.union_date.month
-        union_day = '0' + \
-            str(day_number) if day_number < 10 else str(day_number)
-        union_month = '0' + \
-            str(month_number) if month_number < 10 else str(month_number)
-        union_date = union_day + '/' + union_month
+        union_day = "0" + str(day_number) if day_number < 10 else str(day_number)
+        union_month = (
+            "0" + str(month_number) if month_number < 10 else str(month_number)
+        )
+        union_date = union_day + "/" + union_month
         return union_date
 
     person_one_picture = serializers.SerializerMethodField()
     person_two_picture = serializers.SerializerMethodField()
 
     def get_person_one_picture(self, obj):
-        return obj.person_one.picture.url if obj.person_one and obj.person_one.picture else None
+        return (
+            obj.person_one.picture.url
+            if obj.person_one and obj.person_one.picture
+            else None
+        )
 
     def get_person_two_picture(self, obj):
-        return obj.person_two.picture.url if obj.person_two and obj.person_two.picture else None
+        return (
+            obj.person_two.picture.url
+            if obj.person_two and obj.person_two.picture
+            else None
+        )
 
     class Meta:
         model = MembersUnion
-        fields = '__all__'
+        fields = "__all__"
         depth = 1
 
 
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ('id', 'src', 'category', 'title', 'description',
-                  'youtube_video_code', 'registering_date')
+        fields = (
+            "id",
+            "src",
+            "category",
+            "title",
+            "description",
+            "youtube_video_code",
+            "registering_date",
+        )
 
 
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
-        fields = ('id', 'title', 'start_date', 'end_date', 'location', 'description',
-                  'preacher', 'leader', 'organizing_group', 'category', 'video')
+        fields = (
+            "id",
+            "title",
+            "start_date",
+            "end_date",
+            "location",
+            "description",
+            "preacher",
+            "leader",
+            "organizing_group",
+            "category",
+            "video",
+        )
         depth = 1
 
 
 class GroupMeetingDateSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupMeetingDate
-        fields = ('group', 'day', 'start_date', 'end_date')
+        fields = ("group", "day", "start_date", "end_date")
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -232,8 +304,23 @@ class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
-        fields = ('id', 'general_category', 'name', 'description', 'info', 'leader', 'leader_picture', 'vice_leader', 'vice_leader_picture',
-                  'third_leader', 'third_leader_picture', 'background_image', 'church', 'meeting_dates', 'general_category_icon')
+        fields = (
+            "id",
+            "general_category",
+            "name",
+            "description",
+            "info",
+            "leader",
+            "leader_picture",
+            "vice_leader",
+            "vice_leader_picture",
+            "third_leader",
+            "third_leader_picture",
+            "background_image",
+            "church",
+            "meeting_dates",
+            "general_category_icon",
+        )
         depth = 1
 
 
@@ -270,8 +357,18 @@ class CongregationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Church
-        fields = ('id', 'name', 'description', 'info', 'background_image', 'responsible',
-                  'responsible_picture', 'is_congregation', 'general_category', 'general_category_icon')
+        fields = (
+            "id",
+            "name",
+            "description",
+            "info",
+            "background_image",
+            "responsible",
+            "responsible_picture",
+            "is_congregation",
+            "general_category",
+            "general_category_icon",
+        )
         depth = 1
 
 
@@ -283,7 +380,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = '__all__'
+        fields = "__all__"
         depth = 1
 
 
@@ -296,22 +393,32 @@ class EBDLessonSerializer(serializers.ModelSerializer):
 
     def get_presence_records(self, obj):
         return {
-            'presents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended=True).count(),
-            'absents': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=False, attended=False).count(),
-            'pending':  EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=True).count(),
-            'pending_calls': EBDPresenceRecord.objects.filter(lesson__pk=obj.pk, register_on__isnull=True).values(class_name=F('ebd_class__name')).annotate(count=Count('ebd_class__name', distinct=True))
+            "presents": EBDPresenceRecord.objects.filter(
+                lesson__pk=obj.pk, register_on__isnull=False, attended=True
+            ).count(),
+            "absents": EBDPresenceRecord.objects.filter(
+                lesson__pk=obj.pk, register_on__isnull=False, attended=False
+            ).count(),
+            "pending": EBDPresenceRecord.objects.filter(
+                lesson__pk=obj.pk, register_on__isnull=True
+            ).count(),
+            "pending_calls": EBDPresenceRecord.objects.filter(
+                lesson__pk=obj.pk, register_on__isnull=True
+            )
+            .values(class_name=F("ebd_class__name"))
+            .annotate(count=Count("ebd_class__name", distinct=True)),
         }
 
     class Meta:
         model = EBDLesson
-        fields = '__all__'
+        fields = "__all__"
         depth = 1
 
 
 class EBDClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = EBDClass
-        fields = ('id', 'name')
+        fields = ("id", "name")
 
 
 class EBDPresenceRecordSerializer(serializers.ModelSerializer):
@@ -324,57 +431,58 @@ class EBDPresenceRecordSerializer(serializers.ModelSerializer):
 
     def get_person(self, obj):
         return {
-            'id': obj.person.id,
-            'name': obj.person.name,
-            'nickname': obj.person.nickname,
-            'picture': obj.person.picture.url
+            "id": obj.person.id,
+            "name": obj.person.name,
+            "nickname": obj.person.nickname,
+            "picture": obj.person.picture.url,
         }
 
     def get_lesson(self, obj):
-        return {
-            'id': obj.lesson.id,
-            'title': obj.lesson.title,
-            'date': obj.lesson.date
-        }
+        return {"id": obj.lesson.id, "title": obj.lesson.title, "date": obj.lesson.date}
 
     def get_ebd_class(self, obj):
-        return {
-            'id': obj.ebd_class.id,
-            'name': obj.ebd_class.name
-        }
+        return {"id": obj.ebd_class.id, "name": obj.ebd_class.name}
 
     def get_ebd_church(self, obj):
-        return {
-            'id': obj.ebd_church.id,
-            'name': obj.ebd_church.name
-        }
+        return {"id": obj.ebd_church.id, "name": obj.ebd_church.name}
 
     def get_created_by(self, obj):
         return {
-            'id': obj.created_by.id,
-            'name': '{} {}'.format(obj.created_by.first_name, obj.created_by.last_name) if obj.created_by.first_name else ''
+            "id": obj.created_by.id,
+            "name": (
+                "{} {}".format(obj.created_by.first_name, obj.created_by.last_name)
+                if obj.created_by.first_name
+                else ""
+            ),
         }
 
     def get_labels(self, obj):
-        return EBDPresenceRecordLabels.objects.filter(ebd_presence_record__pk=obj.pk).values('creation_date', 'last_updated_date', label=F('ebd_label_option'))
+        return EBDPresenceRecordLabels.objects.filter(
+            ebd_presence_record__pk=obj.pk
+        ).values("creation_date", "last_updated_date", label=F("ebd_label_option"))
 
     class Meta:
         model = EBDPresenceRecord
-        fields = '__all__'
+        fields = "__all__"
         depth = 1
 
 
 class EBDLabelOptionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EBDLabelOptions
-        fields = ('id', 'title', 'type')
+        fields = ("id", "title", "type")
 
 
 class EBDPresenceRecordLabelsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EBDPresenceRecordLabels
-        fields = ('id', 'ebd_presence_record', 'ebd_label_option',
-                  'creation_date', 'last_updated_date')
+        fields = (
+            "id",
+            "ebd_presence_record",
+            "ebd_label_option",
+            "creation_date",
+            "last_updated_date",
+        )
         depth = 1
 
 
@@ -395,10 +503,13 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
-        token['user_id'] = user.pk
-        token['email'] = user.email
-        token['name'] = (user.first_name if user.first_name else '') + (
-            ' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
+        token["user_id"] = user.pk
+        token["email"] = user.email
+        token["name"] = (
+            (user.first_name if user.first_name else "")
+            + (" " if user.first_name and user.last_name else "")
+            + (user.last_name if user.last_name else "")
+        )
 
         return token
 
@@ -406,30 +517,65 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
-        if user.is_superuser or user.groups.filter(name='Secretaria da Igreja').exists() or user.groups.filter(name='Admin').exists() or user.groups.filter(name='Superintendência').exists() or len(list(EBDClass.objects.filter(teachers__user__id__in=[user.pk]).values('id'))) or len(list(EBDClass.objects.filter(secretaries__user__id__in=[user.pk]).values('id'))):
+        if (
+            user.is_superuser
+            or user.groups.filter(name="Secretaria da Igreja").exists()
+            or user.groups.filter(name="Admin").exists()
+            or user.groups.filter(name="Superintendência").exists()
+            or len(
+                list(
+                    EBDClass.objects.filter(teachers__user__id__in=[user.pk]).values(
+                        "id"
+                    )
+                )
+            )
+            or len(
+                list(
+                    EBDClass.objects.filter(secretaries__user__id__in=[user.pk]).values(
+                        "id"
+                    )
+                )
+            )
+        ):
             token = super().get_token(user)
 
-            token['user_id'] = user.pk
-            token['email'] = user.email
-            token['name'] = (user.first_name if user.first_name else '') + (
-                ' ' if user.first_name and user.last_name else '') + (user.last_name if user.last_name else '')
-            token['groups'] = list(user.groups.all().values())
-            token['is_superuser'] = user.is_superuser
+            token["user_id"] = user.pk
+            token["email"] = user.email
+            token["name"] = (
+                (user.first_name if user.first_name else "")
+                + (" " if user.first_name and user.last_name else "")
+                + (user.last_name if user.last_name else "")
+            )
+            token["groups"] = list(user.groups.all().values())
+            token["is_superuser"] = user.is_superuser
 
-            if not user.is_superuser and not user.groups.filter(name='Secretaria da Igreja').exists() and not user.groups.filter(name='Admin').exists():
-                classes_as_a_teacher = list(EBDClass.objects.filter(
-                    teachers__user__id__in=[user.pk]).values('id', 'name'))
-                token['classes_as_a_teacher'] = classes_as_a_teacher
+            if (
+                not user.is_superuser
+                and not user.groups.filter(name="Secretaria da Igreja").exists()
+                and not user.groups.filter(name="Admin").exists()
+            ):
+                classes_as_a_teacher = list(
+                    EBDClass.objects.filter(teachers__user__id__in=[user.pk]).values(
+                        "id", "name"
+                    )
+                )
+                token["classes_as_a_teacher"] = classes_as_a_teacher
                 print(classes_as_a_teacher)
-                classes_as_a_secretary = list(EBDClass.objects.filter(
-                    secretaries__user__id__in=[user.pk]).values('id', 'name'))
-                token['classes_as_a_secretary'] = classes_as_a_secretary
+                classes_as_a_secretary = list(
+                    EBDClass.objects.filter(secretaries__user__id__in=[user.pk]).values(
+                        "id", "name"
+                    )
+                )
+                token["classes_as_a_secretary"] = classes_as_a_secretary
                 print(classes_as_a_teacher)
 
             return token
         else:
             raise ValidationError(
-                {'message': 'Você não tem permissão para acessar esse recurso.'}, code=403)
+                {"message": "Você não tem permissão para acessar esse recurso."},
+                code=403,
+            )
+
 
 # class EBDLessonPresenceRecordSerializer(serializers.Serializer):
 #     lesson_date = serializers.CharField()

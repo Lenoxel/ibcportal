@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ebd', '0011_auto_20220323_0033'),
+        ("ebd", "0011_auto_20220323_0033"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ebdlesson',
-            name='magazine_title',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Lição'),
+            model_name="ebdlesson",
+            name="magazine_title",
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name="Lição"
+            ),
         ),
     ]

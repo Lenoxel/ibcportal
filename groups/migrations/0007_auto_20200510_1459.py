@@ -6,23 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('groups', '0006_auto_20200508_0103'),
+        ("groups", "0006_auto_20200508_0103"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='groupmeetingdate',
-            options={'ordering': ['-day'], 'verbose_name': 'Horário', 'verbose_name_plural': 'Horários'},
+            name="groupmeetingdate",
+            options={
+                "ordering": ["-day"],
+                "verbose_name": "Horário",
+                "verbose_name_plural": "Horários",
+            },
         ),
         migrations.AddField(
-            model_name='group',
-            name='info',
-            field=models.TextField(default='info', verbose_name='Info'),
+            model_name="group",
+            name="info",
+            field=models.TextField(default="info", verbose_name="Info"),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='group',
-            name='description',
-            field=models.CharField(max_length=100, verbose_name='Descrição'),
+            model_name="group",
+            name="description",
+            field=models.CharField(max_length=100, verbose_name="Descrição"),
         ),
     ]

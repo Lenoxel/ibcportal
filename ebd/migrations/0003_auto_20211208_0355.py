@@ -6,24 +6,36 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0037_auto_20211208_0334'),
-        ('ebd', '0002_auto_20211208_0354'),
+        ("core", "0037_auto_20211208_0334"),
+        ("ebd", "0002_auto_20211208_0354"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ebdclass',
-            name='secretaries',
-            field=models.ManyToManyField(blank=True, related_name='Secretário', to='core.Member', verbose_name='Secretário'),
+            model_name="ebdclass",
+            name="secretaries",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="Secretário",
+                to="core.Member",
+                verbose_name="Secretário",
+            ),
         ),
         migrations.AlterField(
-            model_name='ebdclass',
-            name='students',
-            field=models.ManyToManyField(blank=True, related_name='Aluno', to='core.Member', verbose_name='Aluno'),
+            model_name="ebdclass",
+            name="students",
+            field=models.ManyToManyField(
+                blank=True, related_name="Aluno", to="core.Member", verbose_name="Aluno"
+            ),
         ),
         migrations.AlterField(
-            model_name='ebdclass',
-            name='teachers',
-            field=models.ManyToManyField(blank=True, related_name='Professor', to='core.Member', verbose_name='Professor'),
+            model_name="ebdclass",
+            name="teachers",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="Professor",
+                to="core.Member",
+                verbose_name="Professor",
+            ),
         ),
     ]

@@ -7,14 +7,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('groups', '0008_auto_20200529_0025'),
+        ("groups", "0008_auto_20200529_0025"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='generalcategory',
-            name='icon',
-            field=cloudinary.models.CloudinaryField(default='default', max_length=255, verbose_name='Ícone da categoria'),
+            model_name="generalcategory",
+            name="icon",
+            field=cloudinary.models.CloudinaryField(
+                default="default", max_length=255, verbose_name="Ícone da categoria"
+            ),
             preserve_default=False,
         ),
     ]

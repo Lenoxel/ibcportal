@@ -6,14 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0022_audit'),
+        ("core", "0022_audit"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='audit',
-            name='obj_name',
-            field=models.CharField(default='default', max_length=150, verbose_name='Título'),
+            model_name="audit",
+            name="obj_name",
+            field=models.CharField(
+                default="default", max_length=150, verbose_name="Título"
+            ),
             preserve_default=False,
         ),
     ]

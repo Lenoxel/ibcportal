@@ -1,0 +1,35 @@
+name: Lint and Security Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          pip install black==24.10.0
+          pip install bandit==1.8.2
+
+      # - name: Run Flake8
+      #   run: |
+      #     conda activate ibc_portal_env
+      #     flake8 .
+
+      - name: Check code format with Black
+        run: |
+          black --check .
+
+      - name: Check security with Bandit
+        run: |
+          bandit -r . --severity-level high

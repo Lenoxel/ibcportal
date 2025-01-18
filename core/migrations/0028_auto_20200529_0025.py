@@ -6,18 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0027_auto_20200521_0123'),
+        ("core", "0027_auto_20200521_0123"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='video',
-            name='src',
-            field=models.CharField(max_length=100, null=True, verbose_name='URL'),
+            model_name="video",
+            name="src",
+            field=models.CharField(max_length=100, null=True, verbose_name="URL"),
         ),
         migrations.AlterField(
-            model_name='video',
-            name='youtube_video_code',
-            field=models.CharField(max_length=150, null=True, verbose_name='Código do Youtube'),
+            model_name="video",
+            name="youtube_video_code",
+            field=models.CharField(
+                max_length=150, null=True, verbose_name="Código do Youtube"
+            ),
         ),
     ]

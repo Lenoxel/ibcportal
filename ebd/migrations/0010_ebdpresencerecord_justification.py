@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ebd', '0009_ebdlabeloptions_ebdpresencerecordlabels'),
+        ("ebd", "0009_ebdlabeloptions_ebdpresencerecordlabels"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ebdpresencerecord',
-            name='justification',
-            field=models.CharField(blank=True, max_length=500, null=True, verbose_name='Justificativa da Falta'),
+            model_name="ebdpresencerecord",
+            name="justification",
+            field=models.CharField(
+                blank=True,
+                max_length=500,
+                null=True,
+                verbose_name="Justificativa da Falta",
+            ),
         ),
     ]

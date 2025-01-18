@@ -6,62 +6,62 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0010_auto_20200501_1548'),
+        ("core", "0010_auto_20200501_1548"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='postview',
-            name='post',
+            model_name="postview",
+            name="post",
         ),
         migrations.RemoveField(
-            model_name='videoreaction',
-            name='video',
+            model_name="videoreaction",
+            name="video",
         ),
         migrations.RemoveField(
-            model_name='videoview',
-            name='video',
+            model_name="videoview",
+            name="video",
         ),
         migrations.AddField(
-            model_name='post',
-            name='claps_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='Gostei'),
+            model_name="post",
+            name="claps_count",
+            field=models.PositiveIntegerField(default=0, verbose_name="Gostei"),
         ),
         migrations.AddField(
-            model_name='post',
-            name='dislike_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='Não gostei'),
+            model_name="post",
+            name="dislike_count",
+            field=models.PositiveIntegerField(default=0, verbose_name="Não gostei"),
         ),
         migrations.AddField(
-            model_name='post',
-            name='views_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='Visualizações'),
+            model_name="post",
+            name="views_count",
+            field=models.PositiveIntegerField(default=0, verbose_name="Visualizações"),
         ),
         migrations.AddField(
-            model_name='video',
-            name='claps_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='Gostei'),
+            model_name="video",
+            name="claps_count",
+            field=models.PositiveIntegerField(default=0, verbose_name="Gostei"),
         ),
         migrations.AddField(
-            model_name='video',
-            name='dislike_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='Não gostei'),
+            model_name="video",
+            name="dislike_count",
+            field=models.PositiveIntegerField(default=0, verbose_name="Não gostei"),
         ),
         migrations.AddField(
-            model_name='video',
-            name='views_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='Visualizações'),
+            model_name="video",
+            name="views_count",
+            field=models.PositiveIntegerField(default=0, verbose_name="Visualizações"),
         ),
         migrations.DeleteModel(
-            name='PostReaction',
+            name="PostReaction",
         ),
         migrations.DeleteModel(
-            name='PostView',
+            name="PostView",
         ),
         migrations.DeleteModel(
-            name='VideoReaction',
+            name="VideoReaction",
         ),
         migrations.DeleteModel(
-            name='VideoView',
+            name="VideoView",
         ),
     ]

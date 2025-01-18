@@ -6,13 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0039_auto_20211227_1158'),
+        ("core", "0039_auto_20211227_1158"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='member',
-            name='educational_level',
-            field=models.CharField(blank=True, choices=[('educacao_infantil', 'Educação infantil'), ('ensino_fundamental', 'Ensino fundamental'), ('ensino_medio', 'Ensino médio'), ('ensino_superior', 'Ensino superior'), ('pos_graduacao', 'Pós-graduação'), ('mestrado', 'Mestrado'), ('doutorado', 'Doutorado')], max_length=50, null=True, verbose_name='Grau de escolaridade'),
+            model_name="member",
+            name="educational_level",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("educacao_infantil", "Educação infantil"),
+                    ("ensino_fundamental", "Ensino fundamental"),
+                    ("ensino_medio", "Ensino médio"),
+                    ("ensino_superior", "Ensino superior"),
+                    ("pos_graduacao", "Pós-graduação"),
+                    ("mestrado", "Mestrado"),
+                    ("doutorado", "Doutorado"),
+                ],
+                max_length=50,
+                null=True,
+                verbose_name="Grau de escolaridade",
+            ),
         ),
     ]

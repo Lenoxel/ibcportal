@@ -31,7 +31,7 @@ Este projeto foi desenvolvido com as seguintes tecnologias:
     conda activate ibc_portal_env
     ```
 
-4. Crie um arquivo **.env** dentro do diretório **ibcportal** e configure o banco de dados e as variáveis de ambiente necessárias.
+4. Crie um arquivo **.env** dentro do diretório **/ibcportal** e configure o banco de dados e as variáveis de ambiente necessárias.
 
 ## Como usar
 

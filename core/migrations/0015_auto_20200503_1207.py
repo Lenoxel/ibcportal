@@ -7,20 +7,24 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0014_auto_20200503_1201'),
+        ("core", "0014_auto_20200503_1201"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='picture',
-            field=cloudinary.models.CloudinaryField(default='default', max_length=255, verbose_name='Imagem do evento'),
+            model_name="event",
+            name="picture",
+            field=cloudinary.models.CloudinaryField(
+                default="default", max_length=255, verbose_name="Imagem do evento"
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='member',
-            name='picture',
-            field=cloudinary.models.CloudinaryField(default='default', max_length=255, verbose_name='Foto'),
+            model_name="member",
+            name="picture",
+            field=cloudinary.models.CloudinaryField(
+                default="default", max_length=255, verbose_name="Foto"
+            ),
             preserve_default=False,
         ),
     ]

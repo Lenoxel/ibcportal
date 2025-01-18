@@ -6,17 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0007_auto_20200501_1458'),
+        ("core", "0007_auto_20200501_1458"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='eventinterests',
-            options={'ordering': ['-interested_people_count'], 'verbose_name': 'Pessoas Interessadas', 'verbose_name_plural': 'Interesses em Eventos'},
+            name="eventinterests",
+            options={
+                "ordering": ["-interested_people_count"],
+                "verbose_name": "Pessoas Interessadas",
+                "verbose_name_plural": "Interesses em Eventos",
+            },
         ),
         migrations.AddField(
-            model_name='event',
-            name='interested_people_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='Pessoas Interessadas'),
+            model_name="event",
+            name="interested_people_count",
+            field=models.PositiveIntegerField(
+                default=0, verbose_name="Pessoas Interessadas"
+            ),
         ),
     ]

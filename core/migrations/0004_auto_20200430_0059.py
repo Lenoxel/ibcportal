@@ -7,13 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0003_auto_20200429_2217'),
+        ("core", "0003_auto_20200429_2217"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='postfile',
-            name='post_file',
-            field=cloudinary.models.CloudinaryField(max_length=255, verbose_name='Arquivo'),
+            model_name="postfile",
+            name="post_file",
+            field=cloudinary.models.CloudinaryField(
+                max_length=255, verbose_name="Arquivo"
+            ),
         ),
     ]

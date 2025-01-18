@@ -6,37 +6,65 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0024_auto_20200518_2155'),
+        ("core", "0024_auto_20200518_2155"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='NotificationDevice',
+            name="NotificationDevice",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('device_id', models.TextField(verbose_name='ID do dispositivo')),
-                ('registration_type', models.CharField(max_length=100, verbose_name='Tipo do registro')),
-                ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='Criado em')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("device_id", models.TextField(verbose_name="ID do dispositivo")),
+                (
+                    "registration_type",
+                    models.CharField(max_length=100, verbose_name="Tipo do registro"),
+                ),
+                (
+                    "creation_date",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Criado em"),
+                ),
             ],
             options={
-                'verbose_name': 'Dispositivo',
-                'verbose_name_plural': 'Dispositivos',
-                'ordering': ['-creation_date'],
+                "verbose_name": "Dispositivo",
+                "verbose_name_plural": "Dispositivos",
+                "ordering": ["-creation_date"],
             },
         ),
         migrations.CreateModel(
-            name='PushNotification',
+            name="PushNotification",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=60, verbose_name='Título')),
-                ('message', models.CharField(max_length=150, verbose_name='Mensagem')),
-                ('push_date', models.DateTimeField(verbose_name='Enviar notificação em')),
-                ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='Criado em')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=60, verbose_name="Título")),
+                ("message", models.CharField(max_length=150, verbose_name="Mensagem")),
+                (
+                    "push_date",
+                    models.DateTimeField(verbose_name="Enviar notificação em"),
+                ),
+                (
+                    "creation_date",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Criado em"),
+                ),
             ],
             options={
-                'verbose_name': 'Notificação',
-                'verbose_name_plural': 'Notificações',
-                'ordering': ['-creation_date'],
+                "verbose_name": "Notificação",
+                "verbose_name_plural": "Notificações",
+                "ordering": ["-creation_date"],
             },
         ),
     ]

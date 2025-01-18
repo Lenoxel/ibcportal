@@ -6,16 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0009_auto_20200501_1544'),
+        ("core", "0009_auto_20200501_1544"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='event',
-            name='interested_people_count',
-            field=models.PositiveIntegerField(default=0, verbose_name='Pessoas Interessadas'),
+            model_name="event",
+            name="interested_people_count",
+            field=models.PositiveIntegerField(
+                default=0, verbose_name="Pessoas Interessadas"
+            ),
         ),
         migrations.DeleteModel(
-            name='EventInterests',
+            name="EventInterests",
         ),
     ]

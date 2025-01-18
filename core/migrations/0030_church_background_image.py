@@ -7,14 +7,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0029_auto_20200624_1234'),
+        ("core", "0029_auto_20200624_1234"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='church',
-            name='background_image',
-            field=cloudinary.models.CloudinaryField(default='default', max_length=255, verbose_name='Foto da Igreja'),
+            model_name="church",
+            name="background_image",
+            field=cloudinary.models.CloudinaryField(
+                default="default", max_length=255, verbose_name="Foto da Igreja"
+            ),
             preserve_default=False,
         ),
     ]

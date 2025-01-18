@@ -6,34 +6,51 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0020_auto_20200508_0024'),
-        ('groups', '0003_groupmeetingdate'),
+        ("core", "0020_auto_20200508_0024"),
+        ("groups", "0003_groupmeetingdate"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='groupmeetingdate',
-            options={'ordering': ['day'], 'verbose_name': 'Horário', 'verbose_name_plural': 'Horários'},
+            name="groupmeetingdate",
+            options={
+                "ordering": ["day"],
+                "verbose_name": "Horário",
+                "verbose_name_plural": "Horários",
+            },
         ),
         migrations.AddField(
-            model_name='group',
-            name='members',
-            field=models.ManyToManyField(related_name='Membro', to='core.Member'),
+            model_name="group",
+            name="members",
+            field=models.ManyToManyField(related_name="Membro", to="core.Member"),
         ),
         migrations.AddField(
-            model_name='groupmeetingdate',
-            name='day',
-            field=models.CharField(choices=[('Segunda', 'Segunda'), ('Terça', 'Terça'), ('Quarta', 'Quarta'), ('Quinta', 'Quinta'), ('Sexta', 'Sexta'), ('Sábado', 'Sábado'), ('Domingo', 'Domingo')], default='SEG', max_length=20, verbose_name='Dia'),
+            model_name="groupmeetingdate",
+            name="day",
+            field=models.CharField(
+                choices=[
+                    ("Segunda", "Segunda"),
+                    ("Terça", "Terça"),
+                    ("Quarta", "Quarta"),
+                    ("Quinta", "Quinta"),
+                    ("Sexta", "Sexta"),
+                    ("Sábado", "Sábado"),
+                    ("Domingo", "Domingo"),
+                ],
+                default="SEG",
+                max_length=20,
+                verbose_name="Dia",
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='groupmeetingdate',
-            name='end_date',
-            field=models.TimeField(blank=True, null=True, verbose_name='Fim'),
+            model_name="groupmeetingdate",
+            name="end_date",
+            field=models.TimeField(blank=True, null=True, verbose_name="Fim"),
         ),
         migrations.AlterField(
-            model_name='groupmeetingdate',
-            name='start_date',
-            field=models.TimeField(verbose_name='Início'),
+            model_name="groupmeetingdate",
+            name="start_date",
+            field=models.TimeField(verbose_name="Início"),
         ),
     ]

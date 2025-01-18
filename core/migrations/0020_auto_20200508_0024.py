@@ -6,12 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0019_auto_20200504_2350'),
+        ("core", "0019_auto_20200504_2350"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='postfile',
-            options={'ordering': ['post_file'], 'verbose_name': 'Arquivo', 'verbose_name_plural': 'Arquivos'},
+            name="postfile",
+            options={
+                "ordering": ["post_file"],
+                "verbose_name": "Arquivo",
+                "verbose_name_plural": "Arquivos",
+            },
         ),
     ]
