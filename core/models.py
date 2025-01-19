@@ -249,6 +249,9 @@ class MembersUnion(models.Model):
         verbose_name="Cônjuge",
         related_name="person_two",
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        default=None,
     )
     union_type = models.CharField(
         "Tipo da união",
