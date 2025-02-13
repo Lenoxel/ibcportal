@@ -5,6 +5,13 @@ from import_export import fields, resources
 from import_export.admin import ExportActionMixin
 from import_export.fields import Field
 from import_export.widgets import ManyToManyWidget
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+import pytz
+
 
 from core.auxiliar_functions import remove_person_from_old_ebd_classes
 from core.models import Member
@@ -249,7 +256,86 @@ class EBDPresenceRecordResource(resources.ModelResource):
         )
 
 
-class EBDPresenceRecordAdmin(ExportActionMixin, admin.ModelAdmin):
+def presence_records_generate_pdf(modeladmin, request, queryset):
+    lesson_id = request.GET.get("lesson__id__exact")
+    lesson_info = "Presença dos Alunos"
+
+    if lesson_id:
+        lesson = EBDLesson.objects.get(id=lesson_id)
+        lesson_date = lesson.date.strftime("%d/%m/%Y")
+        lesson_info = f"Lição - {lesson.title}"
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = (
+        f'attachment; filename="chamada_ebd_{lesson_date}.pdf"'
+    )
+
+    doc = SimpleDocTemplate(response, pagesize=A4)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    elements.append(Paragraph(lesson_info, styles["Title"]))
+    elements.append(Spacer(1, 12))
+
+    headers = ["Classe", "Aluno", "Presente", "Chegada"]
+    data = [headers]
+
+    for presence_record in queryset[::-1]:
+        formatted_register_on = "x"
+
+        if presence_record.attended and presence_record.register_on:
+            recife_timezone = pytz.timezone("America/Recife")
+            register_on_recife_timezone = presence_record.register_on.astimezone(
+                recife_timezone
+            )
+            formatted_register_on = register_on_recife_timezone.strftime("%H:%M")
+
+        data.append(
+            [
+                presence_record.ebd_class.name,
+                presence_record.person.name,
+                "Sim" if presence_record.attended else "x",
+                formatted_register_on,
+            ]
+        )
+
+    table = Table(data)
+
+    style = TableStyle(
+        [
+            (
+                "BACKGROUND",
+                (0, 0),
+                (-1, 0),
+                colors.lightgrey,
+            ),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.black),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
+            (
+                "BACKGROUND",
+                (0, 1),
+                (-1, -1),
+                colors.whitesmoke,
+            ),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+        ]
+    )
+
+    table.setStyle(style)
+
+    elements.append(table)
+
+    doc.build(elements)
+
+    return response
+
+
+presence_records_generate_pdf.short_description = "Exportar selecionados para PDF"
+
+
+class EBDPresenceRecordAdmin(admin.ModelAdmin):
     resource_class = EBDPresenceRecordResource
     readonly_fields = (
         "lesson",
@@ -263,6 +349,7 @@ class EBDPresenceRecordAdmin(ExportActionMixin, admin.ModelAdmin):
         "justification",
     )
     list_filter = ("lesson", "person", "ebd_class", "attended", "register_on")
+    actions = [presence_records_generate_pdf]
 
 
 class EBDPresenceRecordLabelsResource(resources.ModelResource):
