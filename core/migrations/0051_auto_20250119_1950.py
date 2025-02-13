@@ -15,7 +15,11 @@ class Migration(migrations.Migration):
             model_name="membersunion",
             name="person_two_external",
             field=models.CharField(
-                blank=True, default=None, max_length=150, verbose_name="Nome do cônjuge"
+                blank=True,
+                null=True,
+                default=None,
+                max_length=150,
+                verbose_name="Nome do cônjuge",
             ),
         ),
         migrations.AlterField(
