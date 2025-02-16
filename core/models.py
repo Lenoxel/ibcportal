@@ -137,6 +137,11 @@ class Post(models.Model):
         return self.title
 
 
+class UserDetails(models.Model):
+    user = models.OneToOneField(User, related_name="details", on_delete=models.CASCADE)
+    password_changed_at = models.DateTimeField(null=True, blank=True)
+
+
 class Member(models.Model):
     objects = models.Manager()
 

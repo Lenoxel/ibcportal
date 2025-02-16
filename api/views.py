@@ -2,10 +2,14 @@
 import os
 from datetime import date, datetime, timedelta
 
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
+from django.utils import timezone
+
 # from calendar import monthrange
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Case, Count, F, OuterRef, Q, Subquery, Sum, When
+
+from core.models import UserDetails
 
 # from rest_framework.authtoken.models import Token
 from django.http import JsonResponse
@@ -13,6 +17,9 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status, permissions
+from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from core.auxiliar_functions import (
@@ -67,7 +74,6 @@ from .serializers import (
     VideoSerializer,
 )
 
-# from django.utils import timezone
 # from django.core.serializers import serialize
 
 
@@ -422,6 +428,46 @@ def device(request, format=None):
 #     def get_serializer_class(self):
 #         serializer = EBDLessonPresenceRecordSerializer
 #         return serializer
+
+
+class UpdateUserDetailsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "Usuário não encontrado"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        if request.user != user:
+            raise PermissionDenied("Você não tem permissão para alterar este usuário")
+
+        data = request.data
+        updated_fields = []
+
+        if "email" in data:
+            user.email = data["email"]
+            updated_fields.append("email")
+
+        if "password" in data:
+            user.set_password(data["password"])
+            updated_fields.append("password")
+
+            if user.details:
+                user.details.password_changed_at = timezone.now()
+                user.details.save()
+            else:
+                UserDetails.objects.create(
+                    user=user, password_changed_at=timezone.now()
+                )
+
+        user.save(update_fields=updated_fields)
+
+        return Response(
+            {"message": "Usuário atualizado com sucesso!"}, status=status.HTTP_200_OK
+        )
 
 
 class EBDClassViewSet(viewsets.ModelViewSet):

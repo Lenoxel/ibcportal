@@ -548,6 +548,11 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
             )
             token["groups"] = list(user.groups.all().values())
             token["is_superuser"] = user.is_superuser
+            token["password_changed_at"] = (
+                user.details.password_changed_at.isoformat()
+                if hasattr(user, "details")
+                else None
+            )
 
             if (
                 not user.is_superuser
@@ -560,14 +565,14 @@ class CustomEBDTokenObtainPairSerializer(TokenObtainPairSerializer):
                     )
                 )
                 token["classes_as_a_teacher"] = classes_as_a_teacher
-                print(classes_as_a_teacher)
+                # print(classes_as_a_teacher)
                 classes_as_a_secretary = list(
                     EBDClass.objects.filter(secretaries__user__id__in=[user.pk]).values(
                         "id", "name"
                     )
                 )
                 token["classes_as_a_secretary"] = classes_as_a_secretary
-                print(classes_as_a_teacher)
+                # print(classes_as_a_secretary)
 
             return token
         else:
