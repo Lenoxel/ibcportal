@@ -154,7 +154,7 @@ class Member(models.Model):
         blank=True,
         default=None,
     )
-    name = models.CharField("Nome", max_length=100)
+    name = models.CharField("Nome", max_length=200)
     nickname = models.CharField("Conhecido como", max_length=25)
     description = models.TextField("Descrição", null=True, blank=True, max_length=300)
     address = models.CharField("Endereço", null=True, blank=True, max_length=250)
