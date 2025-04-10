@@ -2,8 +2,9 @@ import os
 from datetime import timedelta
 
 import cloudinary  # cloudinary
-import cloudinary.api  # cloudinary
-import cloudinary.uploader  # cloudinary
+
+# import cloudinary.api  # cloudinary
+# import cloudinary.uploader  # cloudinary
 import django_on_heroku
 import environ
 
@@ -33,6 +34,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    # "jet.dashboard",
     "jet",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -97,25 +99,25 @@ WSGI_APPLICATION = "ibcportal.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# Prod config
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DATABASE_NAME") or "public",
-        "USER": env("DATABASE_USER") or "postgres",
-        "PASSWORD": env("DATABASE_PASSWORD") or "root",
-        "HOST": env("DATABASE_HOST") or "localhost",
-        "PORT": "5432",
-    }
-}
-
-# Local config
+# DB Prod config
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": env("DATABASE_NAME") or "public",
+#         "USER": env("DATABASE_USER") or "postgres",
+#         "PASSWORD": env("DATABASE_PASSWORD") or "root",
+#         "HOST": env("DATABASE_HOST") or "localhost",
+#         "PORT": "5432",
 #     }
 # }
+
+# DB Local config
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -178,16 +180,14 @@ REST_FRAMEWORK = {
 }
 
 JET_SIDE_MENU_COMPACT = True
+JET_DEFAULT_THEME = "light-gray"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'media')
-# ]
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "staticfiles")
 
 # Production database configuration
 # db_from_env = dj_database_url.config(conn_max_age=500)

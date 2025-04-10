@@ -169,10 +169,6 @@ section#platform .content  {
 
 section#platform .content.large { max-width: 1150px; }
 
-section#platform .content.oops {
-	background: url(../../images/pages/oops.png) no-repeat right;
-	background-size: contain;
-}
 
 /*-----------------------------------------------------------  TYPOGRAPHY   --------------------*/
 /*https://webdesign.tutsplus.com/articles/a-web-designers-typographic-boilerplate--webdesign-15234*/
@@ -1194,11 +1190,6 @@ span.kb-optional {
 }
 
 /*-----------------------------------------------------------  BUTTONS E-BLAST SCHEDULE   ------*/
-#eblast_canvas {
-	padding: 10px;
-	background: url(../../images/texture-cm.png);
-    margin-bottom: 30px;
-}
 
 /*iframe { border: 2px solid var(--gray2); }*/
 
