@@ -258,6 +258,12 @@ class MembersUnion(models.Model):
         blank=True,
         default=None,
     )
+    person_two_external = models.CharField(
+        "Cônjuge externo",
+        max_length=100,
+        null=True,
+        blank=True,
+    )
     union_type = models.CharField(
         "Tipo da união",
         choices=MEMBERS_UNION_OPTIONS,
