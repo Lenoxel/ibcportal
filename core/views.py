@@ -26,7 +26,10 @@ from .models import Donate, Post, Schedule, Video
 
 def home(request):
     posts = Post.objects.filter(
-        Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True)
+        Q(
+            Q(published_date__lte=timezone.now()) | Q(published_date__isnull=True),
+            Q(visibility="public"),
+        )
     ).order_by("-published_date")[0:4]
 
     videos = Video.objects.order_by("-registering_date")[0:3]

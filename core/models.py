@@ -120,6 +120,12 @@ class Post(models.Model):
     )
     title = models.CharField("Título da postagem", max_length=200)
     text = models.TextField("Texto da postagem")
+    visibility = models.CharField(
+        "Visibilidade",
+        choices=[("public", "Público"), ("private", "Privado")],
+        max_length=10,
+        default="private",
+    )
     to_notify = models.BooleanField("Notificar", default=False)
     views_count = models.PositiveIntegerField("Visualizações", default=0)
     claps_count = models.PositiveIntegerField("Gostei", default=0)
