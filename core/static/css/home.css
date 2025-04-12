@@ -136,13 +136,12 @@ INDEX
 }
 
 #mission .fx_3 {
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease;
 }
 
 #mission .fx_3:hover {
-    /* transform: rotate(360deg); */
-    border: 3px solid yellow;
-    border-radius: 5px;
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 #cultos-online .fx_3 h4 {
