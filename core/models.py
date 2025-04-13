@@ -290,7 +290,7 @@ class MembersUnion(models.Model):
     def __str__(self):
         return "{} e {}".format(
             self.person_one,
-            self.person_two if self.person_two else self.person_two_external,
+            self.person_two if self.person_two else self.person_two_external or "?",
         )
 
 
