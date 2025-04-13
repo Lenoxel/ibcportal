@@ -75,6 +75,8 @@ CHURCH_FUNCTION_OPTIONS = [
     ("secretario_de_ebd", "Secretário de sala de EBD"),
     ("superintendente", "Superintendente"),
     ("membro", "Membro"),
+    ("lider_de_congregacao", "Líder de Congregação"),
+    ("evangelista", "Evangelista"),
 ]
 
 MARITAL_STATUS_OPTIONS = [
