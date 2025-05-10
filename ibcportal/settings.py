@@ -111,9 +111,9 @@ DATABASES = {
 
 # Local config
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
 #     }
 # }
 
@@ -161,7 +161,13 @@ CORS_ORIGIN_ALLOW_ALL = True
 #   'http://localhost:8000',
 # )
 
-CORS_ALLOW_METHODS = ["GET", "POST", "PUT"]
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
