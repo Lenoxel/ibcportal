@@ -455,12 +455,14 @@ class UpdateUserDetailsView(APIView):
             user.set_password(data["password"])
             updated_fields.append("password")
 
-            if user.details:
-                user.details.password_changed_at = timezone.now()
+            password_changed_at = timezone.now()
+
+            try:
+                user.details.password_changed_at = password_changed_at
                 user.details.save()
-            else:
+            except UserDetails.DoesNotExist:
                 UserDetails.objects.create(
-                    user=user, password_changed_at=timezone.now()
+                    user=user, password_changed_at=password_changed_at
                 )
 
         user.save(update_fields=updated_fields)
