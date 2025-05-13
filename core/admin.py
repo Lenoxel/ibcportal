@@ -3,6 +3,7 @@ from datetime import date, datetime
 # from importlib import resources
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q, Exists, OuterRef
 from import_export import resources, widgets
 from import_export.admin import ExportActionMixin
 from import_export.fields import Field
@@ -276,6 +277,54 @@ class MembersUnionInlineForPersonTwo(admin.StackedInline):
     fk_name = "person_two"
 
 
+class HasBirthdayFilter(admin.SimpleListFilter):
+    title = "Data de Aniversário cadastrada"
+    parameter_name = "has_birthday"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("yes", "Sim"),
+            ("no", "Não"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.exclude(date_of_birth__isnull=True)
+        if self.value() == "no":
+            return queryset.filter(date_of_birth__isnull=True)
+        return queryset
+
+
+class HasWeddingDateFilter(admin.SimpleListFilter):
+    title = "Data de Casamento cadastrada"
+    parameter_name = "has_wedding_date"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("yes", "Sim"),
+            ("no", "Não"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            wedding_date_exists = MembersUnion.objects.filter(
+                Q(person_one=OuterRef("pk")) | Q(person_two=OuterRef("pk")),
+                union_date__isnull=False,
+            )
+            return queryset.annotate(has_wedding=Exists(wedding_date_exists)).filter(
+                has_wedding=True
+            )
+        if self.value() == "no":
+            wedding_date_is_null = MembersUnion.objects.filter(
+                Q(person_one=OuterRef("pk")) | Q(person_two=OuterRef("pk")),
+                union_date__year=1900,
+            )
+            return queryset.annotate(
+                has_not_wedding=Exists(wedding_date_is_null)
+            ).filter(has_not_wedding=True)
+        return queryset
+
+
 class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     def get_inlines(self, request, obj=None):
         if obj is None:
@@ -292,6 +341,8 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = MemberResource
     list_filter = (
         "name",
+        HasBirthdayFilter,
+        HasWeddingDateFilter,
         "church_relation",
         "ebd_relation",
         "marital_status",
