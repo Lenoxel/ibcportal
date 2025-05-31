@@ -78,9 +78,7 @@ class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
                 [form.cleaned_data["ebd_class"]]
                 if not form.cleaned_data["apply_to_all"]
                 and form.cleaned_data["ebd_class"]
-                else EBDClass.objects.filter(
-                    ~Q(name__icontains="departamento infantil")
-                )
+                else EBDClass.objects.filter(Q(is_active=True))
             )
 
             for ebd_class in ebd_classes:

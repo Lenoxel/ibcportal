@@ -823,7 +823,7 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
                 .filter(
                     Q(
                         Q(lesson__date__range=(filtered_start_date, filtered_end_date)),
-                        ~Q(ebd_class__name="Departamento Infantil"),
+                        Q(is_active=True),
                     )
                 )
                 .order_by("class_name")

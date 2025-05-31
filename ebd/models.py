@@ -28,6 +28,9 @@ class EBDClass(models.Model):
     church = models.ForeignKey(
         Church, verbose_name="Igreja", null=True, blank=True, on_delete=models.SET_NULL
     )
+    is_active = models.BooleanField(
+        "Ativa", default=True, help_text="Classe ativa ou inativa"
+    )
     students = models.ManyToManyField(
         Member, related_name="student", verbose_name="Alunos", blank=True
     )
