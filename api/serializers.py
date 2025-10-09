@@ -166,6 +166,7 @@ class PersonSerializer(serializers.ModelSerializer):
             "whatsapp",
             "work_on_sundays",
             "frequency",
+            "ebd_relation",
         )
 
 

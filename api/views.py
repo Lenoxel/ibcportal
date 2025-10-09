@@ -197,14 +197,14 @@ class PeopleViewSet(viewsets.ModelViewSet):
                 teachers_ids = EBDClass.objects.filter(pk=class_id).values_list(
                     "teachers", flat=True
                 )
-                secreaties_ids = EBDClass.objects.filter(pk=class_id).values_list(
+                secretaries_ids = EBDClass.objects.filter(pk=class_id).values_list(
                     "secretaries", flat=True
                 )
 
                 return Member.objects.filter(
                     Q(id__in=students_ids)
                     | Q(id__in=teachers_ids)
-                    | Q(id__in=secreaties_ids)
+                    | Q(id__in=secretaries_ids)
                 ).order_by("name")
 
             return Member.objects.filter(
@@ -226,12 +226,12 @@ class PeopleViewSet(viewsets.ModelViewSet):
         teachers_ids = EBDClass.objects.filter(pk=ebd_class.pk).values_list(
             "teachers", flat=True
         )
-        secreaties_ids = EBDClass.objects.filter(pk=ebd_class.pk).values_list(
+        secretaries_ids = EBDClass.objects.filter(pk=ebd_class.pk).values_list(
             "secretaries", flat=True
         )
 
         return Member.objects.filter(
-            Q(id__in=students_ids) | Q(id__in=teachers_ids) | Q(id__in=secreaties_ids)
+            Q(id__in=students_ids) | Q(id__in=teachers_ids) | Q(id__in=secretaries_ids)
         ).order_by("name")
 
     # Cria a rota api/ebd/people/{pk}/history
