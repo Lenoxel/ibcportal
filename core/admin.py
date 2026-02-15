@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 # from importlib import resources
 from django.contrib import admin
@@ -325,6 +325,40 @@ class HasWeddingDateFilter(admin.SimpleListFilter):
         return queryset
 
 
+class HasBirthdayThisWeekFilter(admin.SimpleListFilter):
+    title = "Aniversário nesta semana"
+    parameter_name = "birthday_this_week"
+
+    def lookups(self, request, model_admin):
+        return (("yes", "Sim"),)
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            today = date.today()
+            weekday = today.weekday()
+
+            if weekday == 6:
+                start = today
+            else:
+                start = today - timedelta(days=weekday + 1)
+
+            end = start + timedelta(days=6)
+            dates = []
+            current = start
+
+            while current <= end:
+                dates.append((current.month, current.day))
+                current += timedelta(days=1)
+
+            q_objects = Q()
+            for month, day in dates:
+                q_objects |= Q(date_of_birth__month=month, date_of_birth__day=day)
+
+            return queryset.filter(q_objects)
+
+        return queryset
+
+
 class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     def get_inlines(self, request, obj=None):
         if obj is None:
@@ -343,6 +377,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         "name",
         HasBirthdayFilter,
         HasWeddingDateFilter,
+        HasBirthdayThisWeekFilter,
         "church_relation",
         "ebd_relation",
         "marital_status",
