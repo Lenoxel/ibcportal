@@ -212,9 +212,7 @@ class Member(models.Model):
     have_a_job = models.BooleanField("Trabalha atualmente", default=True)
     is_retired = models.BooleanField("É aposentado", default=False)
     work_on_sundays = models.BooleanField("Trabalha aos domingos", default=False)
-    outside_church_region = models.BooleanField(
-        "Membro temporariamente ausente da Igreja", default=False
-    )
+    outside_church = models.BooleanField("Membro inativo", default=False)
     children = models.ManyToManyField(
         "core.Member", related_name="filho", verbose_name="Filhos", blank=True
     )
