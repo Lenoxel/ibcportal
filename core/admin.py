@@ -228,15 +228,17 @@ class MemberResource(resources.ModelResource):
     )
     have_a_job = Field(
         attribute="have_a_job",
-        column_name="Trabalha atualmente",
+        column_name="Trabalha atualmente?",
         widget=CustomBooleanWidget(),
     )
     is_retired = Field(
-        attribute="is_retired", column_name="É aposentado", widget=CustomBooleanWidget()
+        attribute="is_retired",
+        column_name="É aposentado?",
+        widget=CustomBooleanWidget(),
     )
     work_on_sundays = Field(
         attribute="work_on_sundays",
-        column_name="Trabalha aos domingos",
+        column_name="Trabalha aos domingos?",
         widget=CustomBooleanWidget(),
     )
     last_updated_date = Field(
@@ -278,7 +280,7 @@ class MembersUnionInlineForPersonTwo(admin.StackedInline):
 
 
 class HasBirthdayFilter(admin.SimpleListFilter):
-    title = "Data de Aniversário cadastrada"
+    title = "Data de Aniversário cadastrada?"
     parameter_name = "has_birthday"
 
     def lookups(self, request, model_admin):
@@ -296,7 +298,7 @@ class HasBirthdayFilter(admin.SimpleListFilter):
 
 
 class HasWeddingDateFilter(admin.SimpleListFilter):
-    title = "Data de Casamento cadastrada"
+    title = "Data de Casamento cadastrada?"
     parameter_name = "has_wedding_date"
 
     def lookups(self, request, model_admin):
@@ -325,36 +327,80 @@ class HasWeddingDateFilter(admin.SimpleListFilter):
         return queryset
 
 
-class HasBirthdayThisWeekFilter(admin.SimpleListFilter):
-    title = "Aniversário nesta semana"
-    parameter_name = "birthday_this_week"
+class HasCommemorativeDateFilter(admin.SimpleListFilter):
+    title = "Data comemorativa"
+    parameter_name = "commemorative_date"
 
     def lookups(self, request, model_admin):
-        return (("yes", "Sim"),)
+        return (
+            ("this_week", "Nesta semana"),
+            ("this_month", "Neste mês"),
+        )
+
+    def get_commemorative_dates_this_month(self, queryset):
+        today = date.today()
+        month = today.month
+
+        q_objects = (
+            Q(date_of_birth__month=month)
+            | Q(person_one__union_date__month=month)
+            | Q(person_two__union_date__month=month)
+        )
+
+        return (
+            queryset.filter(q_objects)
+            .distinct()
+            .order_by(
+                "date_of_birth__day",
+                "person_one__union_date__day",
+                "person_two__union_date__day",
+            )
+        )
+
+    def get_commemorative_dates_this_week(self, queryset):
+        today = date.today()
+        weekday = today.weekday()
+
+        if weekday == 6:
+            start = today
+        else:
+            start = today - timedelta(days=weekday + 1)
+
+        end = start + timedelta(days=6)
+        dates = []
+        current = start
+
+        while current <= end:
+            dates.append((current.month, current.day))
+            current += timedelta(days=1)
+
+        q_objects = Q()
+        for month, day in dates:
+            q_objects |= Q(date_of_birth__month=month, date_of_birth__day=day)
+            q_objects |= Q(
+                Q(
+                    person_one__union_date__month=month,
+                    person_one__union_date__day=day,
+                )
+                | Q(
+                    person_two__union_date__month=month,
+                    person_two__union_date__day=day,
+                )
+            )
+
+        return (
+            queryset.filter(q_objects)
+            .distinct()
+            .order_by(
+                "date_of_birth__day", "person_one__union_date", "person_two__union_date"
+            )
+        )
 
     def queryset(self, request, queryset):
-        if self.value() == "yes":
-            today = date.today()
-            weekday = today.weekday()
-
-            if weekday == 6:
-                start = today
-            else:
-                start = today - timedelta(days=weekday + 1)
-
-            end = start + timedelta(days=6)
-            dates = []
-            current = start
-
-            while current <= end:
-                dates.append((current.month, current.day))
-                current += timedelta(days=1)
-
-            q_objects = Q()
-            for month, day in dates:
-                q_objects |= Q(date_of_birth__month=month, date_of_birth__day=day)
-
-            return queryset.filter(q_objects)
+        if self.value() == "this_week":
+            return self.get_commemorative_dates_this_week(queryset)
+        if self.value() == "this_month":
+            return self.get_commemorative_dates_this_month(queryset)
 
         return queryset
 
@@ -375,9 +421,9 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     resource_class = MemberResource
     list_filter = (
         "name",
+        HasCommemorativeDateFilter,
         HasBirthdayFilter,
         HasWeddingDateFilter,
-        HasBirthdayThisWeekFilter,
         "church_relation",
         "ebd_relation",
         "marital_status",
@@ -387,6 +433,25 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         "work_on_sundays",
     )
     readonly_fields = ["preview_da_foto"]
+
+    def birthday_formatted(self, obj):
+        if obj.date_of_birth:
+            return obj.date_of_birth.strftime("%d/%m/%Y")
+        return "Não informado"
+
+    birthday_formatted.short_description = "Data de Aniversário"
+
+    def wedding_date_formatted(self, obj):
+        member_union = MembersUnion.objects.filter(
+            Q(person_one=obj) | Q(person_two=obj)
+        ).first()
+        if member_union and member_union.union_date:
+            return member_union.union_date.strftime("%d/%m/%Y")
+        return "Não informado"
+
+    wedding_date_formatted.short_description = "Data de Casamento"
+
+    list_display = ("name", "birthday_formatted", "wedding_date_formatted")
 
 
 admin.site.register(Post, PostAdmin)
