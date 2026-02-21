@@ -218,6 +218,7 @@ class Member(models.Model):
     children = models.ManyToManyField(
         "core.Member", related_name="filho", verbose_name="Filhos", blank=True
     )
+    email = models.EmailField("Email", null=True, blank=True)
     whatsapp = models.CharField("WhatsApp", null=True, blank=True, max_length=100)
     facebook = models.CharField("Facebook", null=True, blank=True, max_length=100)
     instagram = models.CharField("Instagram", null=True, blank=True, max_length=100)
