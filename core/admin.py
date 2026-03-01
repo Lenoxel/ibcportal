@@ -361,12 +361,9 @@ class HasCommemorativeDateFilter(admin.SimpleListFilter):
         today = date.today()
         weekday = today.weekday()
 
-        if weekday == 6:
-            start = today
-        else:
-            start = today - timedelta(days=weekday + 1)
-
+        start = today - timedelta(days=weekday)
         end = start + timedelta(days=6)
+
         dates = []
         current = start
 
@@ -392,7 +389,9 @@ class HasCommemorativeDateFilter(admin.SimpleListFilter):
             queryset.filter(q_objects)
             .distinct()
             .order_by(
-                "date_of_birth__day", "person_one__union_date", "person_two__union_date"
+                "date_of_birth__day",
+                "person_one__union_date__day",
+                "person_two__union_date__day",
             )
         )
 
