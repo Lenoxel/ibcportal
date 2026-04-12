@@ -23,6 +23,7 @@ from .models import (
     Schedule,
     Video,
 )
+from ebd.models import EBDClass
 
 
 class PostFileInline(admin.TabularInline):
@@ -404,6 +405,43 @@ class HasCommemorativeDateFilter(admin.SimpleListFilter):
         return queryset
 
 
+class MemberStatusFilter(admin.SimpleListFilter):
+    title = "Status do membro"
+    parameter_name = "outside_church"
+    default_value = "active"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("active", "Ativo"),
+            ("inactive", "Inativo"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "active":
+            return queryset.filter(outside_church=False)
+        if self.value() == "inactive":
+            return queryset.filter(outside_church=True)
+        return queryset
+
+
+class HasPictureFilter(admin.SimpleListFilter):
+    title = "Foto de perfil cadastrada?"
+    parameter_name = "has_picture"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("yes", "Sim"),
+            ("no", "Não"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.exclude(picture__isnull=True)
+        if self.value() == "no":
+            return queryset.filter(picture__isnull=True)
+        return queryset
+
+
 class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     def get_inlines(self, request, obj=None):
         if obj is None:
@@ -419,6 +457,7 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
     inlines = []
     resource_class = MemberResource
     list_filter = (
+        MemberStatusFilter,
         "name",
         HasCommemorativeDateFilter,
         HasBirthdayFilter,
@@ -430,8 +469,20 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
         "have_a_job",
         "is_retired",
         "work_on_sundays",
+        HasPictureFilter,
     )
     readonly_fields = ["preview_da_foto"]
+
+    def ebd_class(self, obj):
+        member_ebd_class = EBDClass.objects.filter(
+            Q(students=obj) | Q(teachers=obj) | Q(secretaries=obj)
+        )
+
+        if member_ebd_class.exists():
+            return member_ebd_class.first().name
+        return "Sem classe"
+
+    ebd_class.short_description = "Classe da EBD"
 
     def birthday_formatted(self, obj):
         if obj.date_of_birth:
@@ -450,7 +501,21 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
 
     wedding_date_formatted.short_description = "Data de Casamento"
 
-    list_display = ("name", "birthday_formatted", "wedding_date_formatted")
+    def picture_formatted(self, obj):
+        if obj.picture:
+            return obj.picture.url
+        return "Sem foto"
+
+    picture_formatted.short_description = "Foto"
+    picture_formatted.allow_tags = True
+
+    list_display = (
+        "name",
+        "birthday_formatted",
+        "wedding_date_formatted",
+        "ebd_class",
+        "picture_formatted",
+    )
 
 
 admin.site.register(Post, PostAdmin)
