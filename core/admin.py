@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q, Exists, OuterRef
+from django.utils.html import format_html
 from import_export import resources, widgets
 from import_export.admin import ExportActionMixin
 from import_export.fields import Field
@@ -503,11 +504,13 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
 
     def picture_formatted(self, obj):
         if obj.picture:
-            return obj.picture.url
+            return format_html(
+                '<a href="{}" target="_blank" rel="noopener noreferrer">Ver foto</a>',
+                obj.picture.url,
+            )
         return "Sem foto"
 
     picture_formatted.short_description = "Foto"
-    picture_formatted.allow_tags = True
 
     list_display = (
         "name",
