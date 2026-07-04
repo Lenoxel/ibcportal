@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #333333;
+        line-height: 1.6;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        background-color: #ffffff;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+      }
+      .logo {
+        text-align: center;
+        margin-bottom: 25px;
+      }
+      .logo img {
+        max-width: 150px;
+        height: auto;
+      }
+      h2 {
+        color: #2c3e50;
+        margin-top: 0;
+      }
+      .content {
+        font-size: 16px;
+        margin-bottom: 30px;
+      }
+      .footer {
+        font-size: 12px;
+        color: #7f8c8d;
+        text-align: center;
+        border-top: 1px solid #eeeeee;
+        padding-top: 20px;
+      }
+      .highlight {
+        font-weight: bold;
+        color: #2980b9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <img
+          src="https://res.cloudinary.com/dps5k8b3f/image/upload/v1783128652/Logo_IBC_ppslnu.png"
+          alt="Logo IBCC2"
+        />
+      </div>
+
+      <div class="content">
+        <p>Olá, <strong>{{ member_name }}</strong>!</p>
+
+        {% if action == 'added' %}
+        <p>
+          Temos uma novidade! Você foi
+          <span class="highlight">adicionado(a)</span> à classe
+          <strong>{{ class_name }}</strong> como
+          <strong>{{ role_name }}</strong>.
+        </p>
+        <p>
+          Estamos muito felizes em ter você conosco nessa jornada de
+          aprendizado. Nos vemos no próximo encontro!
+        </p>
+        {% else %}
+        <p>
+          Gostaríamos de avisar que você foi
+          <span class="highlight">removido(a)</span> da classe
+          <strong>{{ class_name }}</strong>.
+        </p>
+        <!-- prettier-ignore -->
+        <p>Se isso foi um engano ou se você deseja ingressar em outra turma, por favor, entre em contato com os(as) secretários(as) da classe ({{ secretaries }}) ou com a Superintendência da EBD.</p>
+        {% endif %}
+      </div>
+
+      <div class="footer">
+        <p>Se precisar de mais informações, basta responder a este e-mail.</p>
+        <p>&copy; {{ year }} Minha EBD. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </body>
+</html>
