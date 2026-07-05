@@ -229,7 +229,12 @@ class Member(models.Model):
     # birthday = fields.BirthdayField()
     # birthday_objects = managers.BirthdayManager()
 
-    picture = CloudinaryField("Foto", null=True, blank=True)
+    picture = CloudinaryField(
+        "Foto",
+        null=True,
+        blank=True,
+        folder="member_photos",
+    )
 
     def preview_da_foto(self):
         return mark_safe(
