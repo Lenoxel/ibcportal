@@ -681,11 +681,9 @@ class EBDPresenceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # return EBDPresenceRecord.objects.all()
 
-        return EBDPresenceRecord.objects.raw(
-            """
+        return EBDPresenceRecord.objects.raw("""
             SELECT * from ebd_EBDPresenceRecord
-        """
-        )
+        """)
 
         # lesson_date = self.request.query_params.get('lessonDate', None)
         # classId = self.request.query_params.get('classId', None)def get_queryset
@@ -813,7 +811,9 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
 
             presence_classes = (
                 EBDPresenceRecord.objects.values(
-                    class_id=F("ebd_class__id"), class_name=F("ebd_class__name")
+                    class_id=F("ebd_class__id"),
+                    class_name=F("ebd_class__name"),
+                    is_active=F("ebd_class__is_active"),
                 )
                 .annotate(
                     presences=presences,
@@ -882,7 +882,7 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
                 .filter(
                     Q(
                         Q(lesson__date=filtered_lesson_date),
-                        ~Q(ebd_class__name="Departamento Infantil"),
+                        Q(ebd_class__is_active=True),
                     )
                 )
                 .annotate(visitors=visitors)
