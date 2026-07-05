@@ -932,13 +932,15 @@ class EBDAnalyticsPresenceClassesViewSet(viewsets.ViewSet):
 
 class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
     def list(self, request):
-        start_date = request.query_params.get(
-            "startDate",
-            get_start_of_day(get_today_datetime_utc() - timedelta(days=360)),
-        )
-        end_date = request.query_params.get(
-            "endDate", get_end_of_ebd_date(get_now_datetime_utc())
-        )
+        year_param = request.query_params.get("year", None)
+        try:
+            year = int(year_param) if year_param is not None else date.today().year
+        except Exception:
+            year = date.today().year
+
+        start_date = get_start_of_day(date(year, 1, 1))
+        end_date = get_end_of_ebd_date(date(year, 12, 31))
+
         exemplary_count = request.query_params.get("exemplaryCount", 15)
         worrying_count = request.query_params.get("worryingCount", 15)
 
@@ -1023,11 +1025,11 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
             AND members.ebd_relation = 'aluno'
             INNER JOIN ebd_ebdclass ebd_class
             ON ebd_class.id = ebd_presence_record.ebd_class_id
-            WHERE ebd_presence_record.register_on BETWEEN %s AND %s
-            OR ebd_presence_record.register_on IS NULL
+            WHERE (ebd_presence_record.register_on BETWEEN %s AND %s)
+            OR (ebd_presence_record.register_on IS NULL AND ebd_presence_record.creation_date BETWEEN %s AND %s)
             group by ebd_class.name, members.id
             order BY count desc limit %s""",
-            params=[start_date, end_date, worrying_count],
+            params=[start_date, end_date, start_date, end_date, worrying_count],
         ):
             worrying_students.append(
                 {
@@ -1096,13 +1098,15 @@ class EBDAnalyticsPresenceUsersViewSet(viewsets.ViewSet):
 
 class EBDAnalyticsUsersPunctualityViewSet(viewsets.ViewSet):
     def list(self, request):
-        start_date = request.query_params.get(
-            "startDate",
-            get_start_of_day(get_today_datetime_utc() - timedelta(days=360)),
-        )
-        end_date = request.query_params.get(
-            "endDate", get_end_of_ebd_date(get_now_datetime_utc())
-        )
+        year_param = request.query_params.get("year", None)
+        try:
+            year = int(year_param) if year_param is not None else date.today().year
+        except Exception:
+            year = date.today().year
+
+        start_date = get_start_of_day(date(year, 1, 1))
+        end_date = get_end_of_ebd_date(date(year, 12, 31))
+
         punctual_count = request.query_params.get("punctualCount", 10)
 
         punctual_students = []
@@ -1146,13 +1150,15 @@ class EBDAnalyticsUsersPunctualityViewSet(viewsets.ViewSet):
 
 class EBDAnalyticsUsersInteractivityViewSet(viewsets.ViewSet):
     def list(self, request):
-        start_date = request.query_params.get(
-            "startDate",
-            get_start_of_day(get_today_datetime_utc() - timedelta(days=360)),
-        )
-        end_date = request.query_params.get(
-            "endDate", get_end_of_ebd_date(get_now_datetime_utc())
-        )
+        year_param = request.query_params.get("year", None)
+        try:
+            year = int(year_param) if year_param is not None else date.today().year
+        except Exception:
+            year = date.today().year
+
+        start_date = get_start_of_day(date(year, 1, 1))
+        end_date = get_end_of_ebd_date(date(year, 12, 31))
+
         interactive_count = request.query_params.get("interactiveCount", 10)
 
         interactive_students = []
