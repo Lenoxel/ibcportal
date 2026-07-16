@@ -533,6 +533,7 @@ class EBDClassViewSet(viewsets.ModelViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    # Cria a rota api/ebd/classes/{pk}/members/{member_id}/ebd-relation para alterar a relação do membro com a EBD
     @action(
         detail=True,
         methods=["patch"],

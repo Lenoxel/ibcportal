@@ -103,7 +103,11 @@ class PersonSerializer(serializers.ModelSerializer):
             | Q(teachers__id__in=[obj.pk])
             | Q(secretaries__id__in=[obj.pk])
         ).first()
-        return ebd_class.name if ebd_class is not None else None
+
+        if not ebd_class:
+            return None
+
+        return {"id": ebd_class.id, "name": ebd_class.name}
 
     def get_picture(self, obj):
         return obj.picture.url if obj.picture else None
