@@ -473,9 +473,133 @@ class UpdateUserDetailsView(APIView):
 
 
 class EBDClassViewSet(viewsets.ModelViewSet):
-    http_method_names = ["get"]
+    http_method_names = ["get", "delete", "patch"]
     queryset = EBDClass.objects.all().order_by("name")
     serializer_class = EBDClassSerializer
+
+    # Cria a rota api/ebd/classes/{pk}/members/{member_id} para remover um membro da classe
+    @action(
+        detail=True,
+        methods=["delete"],
+        url_path=r"members/(?P<member_id>\d+)",
+        url_name="remove_member_from_class",
+    )
+    def remove_member_from_class(self, request, pk=None, member_id=None):
+        ebd_class = self.get_object()
+
+        permission_denied_message = (
+            "Você não tem permissão para remover membros desta classe."
+        )
+
+        if not request.user.is_authenticated:
+            raise PermissionDenied(permission_denied_message)
+
+        if not request.user.is_superuser:
+            request_user_member = Member.objects.filter(user=request.user).first()
+            if (
+                request_user_member is None
+                or not ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
+                or not ebd_class.teachers.filter(pk=request_user_member.pk).exists()
+            ):
+                raise PermissionDenied(permission_denied_message)
+
+        is_student = False
+        is_teacher = False
+        is_secretary = False
+
+        member = ebd_class.students.filter(pk=member_id).first()
+
+        if member is not None:
+            ebd_class.students.remove(member)
+            is_student = True
+
+        member = ebd_class.teachers.filter(pk=member_id).first()
+
+        if member is not None:
+            ebd_class.teachers.remove(member)
+            is_teacher = True
+
+        member = ebd_class.secretaries.filter(pk=member_id).first()
+
+        if member is not None:
+            ebd_class.secretaries.remove(member)
+            is_secretary = True
+
+        if not is_student and not is_teacher and not is_secretary:
+            return Response(
+                {"message": "Membro não encontrado nesta classe."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=True,
+        methods=["patch"],
+        url_path=r"members/(?P<member_id>\d+)/ebd-relation",
+        url_name="change_member_ebd_relation",
+    )
+    def change_member_ebd_relation(self, request, pk=None, member_id=None):
+        ebd_class = self.get_object()
+
+        permission_denied_message = (
+            "Você não tem permissão para alterar a relação dessa pessoa com a EBD."
+        )
+
+        if not request.user.is_authenticated:
+            raise PermissionDenied(permission_denied_message)
+
+        if not request.user.is_superuser:
+            request_user_member = Member.objects.filter(user=request.user).first()
+
+            if (
+                request_user_member is None
+                or not ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
+                and not ebd_class.teachers.filter(pk=request_user_member.pk).exists()
+            ):
+                raise PermissionDenied(permission_denied_message)
+
+        target_member = ebd_class.students.filter(pk=member_id).first()
+
+        if target_member is None:
+            target_member = ebd_class.secretaries.filter(pk=member_id).first()
+
+            if target_member is None:
+                return Response(
+                    {
+                        "message": "Membro (aluno ou secretário) não encontrado nesta classe."
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+        new_relation = request.data.get("ebd_relation")
+
+        if new_relation not in [None, "aluno", "visitante"]:
+            return Response(
+                {
+                    "message": "A relação do membro com a EBD deve ser 'aluno' ou 'visitante'."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if new_relation is None:
+            if target_member.ebd_relation == "aluno":
+                new_relation = "visitante"
+            else:
+                new_relation = "aluno"
+
+        target_member.ebd_relation = new_relation
+
+        target_member.save(update_fields=["ebd_relation"])
+
+        return Response(
+            {
+                "id": target_member.pk,
+                "ebd_relation": target_member.ebd_relation,
+                "message": f"Relação do membro com a EBD atualizada para {new_relation} com sucesso!",
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class EBDLessonViewSet(viewsets.ModelViewSet):
