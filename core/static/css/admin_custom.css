@@ -1,0 +1,17 @@
+:root {
+    --font-sans: 'Plus Jakarta Sans', 'Open Sans', ui-sans-serif, system-ui, -apple-system, sans-serif !important;
+
+    --radius: 8px !important;
+}
+
+body {
+    font-family: var(--font-sans);
+}
+
+button, .btn {
+    border-radius: 6px !important;
+}
+
+html {
+    font-size: 1.125rem !important;
+}

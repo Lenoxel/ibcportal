@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import pytz
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
@@ -11,6 +10,8 @@ from tzlocal import get_localzone
 from core.auxiliar_functions import meeting_types
 from core.models import NotificationDevice, PushNotification, Schedule
 from groups.models import Group
+
+from zoneinfo import ZoneInfo
 
 
 class Command(BaseCommand):
@@ -52,7 +53,9 @@ class Command(BaseCommand):
                     message_title = "Psiu, hoje tem culto visse"
                     if len(meetings) == 1:
                         locale_meeting_hour = (
-                            meetings[0][1].replace(tzinfo=pytz.utc).astimezone(local_tz)
+                            meetings[0][1]
+                            .replace(tzinfo=ZoneInfo("UTC"))
+                            .astimezone(local_tz)
                         )
                         if meetings[0][0] == "geral":
                             if meetings[0][2] is not None:
@@ -86,7 +89,9 @@ class Command(BaseCommand):
                         )
                         for meeting in meetings:
                             locale_meeting_hour = (
-                                meeting[1].replace(tzinfo=pytz.utc).astimezone(local_tz)
+                                meeting[1]
+                                .replace(tzinfo=ZoneInfo("UTC"))
+                                .astimezone(local_tz)
                             )
                             if meeting[0] == "geral":
                                 if meeting[2] is not None:

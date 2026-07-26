@@ -1,16 +1,19 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 
 from .models import GeneralCategory, Group, GroupMeetingDate
 
 
-class GroupMeetingDateInline(admin.TabularInline):
+class GroupMeetingDateInline(TabularInline):
     model = GroupMeetingDate
     extra = 1
 
 
-class GroupAdmin(admin.ModelAdmin):
+@admin.register(Group)
+class GroupAdmin(ModelAdmin):
     inlines = [GroupMeetingDateInline]
 
 
-admin.site.register(Group, GroupAdmin)
-admin.site.register(GeneralCategory)
+@admin.register(GeneralCategory)
+class GeneralCategoryAdmin(ModelAdmin):
+    pass

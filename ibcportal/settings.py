@@ -2,13 +2,12 @@ import os
 from datetime import timedelta
 
 import cloudinary  # cloudinary
-import cloudinary.api  # cloudinary
-import cloudinary.uploader  # cloudinary
-import django_on_heroku
+
+# import cloudinary.api  # cloudinary
+# import cloudinary.uploader  # cloudinary
 import environ
 
-# import dj_database_url
-
+import dj_database_url
 
 env = environ.Env()
 environ.Env.read_env()
@@ -28,12 +27,15 @@ SECRET_KEY = os.getenv("IBC_PORTAL_SECRET_KEY", "123")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.herokuapp.com']
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".herokuapp.com", ".ibcc2.com.br"]
 
 # Application definition
 
 INSTALLED_APPS = [
-    "jet",
+    "unfold",  # mandatory to be the first app in the list
+    "unfold.contrib.filters",
+    "unfold.contrib.forms",
+    "unfold.contrib.import_export",  # to keep the django-import-export compatibility
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -63,6 +65,7 @@ cloudinary.config(
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -97,17 +100,20 @@ WSGI_APPLICATION = "ibcportal.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# Prod config
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DATABASE_NAME") or "public",
-        "USER": env("DATABASE_USER") or "postgres",
-        "PASSWORD": env("DATABASE_PASSWORD") or "root",
-        "HOST": env("DATABASE_HOST") or "localhost",
-        "PORT": "5432",
-    }
-}
+# Prod config: automatically read the DATABASE_URL env var from Heroku
+DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
+
+# [OLD] Prod config
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": env("DATABASE_NAME") or "public",
+#         "USER": env("DATABASE_USER") or "postgres",
+#         "PASSWORD": env("DATABASE_PASSWORD") or "root",
+#         "HOST": env("DATABASE_HOST") or "localhost",
+#         "PORT": "5432",
+#     }
+# }
 
 # Local config
 # DATABASES = {
@@ -139,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = "pt-BR"
+LANGUAGE_CODE = "pt-br"
 
 TIME_ZONE = "America/Recife"
 
@@ -149,13 +155,15 @@ USE_L10N = True
 
 USE_TZ = True
 
-CORS_ORIGIN_ALLOW_ALL = True
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_ALL_ORIGINS = False
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:8000',
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+    "http://localhost:8000",
+    "https://ebd.ibcc2.com.br",
+]
 
 # CORS_ORIGIN_WHITELIST = (
 #   'http://localhost:8000',
@@ -183,15 +191,15 @@ REST_FRAMEWORK = {
     ],
 }
 
-JET_SIDE_MENU_COMPACT = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'media')
-# ]
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
@@ -250,5 +258,25 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
-
-django_on_heroku.settings(locals())
+UNFOLD = {
+    "SITE_TITLE": "Portal IBC",
+    "SITE_HEADER": "Administração",
+    "STYLES": [
+        lambda request: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
+        lambda request: "/static/css/admin_custom.css",
+    ],
+    "COLORS": {
+        "primary": {
+            "50": "#f0f5fe",
+            "100": "#e4ecfd",
+            "200": "#cddcfb",
+            "300": "#abc3f7",
+            "400": "#859ff1",
+            "500": "#637ce9",
+            "600": "#354ea1",  # O seu --ion-color-primary-tint
+            "700": "#1e3a8a",  # A sua cor primária base!
+            "800": "#1a337a",  # O seu --ion-color-primary-shade
+            "900": "#182a62",
+        },
+    },
+}

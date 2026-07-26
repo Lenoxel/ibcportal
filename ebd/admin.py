@@ -1,4 +1,5 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.models import Q
 from import_export import fields, resources
@@ -10,7 +11,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
-import pytz
+from zoneinfo import ZoneInfo
 
 
 from core.auxiliar_functions import remove_person_from_old_ebd_classes
@@ -48,7 +49,7 @@ class EBDLessonResource(resources.ModelResource):
         )
 
 
-class EBDLessonAdmin(ExportActionMixin, admin.ModelAdmin):
+class EBDLessonAdmin(ExportActionMixin, ModelAdmin):
     resource_class = EBDLessonResource
     list_filter = ("title", "date")
 
@@ -195,9 +196,15 @@ class EBDClassResource(resources.ModelResource):
         fields = ("name", "church", "students", "teachers", "secretaries")
 
 
-class EBDClassAdmin(ExportActionMixin, admin.ModelAdmin):
+class EBDClassAdmin(ExportActionMixin, ModelAdmin):
     resource_class = EBDClassResource
-    list_filter = ("name", "students", "teachers", "secretaries")
+    list_filter = ("name",)
+
+    search_fields = ("students__name", "teachers__name", "secretaries__name")
+
+    search_help_text = "Pesquise por alunos, professores ou secretários"
+
+    autocomplete_fields = ["students", "teachers", "secretaries"]
 
     # Executa sempre que uma classe de EBD é criada ou atualizada
     def save_model(self, request, obj, form, change):
@@ -221,7 +228,7 @@ class EBDClassAdmin(ExportActionMixin, admin.ModelAdmin):
             return PermissionDenied
 
 
-class EBDLessonClassDetailsAdmin(admin.ModelAdmin):
+class EBDLessonClassDetailsAdmin(ModelAdmin):
     readonly_fields = (
         "lesson",
         "ebd_class",
@@ -282,7 +289,7 @@ def presence_records_generate_pdf(modeladmin, request, queryset):
         formatted_register_on = "x"
 
         if presence_record.attended and presence_record.register_on:
-            recife_timezone = pytz.timezone("America/Recife")
+            recife_timezone = ZoneInfo("America/Recife")
             register_on_recife_timezone = presence_record.register_on.astimezone(
                 recife_timezone
             )
@@ -333,7 +340,7 @@ def presence_records_generate_pdf(modeladmin, request, queryset):
 presence_records_generate_pdf.short_description = "Exportar selecionados para PDF"
 
 
-class EBDPresenceRecordAdmin(admin.ModelAdmin):
+class EBDPresenceRecordAdmin(ModelAdmin):
     resource_class = EBDPresenceRecordResource
     readonly_fields = (
         "lesson",
@@ -346,7 +353,9 @@ class EBDPresenceRecordAdmin(admin.ModelAdmin):
         "register_by",
         "justification",
     )
-    list_filter = ("lesson", "person", "ebd_class", "attended", "register_on")
+    search_fields = ("lesson__title", "person__name", "ebd_class__name")
+    search_help_text = "Pesquise por lição, aluno ou classe"
+    list_filter = ("attended", "register_on")
     actions = [presence_records_generate_pdf]
 
 
@@ -369,14 +378,15 @@ class EBDPresenceRecordLabelsResource(resources.ModelResource):
         fields = ("ebd_lesson", "ebd_class", "ebd_student", "ebd_label_option")
 
 
-class EBDPresenceRecordLabelsAdmin(ExportActionMixin, admin.ModelAdmin):
+class EBDPresenceRecordLabelsAdmin(ExportActionMixin, ModelAdmin):
     resource_class = EBDPresenceRecordLabelsResource
     readonly_fields = ("ebd_presence_record", "ebd_label_option")
-    list_filter = (
+    list_filter = ("ebd_label_option",)
+    search_fields = (
         "ebd_presence_record__person__name",
         "ebd_presence_record__lesson__title",
-        "ebd_label_option",
     )
+    search_help_text = "Pesquise por aluno ou lição"
 
 
 admin.site.register(EBDClass, EBDClassAdmin)

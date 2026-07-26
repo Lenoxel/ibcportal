@@ -92,7 +92,6 @@ api_router.register(
 
 urlpatterns = [
     path("", include("core.urls")),
-    path("jet/", include("jet.urls", "jet")),
     path("admin/", admin.site.urls),
     path("groups/", include("groups.urls")),
     path("api/", include(api_router.urls)),

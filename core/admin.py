@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta
 
 # from importlib import resources
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q, Exists, OuterRef
 from django.utils.html import format_html
@@ -27,12 +28,12 @@ from .models import (
 from ebd.models import EBDClass
 
 
-class PostFileInline(admin.TabularInline):
+class PostFileInline(TabularInline):
     model = PostFile
     extra = 1
 
 
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(ModelAdmin):
     inlines = [PostFileInline]
 
     readonly_fields = ("manager", "views_count", "claps_count", "dislike_count")
@@ -64,7 +65,7 @@ class PostAdmin(admin.ModelAdmin):
             return PermissionDenied
 
 
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(ModelAdmin):
     readonly_fields = ("interested_people_count",)
 
     def save_model(self, request, obj, form, change):
@@ -92,7 +93,7 @@ class EventAdmin(admin.ModelAdmin):
             return PermissionDenied
 
 
-class VideoAdmin(admin.ModelAdmin):
+class VideoAdmin(ModelAdmin):
     def save_model(self, request, obj, form, change):
         if request.user.is_superuser:
             # Criando auditoria
@@ -119,7 +120,7 @@ class VideoAdmin(admin.ModelAdmin):
             return PermissionDenied
 
 
-class ScheduleAdmin(admin.ModelAdmin):
+class ScheduleAdmin(ModelAdmin):
     def save_model(self, request, obj, form, change):
         if request.user.is_superuser:
             # Criando auditoria
@@ -145,7 +146,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             return PermissionDenied
 
 
-class AuditAdmin(admin.ModelAdmin):
+class AuditAdmin(ModelAdmin):
     readonly_fields = (
         "responsible",
         "changed_model",
@@ -164,7 +165,7 @@ class AuditAdmin(admin.ModelAdmin):
     #     return False
 
 
-class DonateAdmin(admin.ModelAdmin):
+class DonateAdmin(ModelAdmin):
     readonly_fields = (
         "donor_name",
         "donor_email",
@@ -175,14 +176,14 @@ class DonateAdmin(admin.ModelAdmin):
     )
 
 
-class NotificationDeviceAdmin(admin.ModelAdmin):
+class NotificationDeviceAdmin(ModelAdmin):
     readonly_fields = (
         "device_id",
         "registration_type",
     )
 
 
-class PushNotificationAdmin(admin.ModelAdmin):
+class PushNotificationAdmin(ModelAdmin):
     readonly_fields = (
         "title",
         "body",
@@ -267,14 +268,14 @@ class MemberResource(resources.ModelResource):
         )
 
 
-class MembersUnionInlineForPersonOne(admin.StackedInline):
+class MembersUnionInlineForPersonOne(StackedInline):
     model = MembersUnion
     extra = 1
     verbose_name_plural = "Relacionamento"
     fk_name = "person_one"
 
 
-class MembersUnionInlineForPersonTwo(admin.StackedInline):
+class MembersUnionInlineForPersonTwo(StackedInline):
     model = MembersUnion
     extra = 1
     verbose_name_plural = "Relacionamento"
@@ -443,7 +444,7 @@ class HasPictureFilter(admin.SimpleListFilter):
         return queryset
 
 
-class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
+class MemberAdmin(ExportActionMixin, ModelAdmin):
     def get_inlines(self, request, obj=None):
         if obj is None:
             return [MembersUnionInlineForPersonOne]
@@ -455,11 +456,14 @@ class MemberAdmin(ExportActionMixin, admin.ModelAdmin):
 
         return [MembersUnionInlineForPersonOne]
 
+    search_fields = (("name"),)
+
+    search_help_text = "Pesquise pelo nome do membro"
+
     inlines = []
     resource_class = MemberResource
     list_filter = (
         MemberStatusFilter,
-        "name",
         HasCommemorativeDateFilter,
         HasBirthdayFilter,
         HasWeddingDateFilter,
