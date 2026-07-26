@@ -90,6 +90,7 @@ api_router.register(
     r"celebrations", BirthdayCelebrationViewSet, basename="deprecated-birthdays"
 )
 
+
 urlpatterns = [
     path("", include("core.urls")),
     path("admin/", admin.site.urls),

@@ -9,6 +9,9 @@ import environ
 
 import dj_database_url
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -265,6 +268,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
+# Configure Unfold
 UNFOLD = {
     "SITE_TITLE": "Portal IBC",
     "SITE_HEADER": "Administração",
@@ -287,3 +291,15 @@ UNFOLD = {
         },
     },
 }
+
+# Configure Sentry
+SENTRY_DSN = os.getenv("SENTRY_DSN")
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        # Enable APM
+        enable_tracing=True,
+        traces_sample_rate=0.1,
+        send_default_pii=True,
+    )

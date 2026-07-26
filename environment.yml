@@ -35,6 +35,7 @@ dependencies:
       - pyfcm==1.4.7
       - python-dateutil==2.8.1
       - requests>=2.33.0
+      - sentry-sdk==2.66.1
       - schedule==0.6.0
       - six==1.14.0
       - sqlparse==0.4.2
