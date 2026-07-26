@@ -165,6 +165,14 @@ CORS_ALLOWED_ORIGINS = [
     "https://ebd.ibcc2.com.br",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://ibcc2.com.br",
+    "https://*.ibcc2.com.br",
+    "https://*.herokuapp.com",
+]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # CORS_ORIGIN_WHITELIST = (
 #   'http://localhost:8000',
 # )
@@ -207,7 +215,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 # db_from_env = dj_database_url.config(conn_max_age=500)
 # DATABASES['default'].update(db_from_env)
 
-SECURE_PROXY_SSL_HEADER = ("https_X_FORWARDED_PROTO", "https")
 
 X_FRAME_OPTIONS = "ALLOW-FROM self"
 
