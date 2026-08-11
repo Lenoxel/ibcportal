@@ -496,10 +496,11 @@ class EBDClassViewSet(viewsets.ModelViewSet):
 
         if not request.user.is_superuser:
             request_user_member = Member.objects.filter(user=request.user).first()
+
             if (
                 request_user_member is None
-                or not ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
-                or not ebd_class.teachers.filter(pk=request_user_member.pk).exists()
+                and not ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
+                and not ebd_class.teachers.filter(pk=request_user_member.pk).exists()
             ):
                 raise PermissionDenied(permission_denied_message)
 
@@ -555,7 +556,7 @@ class EBDClassViewSet(viewsets.ModelViewSet):
 
             if (
                 request_user_member is None
-                or not ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
+                and not ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
                 and not ebd_class.teachers.filter(pk=request_user_member.pk).exists()
             ):
                 raise PermissionDenied(permission_denied_message)
