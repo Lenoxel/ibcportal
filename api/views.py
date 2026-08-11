@@ -54,7 +54,7 @@ from ebd.models import (
 from groups.models import Group
 
 from .serializers import (
-    BirthdayComemorationSerializer,
+    BirthdayCelebrationSerializer,
     CongregationSerializer,
     CustomEBDTokenObtainPairSerializer,
     CustomTokenObtainPairSerializer,
@@ -70,8 +70,9 @@ from .serializers import (
     PersonSerializer,
     PostSerializer,
     ScheduleSerializer,
-    UnionComemorationSerializer,
+    UnionCelebrationSerializer,
     VideoSerializer,
+    EBDClassMemberJoinRequestSerializer,
 )
 
 # from django.core.serializers import serialize
@@ -268,7 +269,7 @@ class PeopleViewSet(viewsets.ModelViewSet):
 
 
 class BirthdayCelebrationViewSet(viewsets.ModelViewSet):
-    serializer_class = BirthdayComemorationSerializer
+    serializer_class = BirthdayCelebrationSerializer
 
     def get_queryset(self):
         month_birthdays = Member.objects.filter(
@@ -283,7 +284,7 @@ class UnionCelebrationViewSet(viewsets.ModelViewSet):
         Q(union_date__month=get_now_datetime_utc().month)
     )
 
-    serializer_class = UnionComemorationSerializer
+    serializer_class = UnionCelebrationSerializer
 
 
 class VideoViewSet(viewsets.ModelViewSet):
@@ -477,6 +478,165 @@ class EBDClassViewSet(viewsets.ModelViewSet):
     queryset = EBDClass.objects.all().order_by("name")
     serializer_class = EBDClassSerializer
 
+    # Cria a rota api/ebd/classes/{pk}/members/request-to-join para solicitar a entrada de um membro na classe
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path=r"members/request-to-join",
+        url_name="request_member_to_join_class",
+    )
+    def request_member_to_join_class(self, request, pk=None):
+        ebd_class = self.get_object()
+
+        permission_denied_message = (
+            "Você não tem permissão para solicitar a entrada de membros nesta classe."
+        )
+
+        if not request.user.is_authenticated:
+            raise PermissionDenied(permission_denied_message)
+
+        if not request.user.is_superuser:
+            request_user_member = Member.objects.filter(user=request.user).first()
+
+            if request_user_member is None or not (
+                ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
+                or ebd_class.teachers.filter(pk=request_user_member.pk).exists()
+            ):
+                raise PermissionDenied(permission_denied_message)
+
+        member_id = request.data.get("member_id")
+
+        if not member_id:
+            return Response(
+                {"message": "O campo 'member_id' é obrigatório."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        member = Member.objects.filter(pk=member_id).first()
+
+        if member is None:
+            return Response(
+                {"message": "Membro não encontrado."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        ebd_class_member_type = request.data.get("ebd_class_member_type")
+        valid_types = ["student", "teacher", "secretary"]
+
+        if ebd_class_member_type not in valid_types:
+            return Response(
+                {"message": "O tipo de membro da classe EBD não é válido."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if (
+            ebd_class_member_type == "student"
+            and ebd_class.students.filter(pk=member.pk).exists()
+        ):
+            return Response(
+                {"message": "Membro já é aluno desta classe."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if (
+            ebd_class_member_type == "teacher"
+            and ebd_class.teachers.filter(pk=member.pk).exists()
+        ):
+            return Response(
+                {"message": "Membro já é professor desta classe."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if (
+            ebd_class_member_type == "secretary"
+            and ebd_class.secretaries.filter(pk=member.pk).exists()
+        ):
+            return Response(
+                {"message": "Membro já é secretário desta classe."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if EBDClassMemberJoinRequest.objects.filter(
+            ebd_class=ebd_class,
+            member=member,
+            ebd_class_member_type=ebd_class_member_type,
+            requested_by=request.user,
+            status="pending",
+        ).exists():
+            return Response(
+                {"message": "Já existe uma solicitação pendente para este membro."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        EBDClassMemberJoinRequest.objects.create(
+            ebd_class=ebd_class,
+            member=member,
+            ebd_class_member_type=ebd_class_member_type,
+        )
+
+        ebd_class_member_is_already_in = EBDClass.objects.filter(
+            Q(students__id=member.pk)
+            | Q(teachers__id=member.pk)
+            | Q(secretaries__id=member.pk)
+        ).first()
+
+        return Response(
+            {
+                "message": "Solicitação de entrada na classe enviada com sucesso!",
+                "detail": {
+                    "class_id": ebd_class.pk,
+                    "ebd_class_member_is_already_in": (
+                        {
+                            "id": ebd_class_member_is_already_in.pk,
+                            "name": ebd_class_member_is_already_in.name,
+                        }
+                        if ebd_class_member_is_already_in
+                        else None
+                    ),
+                },
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    # Cria a rota api/ebd/classes/{pk}/members/requests para listar as solicitações de entrada na classe
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path=r"members/requests",
+    )
+    def list_member_join_requests(self, request, pk=None):
+        ebd_class = self.get_object()
+
+        permission_denied_message = (
+            "Você não tem permissão para solicitar a entrada de membros nesta classe."
+        )
+
+        if not request.user.is_authenticated:
+            raise PermissionDenied(permission_denied_message)
+
+        if not request.user.is_superuser:
+            request_user_member = Member.objects.filter(user=request.user).first()
+
+            if request_user_member is None or not (
+                ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
+                or ebd_class.teachers.filter(pk=request_user_member.pk).exists()
+            ):
+                raise PermissionDenied(permission_denied_message)
+
+        join_requests = EBDClassMemberJoinRequest.objects.filter(
+            ebd_class=ebd_class,
+        ).order_by(
+            Case(
+                When(status="pending", then=0),
+                default=1,
+            ),
+            "-request_date",
+        )
+
+        serializer = EBDClassMemberJoinRequestSerializer(join_requests, many=True)
+
+        return Response(serializer.data)
+
     # Cria a rota api/ebd/classes/{pk}/members/{member_id} para remover um membro da classe
     @action(
         detail=True,
@@ -497,10 +657,9 @@ class EBDClassViewSet(viewsets.ModelViewSet):
         if not request.user.is_superuser:
             request_user_member = Member.objects.filter(user=request.user).first()
 
-            if (
-                request_user_member is None
-                and not ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
-                and not ebd_class.teachers.filter(pk=request_user_member.pk).exists()
+            if request_user_member is None or not (
+                ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
+                or ebd_class.teachers.filter(pk=request_user_member.pk).exists()
             ):
                 raise PermissionDenied(permission_denied_message)
 
@@ -554,10 +713,9 @@ class EBDClassViewSet(viewsets.ModelViewSet):
         if not request.user.is_superuser:
             request_user_member = Member.objects.filter(user=request.user).first()
 
-            if (
-                request_user_member is None
-                and not ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
-                and not ebd_class.teachers.filter(pk=request_user_member.pk).exists()
+            if request_user_member is None or not (
+                ebd_class.secretaries.filter(pk=request_user_member.pk).exists()
+                or ebd_class.teachers.filter(pk=request_user_member.pk).exists()
             ):
                 raise PermissionDenied(permission_denied_message)
 

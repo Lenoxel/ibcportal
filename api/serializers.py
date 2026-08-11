@@ -29,6 +29,7 @@ from ebd.models import (
     EBDLesson,
     EBDPresenceRecord,
     EBDPresenceRecordLabels,
+    EBDClassMemberJoinRequest,
 )
 from groups.models import Group, GroupMeetingDate
 
@@ -87,6 +88,34 @@ class MemberSerializer(serializers.ModelSerializer):
             "address",
             "date_of_birth",
             "picture",
+        )
+
+
+class EBDClassMemberJoinRequestSerializer(serializers.ModelSerializer):
+    member_name = serializers.SerializerMethodField()
+    manager_name = serializers.SerializerMethodField()
+
+    def get_member_name(self, obj):
+        return obj.member.name
+
+    def get_requested_by_name(self, obj):
+        return obj.requested_by.name
+
+    def get_manager_name(self, obj):
+        return obj.manager.name if obj.manager else None
+
+    class Meta:
+        model = EBDClassMemberJoinRequest
+        fields = (
+            "id",
+            "member_name",
+            "ebd_class_member_type",
+            "requested_by_name",
+            "request_date",
+            "status",
+            "manager_decision_date",
+            "manager_decision_reason",
+            "manager_name",
         )
 
 
@@ -174,7 +203,7 @@ class PersonSerializer(serializers.ModelSerializer):
         )
 
 
-class BirthdayComemorationSerializer(serializers.ModelSerializer):
+class BirthdayCelebrationSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.SerializerMethodField()
 
     def get_date_of_birth(self, obj):
@@ -197,7 +226,7 @@ class BirthdayComemorationSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "nickname", "date_of_birth", "picture", "whatsapp"]
 
 
-class UnionComemorationSerializer(serializers.ModelSerializer):
+class UnionCelebrationSerializer(serializers.ModelSerializer):
     union_date = serializers.SerializerMethodField()
 
     def get_union_date(self, obj):

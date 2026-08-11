@@ -24,6 +24,7 @@ from .models import (
     EBDLessonClassDetails,
     EBDPresenceRecord,
     EBDPresenceRecordLabels,
+    EBDClassMemberJoinRequest,
 )
 
 
@@ -389,9 +390,48 @@ class EBDPresenceRecordLabelsAdmin(ExportActionMixin, ModelAdmin):
     search_help_text = "Pesquise por aluno ou lição"
 
 
+class EBDClassMemberJoinRequestAdmin(ModelAdmin):
+    list_display = (
+        "status",
+        "member",
+        "ebd_class",
+        "ebd_class_member_type",
+        "request_date",
+        "manager",
+        "manager_decision_date",
+        "manager_decision_reason",
+    )
+    list_filter = ("status", "ebd_class_member_type")
+    search_fields = ("member__name",)
+    search_help_text = "Pesquise por nome do membro"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        hidden_fields = ["manager", "manager_decision_date"]
+
+        all_fields = [
+            field.name
+            for field in self.model._meta.fields
+            if field.name not in hidden_fields
+        ]
+
+        if obj and obj.status == "pending":
+            editable_fields = ["status", "manager", "manager_decision_reason"]
+
+            return [field for field in all_fields if field not in editable_fields]
+
+        return all_fields
+
+
 admin.site.register(EBDClass, EBDClassAdmin)
 admin.site.register(EBDLesson, EBDLessonAdmin)
 admin.site.register(EBDLessonClassDetails, EBDLessonClassDetailsAdmin)
 admin.site.register(EBDPresenceRecord, EBDPresenceRecordAdmin)
 admin.site.register(EBDPresenceRecordLabels, EBDPresenceRecordLabelsAdmin)
 admin.site.register(EBDLabelOptions)
+admin.site.register(EBDClassMemberJoinRequest, EBDClassMemberJoinRequestAdmin)

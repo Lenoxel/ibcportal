@@ -58,6 +58,64 @@ def ebd_class_background_image_delete(sender, instance, **kwargs):
         cloudinary.uploader.destroy(instance.background_image.public_id)
 
 
+class EBDClassMemberJoinRequest(models.Model):
+    ebd_class = models.ForeignKey(
+        EBDClass, verbose_name="Classe", on_delete=models.CASCADE
+    )
+    member = models.ForeignKey(Member, verbose_name="Membro", on_delete=models.CASCADE)
+    ebd_class_member_type = models.CharField(
+        "Tipo de membro",
+        choices=[
+            ("student", "Aluno"),
+            ("teacher", "Professor"),
+            ("secretary", "Secretário"),
+        ],
+        max_length=20,
+    )
+    requested_by = models.ForeignKey(
+        User,
+        verbose_name="Solicitado por",
+        related_name="ebd_class_member_join_request_requested_by",
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+    request_date = models.DateTimeField("Data da solicitação", auto_now_add=True)
+    status = models.CharField(
+        "Status",
+        choices=[
+            ("pending", "Pendente"),
+            ("approved", "Aprovado"),
+            ("rejected", "Rejeitado"),
+        ],
+        max_length=20,
+        default="pending",
+    )
+    manager = models.ForeignKey(
+        User,
+        verbose_name="Responsável",
+        related_name="ebd_class_member_join_request_manager",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    manager_decision_date = models.DateTimeField(
+        "Data da decisão do responsável", null=True, blank=True
+    )
+    manager_decision_reason = models.TextField(
+        "Motivo da decisão do responsável", null=True, blank=True
+    )
+
+    class Meta:
+        verbose_name = "Solicitação de admissão de membro na classe"
+        verbose_name_plural = "Solicitações de admissão de membros nas classes"
+        ordering = ["-request_date"]
+
+    def __str__(self):
+        return "{} - {} - {}".format(
+            self.request_date.strftime("%d/%m/%Y"), self.member, self.ebd_class
+        )
+
+
 class EBDLesson(models.Model):
     magazine_title = models.CharField("Revista", max_length=100, null=True, blank=True)
     title = models.CharField("Lição", max_length=100)
