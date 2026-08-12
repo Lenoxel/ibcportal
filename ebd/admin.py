@@ -12,7 +12,7 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from zoneinfo import ZoneInfo
-
+from django.utils import timezone
 
 from core.auxiliar_functions import remove_person_from_old_ebd_classes
 from core.models import Member
@@ -405,6 +405,35 @@ class EBDClassMemberJoinRequestAdmin(ModelAdmin):
     search_fields = ("member__name",)
     search_help_text = "Pesquise por nome do membro"
 
+    def save_model(self, request, obj, form, change):
+        has_permission = (
+            request.user.is_superuser
+            or request.user.groups.filter(
+                name__in=["Secretaria da Igreja", "Admin", "Superintendência"]
+            ).exists()
+        )
+
+        if not has_permission:
+            raise PermissionDenied("Você não tem permissão para avaliar solicitações.")
+
+        if obj.status in ["approved", "rejected"]:
+            obj.manager = request.user
+            obj.manager_decision_date = timezone.now()
+
+        super().save_model(request, obj, form, change)
+
+        if obj.status == "approved":
+            if obj.ebd_class_member_type == "student":
+                obj.ebd_class.students.add(obj.member)
+                return
+
+            if obj.ebd_class_member_type == "teacher":
+                obj.ebd_class.teachers.add(obj.member)
+                return
+
+            if obj.ebd_class_member_type == "secretary":
+                obj.ebd_class.secretaries.add(obj.member)
+
     def has_add_permission(self, request):
         return False
 
@@ -412,16 +441,10 @@ class EBDClassMemberJoinRequestAdmin(ModelAdmin):
         return False
 
     def get_readonly_fields(self, request, obj=None):
-        hidden_fields = ["manager", "manager_decision_date"]
-
-        all_fields = [
-            field.name
-            for field in self.model._meta.fields
-            if field.name not in hidden_fields
-        ]
+        all_fields = [field.name for field in self.model._meta.fields]
 
         if obj and obj.status == "pending":
-            editable_fields = ["status", "manager", "manager_decision_reason"]
+            editable_fields = ["status", "manager_decision_reason"]
 
             return [field for field in all_fields if field not in editable_fields]
 
