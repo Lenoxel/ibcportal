@@ -48,6 +48,7 @@ from ebd.models import (
     EBDLessonClassDetails,
     EBDPresenceRecord,
     EBDPresenceRecordLabels,
+    EBDClassMemberJoinRequest,
 )
 
 # from ebd.models import EBDLessonPresenceRecord
@@ -556,15 +557,16 @@ class EBDClassViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if EBDClassMemberJoinRequest.objects.filter(
-            ebd_class=ebd_class,
+        existing_member_join_request = EBDClassMemberJoinRequest.objects.filter(
             member=member,
-            ebd_class_member_type=ebd_class_member_type,
-            requested_by=request.user,
             status="pending",
-        ).exists():
+        ).first()
+
+        if existing_member_join_request:
             return Response(
-                {"message": "Já existe uma solicitação pendente para este membro."},
+                {
+                    "message": f"Já existe uma solicitação pendente para {member.name} como {existing_member_join_request.ebd_class_member_type} na classe {existing_member_join_request.ebd_class.name}."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -572,6 +574,7 @@ class EBDClassViewSet(viewsets.ModelViewSet):
             ebd_class=ebd_class,
             member=member,
             ebd_class_member_type=ebd_class_member_type,
+            requested_by=request.user,
         )
 
         ebd_class_member_is_already_in = EBDClass.objects.filter(
