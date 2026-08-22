@@ -475,7 +475,7 @@ class UpdateUserDetailsView(APIView):
 
 
 class EBDClassViewSet(viewsets.ModelViewSet):
-    http_method_names = ["get", "delete", "patch"]
+    http_method_names = ["get", "delete", "patch", "post"]
     queryset = EBDClass.objects.all().order_by("name")
     serializer_class = EBDClassSerializer
 
@@ -610,9 +610,7 @@ class EBDClassViewSet(viewsets.ModelViewSet):
     def list_member_join_requests(self, request, pk=None):
         ebd_class = self.get_object()
 
-        permission_denied_message = (
-            "Você não tem permissão para solicitar a entrada de membros nesta classe."
-        )
+        permission_denied_message = "Você não tem permissão para visualizar as solicitações de entrada nesta classe."
 
         if not request.user.is_authenticated:
             raise PermissionDenied(permission_denied_message)
