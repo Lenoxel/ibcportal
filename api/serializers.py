@@ -96,22 +96,25 @@ class EBDClassMemberJoinRequestSerializer(serializers.ModelSerializer):
     manager_name = serializers.SerializerMethodField()
     requested_by_name = serializers.SerializerMethodField()
 
+    def handle_user_name(self, user):
+        if not user:
+            return None
+
+        user_name = f"{user.first_name} {user.last_name}"
+
+        if user_name.strip() == "":
+            user_name = user.username
+
+        return user_name
+
     def get_member_name(self, obj):
         return obj.member.name
 
     def get_requested_by_name(self, obj):
-        if not obj.requested_by:
-            return None
-
-        user_name = f"{obj.requested_by.first_name} {obj.requested_by.last_name}"
-
-        if user_name.strip() == "":
-            user_name = obj.requested_by.username
-
-        return user_name
+        return self.handle_user_name(obj.requested_by)
 
     def get_manager_name(self, obj):
-        return obj.manager.name if obj.manager else None
+        return self.handle_user_name(obj.manager)
 
     class Meta:
         model = EBDClassMemberJoinRequest
