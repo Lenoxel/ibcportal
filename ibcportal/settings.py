@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("IBC_PORTAL_SECRET_KEY", "123")
 # print(SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG") == "True"
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", ".herokuapp.com", ".ibcc2.com.br"]
 
