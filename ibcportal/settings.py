@@ -1,4 +1,5 @@
 import os
+from django.templatetags.static import static
 from datetime import timedelta
 
 import cloudinary  # cloudinary
@@ -209,14 +210,18 @@ REST_FRAMEWORK = {
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # Production database configuration
 # db_from_env = dj_database_url.config(conn_max_age=500)
 # DATABASES['default'].update(db_from_env)
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 
 X_FRAME_OPTIONS = "ALLOW-FROM self"
@@ -274,7 +279,7 @@ UNFOLD = {
     "SITE_HEADER": "Administração",
     "STYLES": [
         lambda request: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
-        lambda request: "/static/css/admin_custom.css",
+        lambda request: static("css/admin_custom.css"),
     ],
     "COLORS": {
         "primary": {
