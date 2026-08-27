@@ -75,19 +75,55 @@ class PostSerializer(serializers.ModelSerializer):
 
 class MemberSerializer(serializers.ModelSerializer):
     picture = serializers.SerializerMethodField()
+    current_class = serializers.SerializerMethodField()
 
     def get_picture(self, obj):
         return obj.picture.url if obj.picture else None
 
+    def get_current_class(self, obj):
+        prefetched_classes = []
+        prefetched_relations = (
+            "_student_classes",
+            "_teacher_classes",
+            "_secretary_classes",
+        )
+        has_prefetched_classes = any(
+            hasattr(obj, relation) for relation in prefetched_relations
+        )
+        for relation in prefetched_relations:
+            prefetched_classes.extend(getattr(obj, relation, []))
+
+        if has_prefetched_classes:
+            ebd_class = (
+                min(prefetched_classes, key=lambda current_class: current_class.name)
+                if prefetched_classes
+                else None
+            )
+        else:
+            ebd_class = (
+                EBDClass.objects.filter(
+                    Q(students=obj) | Q(teachers=obj) | Q(secretaries=obj)
+                )
+                .order_by("name")
+                .first()
+            )
+
+        if not ebd_class:
+            return None
+
+        return {"id": ebd_class.id, "name": ebd_class.name}
+
     class Meta:
         model = Member
         fields = (
+            "id",
             "name",
             "description",
             "church_function",
             "address",
             "date_of_birth",
             "picture",
+            "current_class",
         )
 
 

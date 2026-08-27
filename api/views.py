@@ -7,7 +7,7 @@ from django.utils import timezone
 
 # from calendar import monthrange
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Case, Count, F, OuterRef, Q, Subquery, Sum, When
+from django.db.models import Case, Count, F, OuterRef, Prefetch, Q, Subquery, Sum, When
 
 from core.models import UserDetails
 
@@ -167,11 +167,35 @@ class MemberViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Member.objects.all()
+
         group_id = self.request.query_params.get("groupId", None)
+        name = self.request.query_params.get("name", None)
+
         if group_id is not None:
             group = Group.objects.get(pk=group_id)
             queryset = group.members
-        return queryset
+
+        if name is not None:
+            searched_members = Member.objects.filter(name__icontains=name)
+            queryset = searched_members
+
+        return queryset.prefetch_related(
+            Prefetch(
+                "student",
+                queryset=EBDClass.objects.order_by("name"),
+                to_attr="_student_classes",
+            ),
+            Prefetch(
+                "teacher",
+                queryset=EBDClass.objects.order_by("name"),
+                to_attr="_teacher_classes",
+            ),
+            Prefetch(
+                "secretary",
+                queryset=EBDClass.objects.order_by("name"),
+                to_attr="_secretary_classes",
+            ),
+        )
 
 
 class PeopleViewSet(viewsets.ModelViewSet):
