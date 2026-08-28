@@ -587,9 +587,15 @@ class EBDClassViewSet(viewsets.ModelViewSet):
         ).first()
 
         if existing_member_join_request:
+            member_type_map = {
+                "student": "aluno",
+                "teacher": "professor",
+                "secretary": "secretário",
+            }
+
             return Response(
                 {
-                    "message": f"Já existe uma solicitação pendente para {member.name} como {existing_member_join_request.ebd_class_member_type} na classe {existing_member_join_request.ebd_class.name}."
+                    "message": f"Já existe uma solicitação pendente para {member.name} como {member_type_map[existing_member_join_request.ebd_class_member_type]} na classe {existing_member_join_request.ebd_class.name}."
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
