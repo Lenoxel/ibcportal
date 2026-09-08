@@ -300,11 +300,18 @@ UNFOLD = {
 # Configure Sentry
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 if SENTRY_DSN:
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration()],
-        # Enable APM
-        enable_tracing=True,
-        traces_sample_rate=0.1,
-        send_default_pii=True,
-    )
+    sentry_kwargs = {
+        "dsn": SENTRY_DSN,
+        "integrations": [DjangoIntegration()],
+        "send_default_pii": True,
+    }
+
+    try:
+        sentry_sdk.init(
+            **sentry_kwargs,
+            enable_tracing=True,
+            traces_sample_rate=0.1,
+        )
+    except TypeError:
+        # Older sentry-sdk versions do not support tracing options.
+        sentry_sdk.init(**sentry_kwargs)
