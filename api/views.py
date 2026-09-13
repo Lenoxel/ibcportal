@@ -1424,36 +1424,46 @@ class EBDAnalyticsUsersPunctualityViewSet(viewsets.ViewSet):
         start_date = get_start_of_day(date(year, 1, 1))
         end_date = get_end_of_ebd_date(date(year, 12, 31))
 
-        punctual_count = request.query_params.get("punctualCount", 10)
+        try:
+            punctual_limit = int(request.query_params.get("punctualCount", 10))
+        except ValueError:
+            punctual_limit = 10
 
         punctual_students = []
 
         for punctual_student in Member.objects.raw(
-            """SELECT person.id id, person.name name, person.picture picture, percentile_disc(0.5) within group (order by presence_record.register_on at time zone 'America/Recife') time_frequency, COUNT(label.title) punctual_count
-            FROM ebd_ebdpresencerecordlabels presence_labels
-            INNER JOIN ebd_ebdpresencerecord presence_record
-            ON presence_record.ID = presence_labels.ebd_presence_record_id
-            INNER JOIN ebd_ebdlabeloptions label
-            ON label.id = presence_labels.ebd_label_option_id AND (label.title = 'Pontual')
+            """SELECT person.id id, person.name name, person.picture picture, percentile_disc(0.5) within group (order by (presence_record.register_on AT TIME ZONE 'America/Recife')::time) time_frequency, COUNT(CASE WHEN label.title = 'Pontual' THEN 1 END) punctual_count
+            FROM ebd_ebdpresencerecord presence_record
             INNER JOIN core_member person
             ON person.id = presence_record.person_id
+            INNER JOIN ebd_ebdpresencerecordlabels presence_labels
+            ON presence_record.ID = presence_labels.ebd_presence_record_id
+            INNER JOIN ebd_ebdlabeloptions label
+            ON label.id = presence_labels.ebd_label_option_id AND label.title IN ('Pontual', 'Atrasado')
             WHERE presence_record.register_on BETWEEN %s AND %s
-            GROUP BY person.id, person.name, person.picture, label.title
-            ORDER BY punctual_count DESC LIMIT %s""",
-            params=[start_date, end_date, punctual_count],
+            GROUP BY person.id, person.name, person.picture
+            HAVING COUNT(CASE WHEN label.title = 'Pontual' THEN 1 END) > 0
+            ORDER BY punctual_count DESC, time_frequency ASC LIMIT %s""",
+            params=[start_date, end_date, punctual_limit],
         ):
+            picture_url = (
+                f"{os.getenv('CLOUDINARY_BASE_URL')}/{punctual_student.picture}"
+                if punctual_student.picture
+                else None
+            )
+
+            time_freq_str = (
+                punctual_student.time_frequency.strftime("%H:%M")
+                if punctual_student.time_frequency
+                else None
+            )
+
             punctual_students.append(
                 {
                     "person_id": punctual_student.id,
                     "person_name": punctual_student.name,
-                    "person_picture": (
-                        "{}/{}".format(
-                            os.getenv("CLOUDINARY_BASE_URL"), punctual_student.picture
-                        )
-                        if punctual_student.picture
-                        else None
-                    ),
-                    "time_frequency": punctual_student.time_frequency,
+                    "person_picture": picture_url,
+                    "time_frequency": time_freq_str,
                     "punctual_count": punctual_student.punctual_count,
                 }
             )
