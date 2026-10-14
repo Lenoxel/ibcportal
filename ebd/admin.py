@@ -394,6 +394,7 @@ class EBDClassMemberJoinRequestAdmin(ModelAdmin):
     list_display = (
         "status",
         "member",
+        "member_current_situation",
         "ebd_class",
         "ebd_class_member_type",
         "request_date",
@@ -404,6 +405,50 @@ class EBDClassMemberJoinRequestAdmin(ModelAdmin):
     list_filter = ("status", "ebd_class_member_type")
     search_fields = ("member__name",)
     search_help_text = "Pesquise por nome do membro"
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related(
+                "member__student",
+                "member__teacher",
+                "member__secretary",
+            )
+        )
+
+    @admin.display(description="Situação atual")
+    def member_current_situation(self, obj):
+        class_roles = {}
+        for role, member_classes in (
+            ("student", obj.member.student.all()),
+            ("teacher", obj.member.teacher.all()),
+            ("secretary", obj.member.secretary.all()),
+        ):
+            for ebd_class in member_classes:
+                class_roles.setdefault(
+                    ebd_class.pk, {"class": ebd_class, "roles": set()}
+                )
+                class_roles[ebd_class.pk]["roles"].add(role)
+
+        if not class_roles:
+            return "Sem classe"
+
+        current_class = min(
+            (membership["class"] for membership in class_roles.values()),
+            key=lambda ebd_class: ebd_class.name,
+        )
+        roles = class_roles[current_class.pk]["roles"]
+        if "teacher" in roles:
+            member_type = "Professor"
+        elif "secretary" in roles:
+            member_type = "Secretário"
+        elif obj.member.ebd_relation == "visitante":
+            member_type = "Visitante"
+        else:
+            member_type = "Aluno"
+
+        return f"{member_type} da classe {current_class.name}"
 
     def save_model(self, request, obj, form, change):
         has_permission = (
@@ -442,6 +487,7 @@ class EBDClassMemberJoinRequestAdmin(ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         all_fields = [field.name for field in self.model._meta.fields]
+        all_fields.append("member_current_situation")
 
         if obj and obj.status == "pending":
             editable_fields = ["status", "manager_decision_reason"]
