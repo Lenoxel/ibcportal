@@ -1,3 +1,28 @@
+function setupMemberRegisterTrigger() {
+  const props = PropertiesService.getScriptProperties();
+  const googleFormId = props.getProperty('GOOGLE_FORM_ID');
+
+    if (!googleFormId) {
+        throw new Error('Google Form ID não está definido nas propriedades do script.');
+    }
+
+  const form = FormApp.openById(googleFormId);
+  const handler = 'onMemberRegisterFormSubmit';
+
+  const alreadyExists = ScriptApp.getProjectTriggers().some(trigger =>
+    trigger.getHandlerFunction() === handler &&
+    trigger.getEventType() === ScriptApp.EventType.ON_FORM_SUBMIT &&
+    trigger.getTriggerSourceId() === form.getId()
+  );
+
+  if (!alreadyExists) {
+    ScriptApp.newTrigger(handler)
+      .forForm(form)
+      .onFormSubmit()
+      .create();
+  }
+}
+
 function onMemberRegisterFormSubmit(e) {
   const props = PropertiesService.getScriptProperties();
 

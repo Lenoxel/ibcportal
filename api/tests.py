@@ -1,6 +1,7 @@
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from ibcportal.settings import EMAIL_HOST_USER
 from rest_framework.request import Request
 from rest_framework.test import APIClient, APIRequestFactory
 
@@ -67,7 +68,7 @@ class GoogleFormMemberWebhookTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].to,
-            ["glenonsilva@gmail.com"],
+            ["glenonsilva@gmail.com", EMAIL_HOST_USER],
         )
         self.assertIn("Ana Silva", mail.outbox[0].body)
         self.assertIn("ana@example.com", mail.outbox[0].body)
