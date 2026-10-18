@@ -1,3 +1,4 @@
+import base64
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -72,6 +73,52 @@ class GoogleFormMemberWebhookTests(TestCase):
         )
         self.assertIn("Ana Silva", mail.outbox[0].body)
         self.assertIn("ana@example.com", mail.outbox[0].body)
+
+    def test_photo_is_attached_to_email_without_creating_a_member(self):
+        photo_content = b"test-image-content"
+        response = self.client.post(
+            self.url,
+            {
+                "data": {"Nome": "Ana Silva"},
+                "photos": [
+                    {
+                        "filename": "foto.jpg",
+                        "contentType": "image/jpeg",
+                        "base64": base64.b64encode(photo_content).decode("ascii"),
+                    }
+                ],
+            },
+            format="json",
+            HTTP_X_WEBHOOK_SECRET="test-webhook-secret",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].attachments,
+            [("foto.jpg", photo_content, "image/jpeg")],
+        )
+        self.assertEqual(Member.objects.count(), 0)
+
+    def test_invalid_photo_is_rejected_without_sending_email(self):
+        response = self.client.post(
+            self.url,
+            {
+                "data": {"Nome": "Ana Silva"},
+                "photos": [
+                    {
+                        "filename": "foto.jpg",
+                        "contentType": "image/jpeg",
+                        "base64": "not-base64",
+                    }
+                ],
+            },
+            format="json",
+            HTTP_X_WEBHOOK_SECRET="test-webhook-secret",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(mail.outbox, [])
 
     def test_invalid_secret_is_rejected(self):
         response = self.client.post(

@@ -44,9 +44,12 @@ Este projeto foi desenvolvido com as seguintes tecnologias:
 
 ## Cadastro pelo Google Forms
 
-O endpoint `POST /api/members/google-form-webhook/` recebe o JSON no formato
-`{"data": {"Pergunta do formulário": "resposta"}}` e encaminha as respostas
-por email para `glenonsilva@gmail.com`. Ele não cria o membro no banco de dados.
+O endpoint `POST /api/members/google-form-webhook/` recebe as respostas no campo
+`data` e, opcionalmente, fotos no campo `photos` como Base64 (`filename`,
+`contentType` e `base64`). Encaminha as respostas e fotos anexadas por email para
+`glenonsilva@gmail.com`. As fotos não são armazenadas e o endpoint não cria o
+membro no banco de dados. São aceitas até 5 imagens JPEG, PNG, GIF ou WebP, com
+limite de 10 MB por foto e 15 MB no total.
 
 Configure `IBC_GOOGLE_FORM_WEBHOOK_SECRET` no ambiente do servidor e use o mesmo
 valor na propriedade `API_SECRET` do Apps Script. A propriedade `API_URL` deve

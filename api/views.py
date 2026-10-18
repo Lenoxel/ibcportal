@@ -1,4 +1,6 @@
 # from django.shortcuts import render
+import base64
+import binascii
 import hmac
 import json
 import os
@@ -6,7 +8,7 @@ from datetime import date, datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.utils import timezone
 
 # from calendar import monthrange
@@ -205,6 +207,15 @@ class MemberViewSet(viewsets.ModelViewSet):
 class GoogleFormMemberWebhookView(APIView):
     authentication_classes = []
     permission_classes = [permissions.AllowAny]
+    max_photo_count = 5
+    max_photo_size = 10 * 1024 * 1024
+    max_total_photo_size = 15 * 1024 * 1024
+    allowed_photo_content_types = {
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+    }
 
     def post(self, request):
         webhook_secret = settings.GOOGLE_FORM_WEBHOOK_SECRET
@@ -237,13 +248,80 @@ class GoogleFormMemberWebhookView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        email_sent = send_mail(
+        photos = request.data.get("photos", [])
+        if not isinstance(photos, list) or len(photos) > self.max_photo_count:
+            return Response(
+                {"detail": "O campo 'photos' deve ser uma lista com até 5 imagens."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        attachments = []
+        total_photo_size = 0
+        for photo in photos:
+            if not isinstance(photo, dict):
+                return Response(
+                    {"detail": "Cada foto deve ser um objeto."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            filename = photo.get("filename")
+            content_type = photo.get("contentType")
+            encoded_content = photo.get("base64")
+            if (
+                not isinstance(filename, str)
+                or not filename.strip()
+                or content_type not in self.allowed_photo_content_types
+                or not isinstance(encoded_content, str)
+            ):
+                return Response(
+                    {"detail": "Dados de foto inválidos."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            try:
+                photo_content = base64.b64decode(encoded_content, validate=True)
+            except (binascii.Error, ValueError):
+                return Response(
+                    {"detail": "A foto contém Base64 inválido."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            if not photo_content or len(photo_content) > self.max_photo_size:
+                return Response(
+                    {
+                        "detail": "Cada foto deve ter no máximo 10 MB e não pode ser vazia."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            total_photo_size += len(photo_content)
+            if total_photo_size > self.max_total_photo_size:
+                return Response(
+                    {"detail": "O tamanho total das fotos não pode exceder 15 MB."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            safe_filename = os.path.basename(filename.replace("\\", "/"))
+            safe_filename = "".join(
+                character for character in safe_filename if character.isprintable()
+            ).strip()
+            if not safe_filename:
+                return Response(
+                    {"detail": "O nome da foto é inválido."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            attachments.append((safe_filename, photo_content, content_type))
+
+        message = EmailMessage(
             subject="Novo cadastro de membro via formulário Google",
-            message=json.dumps(member_data, ensure_ascii=False, indent=2),
+            body=json.dumps(member_data, ensure_ascii=False, indent=2),
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[settings.EMAIL_HOST_USER, "glenonsilva@gmail.com"],
-            fail_silently=False,
+            to=[settings.EMAIL_HOST_USER, "glenonsilva@gmail.com"],
         )
+        for attachment in attachments:
+            message.attach(*attachment)
+
+        email_sent = message.send(fail_silently=False)
 
         if email_sent != 1:
             return Response(

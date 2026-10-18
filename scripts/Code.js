@@ -1,28 +1,3 @@
-function setupMemberRegisterTrigger() {
-  const props = PropertiesService.getScriptProperties();
-  const googleFormId = props.getProperty('GOOGLE_FORM_ID');
-
-    if (!googleFormId) {
-        throw new Error('Google Form ID não está definido nas propriedades do script.');
-    }
-
-  const form = FormApp.openById(googleFormId);
-  const handler = 'onMemberRegisterFormSubmit';
-
-  const alreadyExists = ScriptApp.getProjectTriggers().some(trigger =>
-    trigger.getHandlerFunction() === handler &&
-    trigger.getEventType() === ScriptApp.EventType.ON_FORM_SUBMIT &&
-    trigger.getTriggerSourceId() === form.getId()
-  );
-
-  if (!alreadyExists) {
-    ScriptApp.newTrigger(handler)
-      .forForm(form)
-      .onFormSubmit()
-      .create();
-  }
-}
-
 function onMemberRegisterFormSubmit(e) {
   const props = PropertiesService.getScriptProperties();
 
@@ -31,11 +6,25 @@ function onMemberRegisterFormSubmit(e) {
     data[r.getItem().getTitle()] = r.getResponse();
   });
 
+  const photoIds = data['Foto'] || [];
+  const photos = (Array.isArray(photoIds) ? photoIds : [photoIds])
+    .filter(Boolean)
+    .map(id => {
+      const file = DriveApp.getFileById(id);
+      const blob = file.getBlob();
+
+      return {
+        filename: file.getName(),
+        contentType: blob.getContentType(),
+        base64: Utilities.base64Encode(blob.getBytes()),
+      };
+    });
+
   const resp = UrlFetchApp.fetch(props.getProperty('API_URL'), {
     method: 'post',
     contentType: 'application/json',
     headers: { 'X-Webhook-Secret': props.getProperty('API_SECRET') },
-    payload: JSON.stringify({ data }),
+    payload: JSON.stringify({ data, photos }),
     muteHttpExceptions: true,
   });
 
