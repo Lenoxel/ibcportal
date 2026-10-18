@@ -14,3 +14,6 @@ staticfiles/
 
 # env variables
 .env
+
+# Script stuff
+.clasp.json

@@ -1,6 +1,8 @@
-from django.test import TestCase
+from django.core import mail
+from django.test import TestCase, override_settings
+from django.urls import reverse
 from rest_framework.request import Request
-from rest_framework.test import APIRequestFactory
+from rest_framework.test import APIClient, APIRequestFactory
 
 from core.models import Member
 from ebd.models import EBDClass
@@ -41,3 +43,74 @@ class MemberViewSetTests(TestCase):
         members = list(view.get_queryset())
 
         self.assertEqual(members, [matching_member])
+
+
+@override_settings(
+    GOOGLE_FORM_WEBHOOK_SECRET="test-webhook-secret",
+    EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+    EMAIL_HOST_USER="cadastro@ibcc2.com.br",
+)
+class GoogleFormMemberWebhookTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse("google-form-member-webhook")
+
+    def test_valid_submission_is_sent_to_member_registration_email(self):
+        response = self.client.post(
+            self.url,
+            {"data": {"Nome": "Ana Silva", "Email": "ana@example.com"}},
+            format="json",
+            HTTP_X_WEBHOOK_SECRET="test-webhook-secret",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].to,
+            ["glenonsilva@gmail.com"],
+        )
+        self.assertIn("Ana Silva", mail.outbox[0].body)
+        self.assertIn("ana@example.com", mail.outbox[0].body)
+
+    def test_invalid_secret_is_rejected(self):
+        response = self.client.post(
+            self.url,
+            {"data": {"Nome": "Ana Silva"}},
+            format="json",
+            HTTP_X_WEBHOOK_SECRET="wrong-secret",
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(mail.outbox, [])
+
+    def test_empty_or_invalid_data_is_rejected(self):
+        response = self.client.post(
+            self.url,
+            {"data": []},
+            format="json",
+            HTTP_X_WEBHOOK_SECRET="test-webhook-secret",
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.post(
+            self.url,
+            [],
+            format="json",
+            HTTP_X_WEBHOOK_SECRET="test-webhook-secret",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(mail.outbox, [])
+
+    @override_settings(GOOGLE_FORM_WEBHOOK_SECRET="")
+    def test_unconfigured_webhook_returns_service_unavailable(self):
+        response = self.client.post(
+            self.url,
+            {"data": {"Nome": "Ana Silva"}},
+            format="json",
+            HTTP_X_WEBHOOK_SECRET="test-webhook-secret",
+        )
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(mail.outbox, [])

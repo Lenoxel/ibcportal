@@ -1,8 +1,12 @@
 # from django.shortcuts import render
+import hmac
+import json
 import os
 from datetime import date, datetime, timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.utils import timezone
 
 # from calendar import monthrange
@@ -195,6 +199,61 @@ class MemberViewSet(viewsets.ModelViewSet):
                 queryset=EBDClass.objects.order_by("name"),
                 to_attr="_secretary_classes",
             ),
+        )
+
+
+class GoogleFormMemberWebhookView(APIView):
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        webhook_secret = settings.GOOGLE_FORM_WEBHOOK_SECRET
+
+        if not webhook_secret:
+            return Response(
+                {"detail": "Webhook não configurado."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        received_secret = request.headers.get("X-Webhook-Secret", "")
+        if not hmac.compare_digest(
+            received_secret.encode("utf-8"), webhook_secret.encode("utf-8")
+        ):
+            return Response(
+                {"detail": "Você não tem permissão para acessar este recurso."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if not isinstance(request.data, dict):
+            return Response(
+                {"detail": "O corpo da requisição deve ser um objeto JSON."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        member_data = request.data.get("data")
+        if not isinstance(member_data, dict) or not member_data:
+            return Response(
+                {"detail": 'O campo "data" deve ser um objeto não vazio.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        email_sent = send_mail(
+            subject="Novo cadastro de membro via formulário Google",
+            message=json.dumps(member_data, ensure_ascii=False, indent=2),
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[settings.EMAIL_HOST_USER, "glenonsilva@gmail.com"],
+            fail_silently=False,
+        )
+
+        if email_sent != 1:
+            return Response(
+                {"detail": "Não foi possível enviar o email."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        return Response(
+            {"detail": "Cadastro enviado por email."},
+            status=status.HTTP_200_OK,
         )
 
 
@@ -996,11 +1055,9 @@ class EBDPresenceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         # return EBDPresenceRecord.objects.all()
 
-        return EBDPresenceRecord.objects.raw(
-            """
+        return EBDPresenceRecord.objects.raw("""
             SELECT * from ebd_EBDPresenceRecord
-        """
-        )
+        """)
 
         # lesson_date = self.request.query_params.get('lessonDate', None)
         # classId = self.request.query_params.get('classId', None)def get_queryset
