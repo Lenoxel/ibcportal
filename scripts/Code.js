@@ -1,4 +1,4 @@
-function aoEnviarFormulario(e) {
+function onMemberRegisterFormSubmit(e) {
   const props = PropertiesService.getScriptProperties();
 
   const data = {};
@@ -14,8 +14,12 @@ function aoEnviarFormulario(e) {
     muteHttpExceptions: true,
   });
 
-  // Lançar erro faz o Google te avisar por email (configure em Gatilhos > Notificações de falha)
-  if (resp.getResponseCode() >= 300) {
-    throw new Error(`API respondeu ${resp.getResponseCode()}: ${resp.getContentText()}`);
+  const respContent = resp.getContentText();
+  const respCode = resp.getResponseCode();
+
+  console.log(`API respondeu ${respCode}: ${respContent}`);
+
+  if (respCode >= 300) {
+    throw new Error(`API respondeu ${respCode}: ${respContent}`);
   }
 }
