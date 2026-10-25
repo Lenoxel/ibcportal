@@ -13,6 +13,7 @@ from .serializers import MemberSerializer
 from .views import MemberViewSet
 
 
+@override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
 class MemberSerializerTests(TestCase):
     def test_current_class_is_none_when_member_has_no_class(self):
         member = Member.objects.create(name="Sem classe", nickname="")
@@ -22,7 +23,9 @@ class MemberSerializerTests(TestCase):
         self.assertIsNone(data["current_class"])
 
     def test_current_class_includes_any_ebd_membership(self):
-        member = Member.objects.create(name="Professor", nickname="")
+        member = Member.objects.create(
+            name="Professor", nickname="", email="professor@example.com"
+        )
         ebd_class = EBDClass.objects.create(name="Classe de adultos")
         ebd_class.teachers.add(member)
 
